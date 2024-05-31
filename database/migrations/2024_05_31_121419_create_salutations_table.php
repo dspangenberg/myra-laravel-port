@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-      Schema::table('eqquipment_categories', function (Blueprint $table) {
-        $table->renameColumn('eqquipment_group_id', 'parent_id')->default(0);
-      });
+        Schema::create('salutations', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('gender', 1);
+            $table->boolean('is_hidden')->default(false);
+            $table->timestamps();
+        });
     }
 
     /**
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-      Schema::table('eqquipment_categories', function (Blueprint $table) {
-        $table->renameColumn('parent_id', 'eqquipment_group_id');
-      });
+        Schema::dropIfExists('salutations');
     }
 };

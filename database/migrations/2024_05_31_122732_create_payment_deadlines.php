@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('filings', function (Blueprint $table) {
+        Schema::create('payment_deadlines', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->integer('days')->default(0);
+
+            $table->boolean('is_immediately')->default(false);
+            $table->boolean('is_default')->default(false);
             $table->timestamps();
         });
     }
@@ -23,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('filings');
+        Schema::dropIfExists('payment_deadlines');
     }
 };

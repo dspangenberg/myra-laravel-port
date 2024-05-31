@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-      Schema::table('storage_locations', function (Blueprint $table) {
-        $table->integer('business_segment_id');
-      });
+        Schema::create('address_categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->integer('type')->default(0);
+            $table->timestamps();
+        });
     }
 
     /**
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-      Schema::table('storage_locations', function (Blueprint $table) {
-        $table->dropColumn('business_segment_id');
-      });
+        Schema::dropIfExists('address_categories');
     }
 };

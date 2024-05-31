@@ -11,14 +11,11 @@ return new class extends Migration
    */
   public function up(): void
   {
-    Schema::create('safety_instruction_categories', function (Blueprint $table) {
+    Schema::create('project_categories', function (Blueprint $table) {
       $table->id();
       $table->string('name');
-      $table->string('description')->default('');
-      $table->string('color')->default('');
-      $table->boolean('use_parent_interval')->default(true);
-      $table->integer('interval')->default(365);
-      $table->integer('number_of_intervals')->default(1);
+      $table->string('color')->nullable();
+      $table->string('icon')->nullable();
       $table->timestamps();
     });
   }
@@ -28,6 +25,6 @@ return new class extends Migration
    */
   public function down(): void
   {
-    Schema::dropIfExists('safety_instruction_categories');
+    Schema::dropIfExists('project_categories');
   }
 };

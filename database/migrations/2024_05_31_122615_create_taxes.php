@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('business_segments', function (Blueprint $table) {
+        Schema::create('taxes', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('invoice_text');
+            $table->decimal('value');
+            $table->boolean('needs_vat_id');
+            $table->boolean('is_default');
             $table->timestamps();
         });
     }
@@ -23,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('business_segments');
+        Schema::dropIfExists('taxes');
     }
 };

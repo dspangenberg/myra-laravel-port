@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('storage_locations', function (Blueprint $table) {
+        Schema::create('contact_phones', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->integer('contact_id');
+            $table->integer('phone_category_id');
+            $table->integer('pos')->default(0);
+            $table->string('phone');
             $table->timestamps();
         });
     }
@@ -23,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('storage_locations');
+        Schema::dropIfExists('contact_phones');
     }
 };

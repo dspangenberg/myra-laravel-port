@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-      Schema::create('eqquipment_category_eqquipment_group', function (Blueprint $table) {
-        $table->id();
-        $table->integer('eqquipment_category_id');
-        $table->integer('eqquipment_group_id');
-        $table->timestamps();
-    });
+        Schema::create('countries', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('iso_code');
+            $table->string('vehicle_code');
+            $table->string('country_code');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-      Schema::dropIfExists('filings');
+        Schema::dropIfExists('countries');
     }
 };
