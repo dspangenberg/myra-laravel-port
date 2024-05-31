@@ -1,0 +1,85 @@
+<template>
+  <nav
+    class="flex items-stretch self-stretch flex-none order-first w-64 h-full overflow-hidden bg-white border-r select-none border-stone-200/30"
+  >
+    <div class="flex flex-col flex-1 w-full h-full px-2">
+      <div class="flex flex-1 divide-y divide-stone-200">
+        <div class="flex-1 h-full mt-3 space-y-5">
+          <div class="mb-12">
+            <img
+              src="/tw.png"
+              class="mx-auto rounded-full size-10 "
+            >
+          </div>
+          <twice-ui-nav-group>
+            <twice-ui-nav-item
+              badge-animate
+              :badge-count="0"
+              badge-color="green"
+              label="Dashboard"
+              icon="tabler-gauge"
+              route-name="dashboard"
+              exact
+              active-route-path="/app"
+            />
+          </twice-ui-nav-group>
+          <twice-ui-nav-group>
+            <twice-ui-nav-item
+              disabled
+              icon="tabler-calendar-time"
+              route-name="soon"
+              label="Agenda"
+              active-route-path="/app/agenda"
+            />
+            <twice-ui-nav-item
+              disabled
+              label="Kontakte"
+              icon="tabler-address-book"
+              route-name="soon"
+              active-route-path="/contacts"
+            />
+            <twice-ui-nav-item
+              disabled
+              label="Dokumente"
+              icon="tabler-folder"
+              route-name="soon"
+              active-route-path="/app/documents"
+            />
+          </twice-ui-nav-group>
+
+          <twice-ui-nav-group>
+            <twice-ui-nav-item
+              label="Mitarbeiter"
+              icon="tabler-id-badge-2"
+              route-name="soon"
+              active-route-path="/app/employees"
+            />
+            <twice-ui-nav-item
+              disabled
+              label="Überprüfungen"
+              icon="tabler-checkup-list"
+              route-name="soon"
+              active-route-path="/app/checks"
+            />
+          </twice-ui-nav-group>
+          <twice-ui-nav-group>
+            <twice-ui-nav-item
+              disabled
+              label="Arbeitsmittel"
+              icon="tabler-tools"
+              route-name="soon"
+              active-route-path="/app/equipment"
+            />
+            <twice-ui-nav-item
+              disabled
+              label="Unterweisungen"
+              icon="tabler-chalkboard"
+              route-name="soon"
+              active-route-path="/app/instructions"
+            />
+          </twice-ui-nav-group>
+        </div>
+      </div>
+    </div>
+  </nav>
+</template>
