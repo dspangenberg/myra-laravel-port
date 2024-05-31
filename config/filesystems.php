@@ -40,7 +40,13 @@ return [
           'driver' => 'local',
           'root' => database_path('data'),
           'throw' => false,
-      ],
+        ],
+
+        'private' => [
+          'driver' => 'local',
+          'root' => database_path('private-data'),
+          'throw' => false,
+        ],
 
         'public' => [
             'driver' => 'local',
