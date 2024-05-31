@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EquipmentCategory;
+use App\Models\PhoneCategory;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Resources\EquipmentCategoryResource;
 use App\Http\Resources\EquipmentCategoryCollection;
@@ -16,7 +16,7 @@ class EquipmentCategoryController extends Controller
      */
     public function index()
     {
-      return new EquipmentCategoryCollection(EquipmentCategory::orderBy('name')->with('parent')->paginate($this->recordsPerPage));
+      return new EquipmentCategoryCollection(PhoneCategory::orderBy('name')->with('parent')->paginate($this->recordsPerPage));
       // return new InventoryGroupCollection(InventoryGroup::orderBy('name')->with('segment')->paginate($this->recordsPerPage));
 
     }
@@ -29,18 +29,18 @@ class EquipmentCategoryController extends Controller
         'inventory_groups' => 'nullable|array'
       ]);
 
-      $equipmentCategory = EquipmentCategory::create($validated);
+      $equipmentCategory = PhoneCategory::create($validated);
       $equipmentCategory->inventory_groups()->sync($validated['inventory_groups']);
 
       return response()->json([
         'category' => $equipmentCategory
-      ], 200);
+      ]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(EquipmentCategory $equipmentCategory)
+    public function show(PhoneCategory $equipmentCategory)
     {
       return new EquipmentCategoryResource($equipmentCategory);
     }
@@ -48,7 +48,7 @@ class EquipmentCategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(EquipmentCategory $equipmentCategory)
+    public function edit(PhoneCategory $equipmentCategory)
     {
         //
     }
@@ -56,7 +56,7 @@ class EquipmentCategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, EquipmentCategory $equipmentCategory)
+    public function update(Request $request, PhoneCategory $equipmentCategory)
     {
         $validated = $request->validate([
           'name' =>'required',
@@ -71,13 +71,13 @@ class EquipmentCategoryController extends Controller
 
         return response()->json([
           'category' => $equipmentCategory
-        ], 200);
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(EquipmentCategory $equipmentCategory)
+    public function destroy(PhoneCategory $equipmentCategory)
     {
         //
     }

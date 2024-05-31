@@ -29,7 +29,7 @@ class FilingController extends Controller
       $filing = Filing::create($validated);
       return response()->json([
         'filing' => $filing
-      ], 200);
+      ]);
     }
 
     /**
@@ -39,7 +39,7 @@ class FilingController extends Controller
     {
       return response()->json([
         'filing' => $filing
-      ], 200);
+      ]);
     }
 
     /**
@@ -56,7 +56,7 @@ class FilingController extends Controller
 
       return response()->json([
         'filing' => $filing
-      ], 200);
+      ]);
     }
 
     /**

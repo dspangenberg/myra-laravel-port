@@ -1,3 +1,4 @@
+<!--suppress ALL -->
 <script setup lang="ts">
 import { Button } from '@/components/shdn/ui/button'
 import { IconChalkboard, IconSearch, IconIdBadge2, IconBell, IconCheckupList, IconCalendarDot, IconGauge, IconAddressBook, IconWand, IconFolder, IconMenu2 } from '@tabler/icons-vue'
@@ -20,6 +21,7 @@ const iconProps = {
           <img
             src="@/assets/tw.png"
             class="size-8"
+            alt="twiceware-Logo"
           >
         </div>
         <div class="grid gap-1 p-2 ">

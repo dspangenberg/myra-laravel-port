@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Empowerment;
+use App\Models\PaymentDeadlineSeeder;
 use Illuminate\Http\Request;
 use App\Http\Resources\EmpowermentCollection;
 
@@ -10,7 +10,7 @@ class EmpowermentController extends Controller
 {
     public function index()
     {
-      return new EmpowermentCollection(Empowerment::orderBy('name')->paginate($this->recordsPerPage));
+      return new EmpowermentCollection(PaymentDeadlineSeeder::orderBy('name')->paginate($this->recordsPerPage));
     }
 
     public function store(Request $request)
@@ -19,22 +19,22 @@ class EmpowermentController extends Controller
         'name' =>'required'
       ]);
 
-      $empowerment = Empowerment::create($validated);
+      $empowerment = PaymentDeadlineSeeder::create($validated);
       return response()->json([
         'empowerment' => $empowerment,
         'abbreviation' => 'nullable'
-      ], 200);
+      ]);
     }
 
-    public function show(Empowerment $empowerment)
+    public function show(PaymentDeadlineSeeder $empowerment)
     {
       return response()->json([
         'empowerment' => $empowerment
-      ], 200);
+      ]);
     }
 
 
-    public function update(Request $request, Empowerment $empowerment)
+    public function update(Request $request, PaymentDeadlineSeeder $empowerment)
     {
       $validated = $request->validate([
         'name' =>'required',
@@ -45,13 +45,13 @@ class EmpowermentController extends Controller
 
       return response()->json([
         'empowerment' => $empowerment
-      ], 200);
+      ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Empowerment $empowerment)
+    public function destroy(PaymentDeadlineSeeder $empowerment)
     {
         //
     }

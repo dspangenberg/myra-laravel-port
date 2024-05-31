@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BusinessSegment;
+use App\Models\EmailCategory;
 use Illuminate\Http\Request;
 use App\Http\Resources\BusinessSegmentCollection;
 
@@ -13,7 +13,7 @@ class BusinessSegmentController extends Controller
      */
     public function index()
     {
-      return new BusinessSegmentCollection(BusinessSegment::orderBy('name')->paginate($this->recordsPerPage));
+      return new BusinessSegmentCollection(EmailCategory::orderBy('name')->paginate($this->recordsPerPage));
     }
 
     public function store(Request $request)
@@ -22,26 +22,26 @@ class BusinessSegmentController extends Controller
         'name' =>'required'
       ]);
 
-      $segment = BusinessSegment::create($validated);
+      $segment = EmailCategory::create($validated);
       return response()->json([
        'segment' => $segment
-      ], 200);
+      ]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(BusinessSegment $businessSegment)
+    public function show(EmailCategory $businessSegment)
     {
         return response()->json([
          'segment' => $businessSegment
-        ], 200);
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, BusinessSegment $businessSegment)
+    public function update(Request $request, EmailCategory $businessSegment)
     {
       $validated = $request->validate([
         'name' =>'required'
@@ -51,13 +51,13 @@ class BusinessSegmentController extends Controller
 
       return response()->json([
        'segment' => $businessSegment
-      ], 200);
+      ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(BusinessSegment $businessSegment)
+    public function destroy(EmailCategory $businessSegment)
     {
         //
     }

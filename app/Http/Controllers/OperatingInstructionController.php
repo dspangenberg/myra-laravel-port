@@ -22,7 +22,7 @@ class OperatingInstructionController extends Controller
   {
       return response()->json([
         'instruction' => $operating_instruction
-      ], 200);
+      ]);
   }
 
   public function update(Request $request, OperatingInstruction $operating_instruction)
@@ -37,7 +37,7 @@ class OperatingInstructionController extends Controller
 
     return response()->json([
       'instruction' => $operating_instruction
-    ], 200);
+    ]);
   }
 
 
@@ -53,6 +53,6 @@ class OperatingInstructionController extends Controller
     $operating_instruction = OperatingInstruction::create($validated);
     return response()->json([
       'instruction' => $operating_instruction
-    ], 200);
+    ]);
   }
 }

@@ -31,7 +31,7 @@ class ManufacturerController extends Controller
       $manufacturer = Manufacturer::create($validated);
       return response()->json([
         'manufacturer' => $manufacturer
-      ], 200);
+      ]);
     }
 
 
@@ -39,7 +39,7 @@ class ManufacturerController extends Controller
     {
       return response()->json([
         'manufacturer' => $manufacturer
-      ], 200);
+      ]);
     }
 
     /**
@@ -56,7 +56,7 @@ class ManufacturerController extends Controller
 
       return response()->json([
         'manufacturer' => $manufacturer
-      ], 200);
+      ]);
     }
 
     /**

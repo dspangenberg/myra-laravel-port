@@ -80,7 +80,7 @@ router.beforeEach((to, from, next) => {
 
   router.onError(handler => console.log(handler, from, to))
 
-  if (globalStore.isAuthenticated === true || to.meta.requiresAuth === false) {
+  if (globalStore.isAuthenticated || to.meta.requiresAuth === false) {
     next()
   } else {
     next({ name: 'login' })

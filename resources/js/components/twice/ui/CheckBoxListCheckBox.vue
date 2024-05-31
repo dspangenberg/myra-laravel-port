@@ -61,4 +61,3 @@ const proxyChecked = computed({
     </label>
   </div>
 </template>
-

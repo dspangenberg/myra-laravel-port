@@ -33,6 +33,6 @@ export const createEmpowerment = async (payload: Empowerment) => {
   await axios.$post(baseUrl, payload)
 }
 
-export const updateEmpowerment= async (payload: Empowerment) => {
+export const updateEmpowerment = async (payload: Empowerment) => {
   await axios.$put(`${baseUrl}/${payload.id}`, payload)
 }

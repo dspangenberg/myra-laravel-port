@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Department;
+use App\Models\PaymentDeadline;
 use Illuminate\Http\Request;
 use App\Http\Resources\DepartmentCollection;
 
@@ -13,7 +13,7 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-      return new DepartmentCollection(Department::orderBy('name')->paginate($this->recordsPerPage));
+      return new DepartmentCollection(PaymentDeadline::orderBy('name')->paginate($this->recordsPerPage));
     }
 
     public function store(Request $request)
@@ -22,20 +22,20 @@ class DepartmentController extends Controller
         'name' =>'required'
       ]);
 
-      $department = Department::create($validated);
+      $department = PaymentDeadline::create($validated);
       return response()->json([
         'department' => $department
-      ], 200);
+      ]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Department $department)
+    public function show(PaymentDeadline $department)
     {
       return response()->json([
         'department' => $department
-      ], 200);
+      ]);
     }
 
     /**
@@ -45,7 +45,7 @@ class DepartmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Department $department)
+    public function update(Request $request, PaymentDeadline $department)
     {
       $validated = $request->validate([
         'name' =>'required'
@@ -55,13 +55,13 @@ class DepartmentController extends Controller
 
       return response()->json([
         'department' => $department
-      ], 200);
+      ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Department $department)
+    public function destroy(PaymentDeadline $department)
     {
         //
     }

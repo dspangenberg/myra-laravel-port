@@ -41,7 +41,7 @@ class InventoryGroupController extends Controller
       $inventoryGroup = InventoryGroup::create($validated);
       return response()->json([
         'group' => $inventoryGroup
-      ], 200);
+      ]);
     }
 
     /**
@@ -51,7 +51,7 @@ class InventoryGroupController extends Controller
     {
       return response()->json([
         'group' => $inventoryGroup
-      ], 200);
+      ]);
     }
 
     /**
@@ -78,7 +78,7 @@ class InventoryGroupController extends Controller
 
       return response()->json([
         'group' => $inventoryGroup
-      ], 200);
+      ]);
     }
 
     /**

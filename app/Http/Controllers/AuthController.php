@@ -89,7 +89,7 @@ class AuthController extends Controller
                 'message' => 'Logged In Successfully',
                 'token' => $user->createToken("API_TOKEN")->plainTextToken,
                 'user' => $user
-            ], 200);
+            ]);
 
         } catch (\Throwable $e) {
             return response()->json([

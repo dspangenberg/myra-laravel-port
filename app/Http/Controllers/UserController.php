@@ -17,7 +17,7 @@ class UserController extends Controller
   {
     return response()->json([
       'users' => User::paginate(10, ['*'], 'users')->toArray()
-    ], 200);
+    ]);
   }
 
   public function update(Request $request, User $user)
@@ -35,7 +35,7 @@ class UserController extends Controller
 
     return response()->json([
       'location' => $user
-    ], 200);
+    ]);
   }
 
   public function store(Request $request, User $user)
@@ -53,13 +53,13 @@ class UserController extends Controller
 
     return response()->json([
       'location' => $user
-    ], 200);
+    ]);
   }
 
   public function show(User $user)
     {
       return response()->json([
         'user' => $user
-      ], 200);
+      ]);
     }
 }

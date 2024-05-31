@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use App\Models\BusinessSegment;
+use App\Models\EmailCategory;
 
 class InventoryGroupCollection extends ResourceCollection
 {
@@ -12,7 +12,7 @@ class InventoryGroupCollection extends ResourceCollection
   {
     return [
       'data' => $this->collection,
-      'segments' => BusinessSegment::orderBy('name')->get()->toArray()
+      'segments' => EmailCategory::orderBy('name')->get()->toArray()
     ];
   }
 }

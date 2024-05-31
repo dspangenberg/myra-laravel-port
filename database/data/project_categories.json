@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "name": "Administration",
+    "color": null,
+    "icon": "tabler-icon-terminal-2",
+    "created_at": "2022-01-08 18:54:12",
+    "updated_at": "2022-01-08 18:54:12"
+  },
+  {
+    "id": 2,
+    "name": "Beratung/Schulung",
+    "color": null,
+    "icon": "tabler-icon-school",
+    "created_at": "2022-01-08 18:54:12",
+    "updated_at": "2022-01-08 18:54:12"
+  },
+  {
+    "id": 3,
+    "name": "internes Projekt",
+    "color": null,
+    "icon": "tabler-icon-smart-home",
+    "created_at": "2022-01-08 18:54:12",
+    "updated_at": "2022-01-08 18:54:12"
+  },
+  {
+    "id": 4,
+    "name": "Pflege",
+    "color": null,
+    "icon": "tabler-icon-tools",
+    "created_at": "2022-01-08 18:54:12",
+    "updated_at": "2022-01-08 18:54:12"
+  },
+  {
+    "id": 5,
+    "name": "Support",
+    "color": null,
+    "icon": "tabler-icon-tools",
+    "created_at": "2022-01-08 18:54:12",
+    "updated_at": "2022-01-08 18:54:12"
+  },
+  {
+    "id": 6,
+    "name": "Support (Endanwender)",
+    "color": null,
+    "icon": "tabler-icon-tools",
+    "created_at": "2022-01-08 18:54:12",
+    "updated_at": "2022-01-08 18:54:12"
+  },
+  {
+    "id": 7,
+    "name": "Webentwicklung",
+    "color": null,
+    "icon": "tabler-icon-brand-visual-studio",
+    "created_at": "2022-01-08 18:54:12",
+    "updated_at": "2022-01-08 18:54:12"
+  },
+  {
+    "id": 8,
+    "name": "Webdesign (Launch)",
+    "color": null,
+    "icon": "tabler-icon-brand-html5",
+    "created_at": "2022-01-08 18:54:12",
+    "updated_at": "2022-01-08 18:54:12"
+  },
+  {
+    "id": 9,
+    "name": "Webdesign (Relaunch)",
+    "color": null,
+    "icon": "tabler-icon-brand-html5",
+    "created_at": "2022-01-08 18:54:12",
+    "updated_at": "2022-01-08 18:54:12"
+  },
+  {
+    "id": 10,
+    "name": "Webhosting",
+    "color": null,
+    "icon": "tabler-icon-server",
+    "created_at": "2022-01-08 18:54:12",
+    "updated_at": "2022-01-08 18:54:12"
+  }
+]

@@ -29,7 +29,7 @@ class StorageLocationController extends Controller
       $location = StorageLocation::create($validated);
       return response()->json([
         'location' => $location
-      ], 200);
+      ]);
     }
 
     /**
@@ -39,7 +39,7 @@ class StorageLocationController extends Controller
     {
       return response()->json([
         'location' => $storageLocation
-      ], 200);
+      ]);
     }
 
     public function update(Request $request, StorageLocation $storageLocation)
@@ -53,7 +53,7 @@ class StorageLocationController extends Controller
 
       return response()->json([
         'location' => $storageLocation
-      ], 200);
+      ]);
     }
 
     /**

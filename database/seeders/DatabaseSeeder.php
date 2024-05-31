@@ -15,10 +15,26 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
+        $count = User::count();
+
+        if ($count === 0) {
+          User::factory()->create([
             'last_name' => 'Spangenberg',
             'first_name' => 'Danny',
             'email' => 'test@example.com',
         ]);
+      }
+
+      $this->call([
+        AddressCategorySeeder::class,
+        CountrySeeder::class,
+        EmailCategorySeeder::class,
+        PhoneCategorySeeder::class,
+        ProjectCategorySeeder::class,
+        SalutationSeeder::class,
+        TaxSeeder::class,
+        TimeCategorySeeder::class,
+        TitleSeeder::class,
+      ]);
     }
 }

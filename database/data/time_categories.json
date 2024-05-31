@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "name": "Software- und Webentwicklung",
+    "short_name": "DEV",
+    "pos": null,
+    "hourly": 60.00,
+    "is_default": 0,
+    "created_at": "2022-01-12 00:43:41",
+    "updated_at": "2022-01-12 00:43:41"
+  },
+  {
+    "id": 2,
+    "name": "Administration",
+    "short_name": "ADM",
+    "pos": null,
+    "hourly": 60.00,
+    "is_default": 0,
+    "created_at": "2022-01-12 00:43:41",
+    "updated_at": "2022-01-12 00:43:41"
+  },
+  {
+    "id": 3,
+    "name": "Dokumentation",
+    "short_name": "DOC",
+    "pos": null,
+    "hourly": 60.00,
+    "is_default": 0,
+    "created_at": "2022-01-12 00:43:41",
+    "updated_at": "2022-01-12 00:43:41"
+  },
+  {
+    "id": 4,
+    "name": "Konzeption",
+    "short_name": "KON",
+    "pos": null,
+    "hourly": 60.00,
+    "is_default": 0,
+    "created_at": "2022-01-12 00:43:41",
+    "updated_at": "2022-01-12 00:43:41"
+  },
+  {
+    "id": 5,
+    "name": "Pflege",
+    "short_name": "PFL",
+    "pos": null,
+    "hourly": 60.00,
+    "is_default": 0,
+    "created_at": "2022-01-12 00:43:41",
+    "updated_at": "2022-01-12 00:43:41"
+  },
+  {
+    "id": 6,
+    "name": "Support",
+    "short_name": "SUP",
+    "pos": null,
+    "hourly": 60.00,
+    "is_default": 0,
+    "created_at": "2022-01-12 00:43:41",
+    "updated_at": "2022-01-12 00:43:41"
+  },
+  {
+    "id": 7,
+    "name": "Support (Endkunde)",
+    "short_name": "SEU",
+    "pos": null,
+    "hourly": 60.00,
+    "is_default": 0,
+    "created_at": "2022-01-12 00:43:41",
+    "updated_at": "2022-01-12 00:43:41"
+  },
+  {
+    "id": 8,
+    "name": "Abrechnung nach Aufwand (Allgemein)",
+    "short_name": "GEN",
+    "pos": null,
+    "hourly": 60.00,
+    "is_default": 1,
+    "created_at": "2022-01-12 00:43:41",
+    "updated_at": "2022-01-12 00:43:41"
+  }
+]
