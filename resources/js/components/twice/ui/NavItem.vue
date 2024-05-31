@@ -42,6 +42,12 @@ const props = withDefaults(defineProps<Props>(), {
   routeQuery: undefined
 })
 
+const iconProps = {
+  size: '24',
+  stroke: '1.5',
+  class: [props.disabled ? 'text-gray-300 hover:text-gray-300' : 'text-gray-700 active:text-black group-hover:text-black', ' flex-none mr-1.5 h-5 w-5 ']
+}
+
 const route = useRoute()
 const router = useRouter()
 
@@ -110,10 +116,9 @@ const isActive = computed(() => {
           v-else
           class="flex-none"
         >
-          <twice-ui-icon
-            :name="icon"
-            :class="[disabled ? 'text-gray-300 cursor-not-allowed' : active ? 'text-black ' : 'text-gray-700 group-hover:text-black', 'flex-shrink-0 mr-1.5 h-5 w-5 ']"
-            :stroke-width="iconStrokeWidth"
+          <slot
+            name="icon"
+            :icon-props="iconProps"
           />
         </div>
         <span
