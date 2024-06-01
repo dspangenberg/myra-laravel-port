@@ -1,13 +1,13 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
-import { getAllBusinessSegments, findBusinessSegmentById, createBusinessSegment, updateBusinessSegment } from '@/api/params/BusinessSegment'
+import { getAllBusinessSegments, findBusinessSegmentById, createBusinessSegment, updateBusinessSegment } from '@/api/params/ProjectCategory'
 import { reactive, ref, type Ref } from 'vue'
-import type { BusinessSegment } from '@/api/params/BusinessSegment'
+import type { ProjectCategory } from '@/api/params/ProjectCategory'
 import { type Meta } from '@/types/'
 
 export const useBusinessSegmentStore = defineStore('params-business-segment-store', () => {
-  const segments: Ref<BusinessSegment[] | null> = ref([])
-  const segment: Ref<BusinessSegment | null> = ref(null)
-  const segmentEdit: Ref<BusinessSegment | null> = ref(null)
+  const segments: Ref<ProjectCategory[] | null> = ref([])
+  const segment: Ref<ProjectCategory | null> = ref(null)
+  const segmentEdit: Ref<ProjectCategory | null> = ref(null)
   const meta: Ref<Meta | null> = ref(null)
   const isLoading: Ref<boolean> = ref(false)
 
@@ -43,7 +43,7 @@ export const useBusinessSegmentStore = defineStore('params-business-segment-stor
     })
   }
 
-  const save = async (value: BusinessSegment) => {
+  const save = async (value: ProjectCategory) => {
     if (!value.id) {
       await createBusinessSegment(value)
     } else {

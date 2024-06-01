@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { type BusinessSegment } from '@/api/params/BusinessSegment'
+import { type ProjectCategory } from '@/api/params/ProjectCategory'
 import {
   TableCell,
   TableRow
 } from '@/components/shdn/ui/table'
 
 export interface Props {
-  item: BusinessSegment
+  item: ProjectCategory
 }
 defineEmits(['select'])
 defineProps<Props>()

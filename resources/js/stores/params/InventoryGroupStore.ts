@@ -2,13 +2,13 @@ import { defineStore, acceptHMRUpdate } from 'pinia'
 import { getAllInventoryGroups, findInventoryGroupById, createInventoryGroup, updateInventoryGroup } from '@/api/params/InventoryGroup'
 import { reactive, ref, type Ref } from 'vue'
 import type { InventoryGroup } from '@/api/params/InventoryGroup'
-import type { BusinessSegment } from '@/api/params/BusinessSegment'
+import type { ProjectCategory } from '@/api/params/ProjectCategory'
 
 import { type Meta } from '@/types/'
 
 export const useInventoryGroupStore = defineStore('params-inventory-group', () => {
   const groups: Ref<InventoryGroup[] | null> = ref([])
-  const segments: Ref<BusinessSegment[] | null> = ref([])
+  const segments: Ref<ProjectCategory[] | null> = ref([])
   const group: Ref<InventoryGroup | null> = ref(null)
   const groupEdit: Ref<InventoryGroup | null> = ref(null)
   const meta: Ref<Meta | null> = ref(null)

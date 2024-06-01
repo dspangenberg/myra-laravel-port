@@ -31,6 +31,7 @@ export const useUserStore = defineStore('user-store', () => {
     const { data: usersData, meta: metaData } = await getAllUsers()
     users.value = usersData
     meta.value = metaData
+    isLoading.value = false
   }
 
   const add = () => {
@@ -39,11 +40,9 @@ export const useUserStore = defineStore('user-store', () => {
   }
 
   const findById = async (id: number) => {
-    isLoading.value = true
     const { user: apiUser } = await findUserById(id)
     user.value = apiUser
     userEdit.value = apiUser
-    isLoading.value = false
   }
 
   const save = async (value: User) => {

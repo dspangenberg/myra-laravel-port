@@ -54,7 +54,7 @@ const emit = defineEmits(['updatePage'])
             as-child
           >
             <Button
-              class="p-0 size-10"
+              class="p-0 size-10 text-sm"
               :variant="item.value === page ? 'default' : 'outline'"
             >
               {{ item.value }}

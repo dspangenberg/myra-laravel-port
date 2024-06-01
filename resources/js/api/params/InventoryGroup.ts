@@ -1,6 +1,6 @@
 import { useAxios } from '@/composables/useAxios'
 import { type Meta } from '@/types/'
-import { type BusinessSegment } from '@/api/params/BusinessSegment'
+import { type ProjectCategory } from '@/api/params/ProjectCategory'
 
 const { axios } = useAxios(true)
 const baseUrl: string = '/api/params/inventory-groups'
@@ -11,13 +11,13 @@ export interface InventoryGroup {
   inventory_number_prefix?: string
   inventory_current_number?: number
   business_segment_id?: number
-  segment?: BusinessSegment
+  segment?: ProjectCategory
 }
 
 export interface ResponseWithMeta {
   data: InventoryGroup[],
   meta: Meta
-  segments: BusinessSegment[]
+  segments: ProjectCategory[]
 }
 
 export interface Response {

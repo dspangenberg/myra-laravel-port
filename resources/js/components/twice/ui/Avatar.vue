@@ -3,14 +3,16 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/shdn/ui/avatar
 
 export interface Props {
   avatar?: string
-  initials: string,
-  fullname: string
+  initials?: string,
+  fullname?: string
   size?: 'sm' | 'md' | 'lg'
 }
 
 withDefaults(defineProps<Props>(), {
   avatar: 'null',
-  size: 'md'
+  size: 'md',
+  initials: '',
+  fullname: ''
 })
 
 </script>

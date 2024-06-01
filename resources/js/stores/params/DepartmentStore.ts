@@ -1,13 +1,13 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
-import { getAllDepartments, findDepartmentById, createDepartment, updateDepartment } from '@/api/params/Department'
+import { getAllDepartments, findDepartmentById, createDepartment, updateDepartment } from '@/api/params/TimeCategory'
 import { reactive, ref, type Ref } from 'vue'
-import type { Department } from '@/api/params/Department'
+import type { TimeCategory } from '@/api/params/TimeCategory'
 import { type Meta } from '@/types/'
 
 export const useDepartmentStore = defineStore('params-department-store', () => {
-  const departments: Ref<Department[] | null> = ref([])
-  const department: Ref<Department | null> = ref(null)
-  const departmentEdit: Ref<Department | null> = ref(null)
+  const departments: Ref<TimeCategory[] | null> = ref([])
+  const department: Ref<TimeCategory | null> = ref(null)
+  const departmentEdit: Ref<TimeCategory | null> = ref(null)
   const meta: Ref<Meta | null> = ref(null)
   const isLoading: Ref<boolean> = ref(false)
 
@@ -43,7 +43,7 @@ export const useDepartmentStore = defineStore('params-department-store', () => {
     })
   }
 
-  const save = async (value: Department) => {
+  const save = async (value: TimeCategory) => {
     if (!value.id) {
       await createDepartment(value)
     } else {

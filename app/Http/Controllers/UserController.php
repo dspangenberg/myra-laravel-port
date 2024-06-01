@@ -3,21 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\StoreUserRequest;
 use Illuminate\Validation\Rule;
-
+use App\Http\Resources\UserCollection;
 
 class UserController extends Controller
 {
   public function index()
   {
-    return response()->json([
-      'users' => User::paginate(10, ['*'], 'users')->toArray()
-    ]);
+    return new UserCollection(User::orderBy('last_name')->paginate($this->recordsPerPage));
   }
 
   public function update(Request $request, User $user)

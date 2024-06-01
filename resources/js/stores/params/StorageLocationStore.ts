@@ -3,13 +3,13 @@ import { getAllStorageLocations, findStorageLocationById, createStorageLocation,
 import { reactive, ref, type Ref } from 'vue'
 import type { StorageLocation } from '@/api/params/StorageLocation'
 import { type Meta } from '@/types/'
-import type { BusinessSegment } from '@/api/params/BusinessSegment'
+import type { ProjectCategory } from '@/api/params/ProjectCategory'
 
 export const useStorageLocationStore = defineStore('params-storage-location', () => {
   const locations: Ref<StorageLocation[] | null> = ref([])
   const location: Ref<StorageLocation | null> = ref(null)
   const locationEdit: Ref<StorageLocation | null> = ref(null)
-  const segments: Ref<BusinessSegment[] | null> = ref([])
+  const segments: Ref<ProjectCategory[] | null> = ref([])
   const meta: Ref<Meta | null> = ref(null)
   const isLoading: Ref<boolean> = ref(false)
 

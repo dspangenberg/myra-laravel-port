@@ -1,3 +1,4 @@
+<!--suppress ES6MissingAwait -->
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 import { onMounted, ref, watch } from 'vue'

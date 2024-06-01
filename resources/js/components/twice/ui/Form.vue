@@ -1,24 +1,19 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends Record<string, any>">
 import { useForm } from 'vee-validate'
 import { ref, watch, computed } from 'vue'
 import { id as id2 } from 'random-html-id'
-import { type IKeyValueMulitTypeStore } from '@/types/'
 
-export interface Props {
-  initialValues: IKeyValueMulitTypeStore | null;
-  id?: string;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  initialValues: null,
-  id: id2()
+const props = withDefaults(defineProps<{
+  initialValues?: T | null | {} | undefined
+  id?: string
+}>(), {
+  id: id2(),
+  initialValues: null
 })
 
 const form = ref<HTMLFormElement | null>(null)
 
-// const emit = defineEmits(['submitted', 'changed', 'dirty', 'pending', 'request'])
-
-const emit = defineEmits<{(e: 'submitted', values: IKeyValueMulitTypeStore): IKeyValueMulitTypeStore,
+const emit = defineEmits<{(e: 'submitted', values: T): void,
 (e: 'changed'): void
 (e: 'dirty'): void
 (e: 'pending'): void
@@ -28,11 +23,11 @@ const emit = defineEmits<{(e: 'submitted', values: IKeyValueMulitTypeStore): IKe
 const { setValues, handleSubmit, submitForm, validate, errors, meta, isSubmitting, isValidating, values, setFieldValue } = useForm({
   validateOnMount: false,
   keepValuesOnUnmount: true,
-  initialValues: props.initialValues || null
+  initialValues: props.initialValues
 })
 
 watch(meta, async (meta) => {
-  if (meta.dirty === true) {
+  if (meta.dirty) {
     emit('dirty')
   }
 })
@@ -44,7 +39,7 @@ watch(isRequestPending, async () => {
 })
 
 const onSubmit = handleSubmit(values => {
-  emit('submitted', values)
+  emit('submitted', values as T)
 })
 
 defineExpose({ setValues, form, meta, isSubmitting, submitForm, errors, setFieldValue, validate, values })

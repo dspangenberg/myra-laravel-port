@@ -39,6 +39,10 @@ onMounted(async () => {
   await userStore.getAll()
 })
 
+const onUpdatePage = (page: number) => {
+  currentPage.value = page
+}
+
 </script>
 
 <template>
@@ -66,8 +70,11 @@ onMounted(async () => {
     <template #content-full>
       <div class="px-0.5">
         <twice-ui-table-box
-          :record-count="users?.length"
+          v-if="meta"
+          :meta="meta"
           record-name="Benutzer*innen"
+          :loading="isLoading"
+          @update-page="onUpdatePage"
         >
           <Table>
             <TableHeader>

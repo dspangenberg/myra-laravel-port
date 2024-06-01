@@ -22,6 +22,7 @@
         ]
     },
     "include": [
+      "*.d.ts",
       "resources/js/**/*.ts",
       "resources/js/**/*.d.ts",
       "resources/js/**/*.vue"

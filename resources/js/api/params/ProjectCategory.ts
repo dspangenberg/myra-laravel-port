@@ -4,18 +4,20 @@ import { type Meta } from '@/types/'
 const { axios } = useAxios(true)
 const baseUrl: string = '/api/params/business-segments'
 
-export interface BusinessSegment {
+export interface ProjectCategory {
   id?: number | null
   name: string
+  color: string
+  icon: string
 }
 
 export interface ResponseWithMeta {
-  data: BusinessSegment[],
+  data: ProjectCategory[],
   meta: Meta
 }
 
 export interface Response {
-  segment: BusinessSegment
+  segment: ProjectCategory
 }
 
 export const getAllBusinessSegments = async (page: number = 1): Promise<ResponseWithMeta> => {
@@ -28,10 +30,10 @@ export const findBusinessSegmentById = async (id: number): Promise<Response> => 
   return { segment }
 }
 
-export const createBusinessSegment = async (payload: BusinessSegment) => {
+export const createBusinessSegment = async (payload: ProjectCategory) => {
   await axios.$post(baseUrl, payload)
 }
 
-export const updateBusinessSegment = async (payload: BusinessSegment) => {
+export const updateBusinessSegment = async (payload: ProjectCategory) => {
   await axios.$put(`${baseUrl}/${payload.id}`, payload)
 }

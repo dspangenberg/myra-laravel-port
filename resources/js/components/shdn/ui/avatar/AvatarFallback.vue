@@ -40,7 +40,7 @@ const getBackgroundColor = computed(() => {
 <template>
   <AvatarFallback
     v-bind="props"
-    class="object-cover rounded-full text-white font-medium border-4 !border-white"
+    class="object-cover rounded-full text-white font-medium border-4 !border-white uppercase"
     :class="cn(avatarVariant({ size }))"
     :style="{ backgroundColor: getBackgroundColor }"
   >

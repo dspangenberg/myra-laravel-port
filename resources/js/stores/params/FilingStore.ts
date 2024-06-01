@@ -2,14 +2,14 @@ import { defineStore, acceptHMRUpdate } from 'pinia'
 import { getAllFilings, findFilingById, createFiling, updateFiling } from '@/api/params/Filing'
 import { reactive, ref, type Ref } from 'vue'
 import type { Filing } from '@/api/params/Filing'
-import type { BusinessSegment } from '@/api/params/BusinessSegment'
+import type { ProjectCategory } from '@/api/params/ProjectCategory'
 import { type Meta } from '@/types/'
 
 export const useFilingStore = defineStore('params-filings', () => {
   const filings: Ref<Filing[] | null> = ref([])
   const filing: Ref<Filing | null> = ref(null)
   const filingEdit: Ref<Filing | null> = ref(null)
-  const segments: Ref<BusinessSegment[] | null> = ref([])
+  const segments: Ref<ProjectCategory[] | null> = ref([])
   const meta: Ref<Meta | null> = ref(null)
   const isLoading: Ref<boolean> = ref(false)
 

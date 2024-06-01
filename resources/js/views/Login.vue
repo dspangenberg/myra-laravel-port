@@ -21,7 +21,6 @@ const form = reactive({
 const onSubmit = async (values: { email: string; password: string }) => {
   try {
     isSaving.value = false
-    console.log(values)
     await globalStore.signIn(values.email, values.password)
     isSaving.value = false
     router.push({ name: 'dashboard' })
@@ -40,7 +39,7 @@ const onSubmit = async (values: { email: string; password: string }) => {
         <div class="flex-none">
           <img
             class="w-12  animate-bounce-in"
-            src="@/assets/twhelm.png"
+            src="@/assets/tw.png"
 
             alt="Workflow"
           >
@@ -48,7 +47,7 @@ const onSubmit = async (values: { email: string; password: string }) => {
         <div
           class="flex-auto text-black ml-3 text-lg font-medium pt-4"
         >
-          twiceware_eligius
+          twiceware_myra
           <div class="text-xs font-light pt-1">
             {{ version }}
           </div>

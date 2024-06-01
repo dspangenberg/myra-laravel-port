@@ -21,7 +21,6 @@ export interface ErrorResponse {
 export const signIn = async (email: string, password: string): Promise<Credentials> => {
   try {
     const response = await axios.$post('/api/auth/login', { email, password })
-    console.log(response)
     return response as unknown as Credentials
   } catch (error) {
     const errors = error as ErrorResponse

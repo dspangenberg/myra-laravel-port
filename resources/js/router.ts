@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useGlobalStore } from '@/stores/GlobalStore'
 import routesParams from '@/modules/Params/routes'
 import userRoutes from '@/modules/User/routes'
+import contactRoutes from '@/modules/Contact/routes'
+import projectRoutes from '@/modules/Project/routes'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -56,10 +58,6 @@ const router = createRouter({
           component: () => import('@/views/Soon.vue')
         },
         {
-          path: 'contacts',
-          component: () => import('@/views/Soon.vue')
-        },
-        {
           path: 'documents',
           component: () => import('@/views/Soon.vue')
         },
@@ -68,6 +66,8 @@ const router = createRouter({
           component: () => import('@/views/Soon.vue')
         },
         routesParams,
+        contactRoutes,
+        projectRoutes,
         userRoutes
       ]
     },

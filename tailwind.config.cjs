@@ -112,12 +112,11 @@ module.exports = {
       },
       fontSize: {
         xxs: ['0.67rem', '0.6rem'],
-        xs: ['0.75rem', '0.95rem'],
-        sm: ['0.80rem', '1.075rem'],
-        base: ['0.9rem', '1.1rem'],
+        xs: ['0.74rem', '0.9rem'],
+        sm: ['0.8rem', '1.0rem'],
+        base: ['0.90rem', '1.10rem'],
         lg: ['1.0rem', '1.20rem'],
-        xl: ['1.2rem', '1.4rem'],
-        xxl: ['24px', '32px']
+        xl: ['1.1rem', '1.30rem']
       },
       fontWeight: {
         hairline: 100,

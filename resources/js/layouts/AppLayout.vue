@@ -1,14 +1,8 @@
 <!--suppress ALL -->
 <script setup lang="ts">
 import { Button } from '@/components/shdn/ui/button'
-import { IconReceiptEuro, IconSearch, IconLayoutKanban, IconBell, IconClockEdit, IconCalendarDot, IconGauge, IconBuildingCommunity, IconSignature, IconFolder, IconMenu2 } from '@tabler/icons-vue'
+import { IconReceiptEuro, IconSearch, IconLayoutKanban, IconBell, IconClockEdit, IconCalendarDot, IconGauge, IconBuildingCommunity, IconSignature, IconFolder } from '@tabler/icons-vue'
 import UserMenu from './UserMenu.vue'
-
-const iconPropsX = {
-  size: '24',
-  stroke: '1.5'
-}
-
 </script>
 
 <template>
@@ -45,8 +39,6 @@ const iconPropsX = {
               />
             </template>
           </TwiceUiNavItem>
-        </div>
-        <div class="grid gap-1 p-2 ">
           <TwiceUiNavItem
             disabled
             label="Agenda"
@@ -56,6 +48,18 @@ const iconPropsX = {
           >
             <template #icon="{ iconProps }">
               <IconCalendarDot v-bind="iconProps" />
+            </template>
+          </TwiceUiNavItem>
+        </div>
+        <div class="grid gap-1 p-2 ">
+          <TwiceUiNavItem
+            label="Accounts + Kontakte"
+            route-name="contacts-list"
+            active-route-path="/app/contacts"
+            exact
+          >
+            <template #icon="{ iconProps }">
+              <IconBuildingCommunity v-bind="iconProps" />
             </template>
           </TwiceUiNavItem>
           <TwiceUiNavItem
@@ -69,22 +73,10 @@ const iconPropsX = {
               <IconFolder v-bind="iconProps" />
             </template>
           </TwiceUiNavItem>
-        </div>
-        <div class="grid gap-1 p-2 ">
-          <TwiceUiNavItem
-            label="Accounts + Kontakte"
-            route-name="agenda"
-            active-route-path="/app/agenda"
-            exact
-          >
-            <template #icon="{ iconProps }">
-              <IconBuildingCommunity v-bind="iconProps" />
-            </template>
-          </TwiceUiNavItem>
           <TwiceUiNavItem
             label="Projekte"
-            route-name="agenda"
-            active-route-path="/app/agenda"
+            route-name="projects-list"
+            active-route-path="/app/projects"
           >
             <template #icon="{ iconProps }">
               <IconLayoutKanban v-bind="iconProps" />
@@ -100,8 +92,10 @@ const iconPropsX = {
               <IconSignature v-bind="iconProps" />
             </template>
           </TwiceUiNavItem>
+        </div>
+        <div class="grid gap-1 p-2 ">
           <TwiceUiNavItem
-            label="Zeiten"
+            label="Zeiterfassung"
             route-name="agenda"
             active-route-path="/app/times"
           >
@@ -109,8 +103,6 @@ const iconPropsX = {
               <IconClockEdit v-bind="iconProps" />
             </template>
           </TwiceUiNavItem>
-        </div>
-        <div class="grid gap-1 p-2 ">
           <TwiceUiNavItem
             label="Fakturierung + Fibu"
             disabled
@@ -126,7 +118,7 @@ const iconPropsX = {
       </nav>
     </aside>
     <div class="flex flex-col flex-1 overflow-hidden">
-      <header class="sticky top-0 z-10 flex h-[57px] items-center gap-1  px-4 pt-2 flex-none border-stone-100 ">
+      <header class="sticky top-0 z-10 flex h-[57px] items-center gap-1  px-4 pt-2 flex-none border-stone-100">
         <div class="flex-1" />
         <div class="p-2">
           <Button
@@ -143,10 +135,8 @@ const iconPropsX = {
           <UserMenu />
         </div>
       </header>
-      <main class="grid flex-1 px-4 py-6 overflow-hidden overflow-y-auto bg-stone-50">
-        <div class="container">
-          <router-view />
-        </div>
+      <main class="grid flex-1 overflow-hidden overflow-y-auto bg-stone-50">
+        <router-view />
       </main>
     </div>
   </div>

@@ -2,18 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EmailCategory;
+use App\Models\Project;
 use Illuminate\Http\Request;
-use App\Http\Resources\BusinessSegmentCollection;
+use App\Http\Resources\ProjectCollection;
 
-class BusinessSegmentController extends Controller
+class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-      return new BusinessSegmentCollection(EmailCategory::orderBy('name')->paginate($this->recordsPerPage));
+      return new ProjectCollection(Project::query()
+        ->orderBy('name')
+        ->with('owner')
+        ->with('category')
+        ->with('lead')
+        ->paginate($this->recordsPerPage));
     }
 
     public function store(Request $request)

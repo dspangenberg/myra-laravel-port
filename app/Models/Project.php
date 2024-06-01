@@ -3,7 +3,61 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * 
+ *
+ * @property int $id
+ * @property string $name
+ * @property int $owner_contact_id
+ * @property int $lead_user_id
+ * @property int $manager_contact_id
+ * @property int $invoice_contact_id
+ * @property int $project_category_id
+ * @property int $parent_project_id
+ * @property int $is_archived
+ * @property string $hourly
+ * @property string $budget_hours
+ * @property string $budget_costs
+ * @property string $budget_period
+ * @property string|null $begin_on
+ * @property string|null $end_on
+ * @property string $website
+ * @property string $note
+ * @property string|null $avatar
+ * @property string|null $deleted_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\ProjectCategory|null $category
+ * @property-read \App\Models\User|null $lead
+ * @property-read \App\Models\Contact|null $owner
+ * @method static \Illuminate\Database\Eloquent\Builder|Project newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Project newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Project query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereAvatar($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereBeginOn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereBudgetCosts($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereBudgetHours($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereBudgetPeriod($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereEndOn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereHourly($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereInvoiceContactId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereIsArchived($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereLeadUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereManagerContactId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereOwnerContactId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereParentProjectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereProjectCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereWebsite($value)
+ * @mixin \Eloquent
+ */
 class Project extends Model
 {
     protected $fillable = [
@@ -25,4 +79,18 @@ class Project extends Model
       'note',
       'avatar'
     ];
+
+  public function owner(): HasOne
+  {
+    return $this->hasOne(Contact::class, 'id', 'owner_contact_id');
+  }
+
+  public function category(): HasOne
+  {
+    return $this->hasOne(ProjectCategory::class, 'id', 'project_category_id');
+  }
+  public function lead(): HasOne
+  {
+    return $this->hasOne(User::class, 'id', 'lead_user_id');
+  }
 }

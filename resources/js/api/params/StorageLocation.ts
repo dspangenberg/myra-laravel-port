@@ -1,6 +1,6 @@
 import { useAxios } from '@/composables/useAxios'
 import { type Meta } from '@/types/'
-import { type BusinessSegment } from '@/api/params/BusinessSegment'
+import { type ProjectCategory } from '@/api/params/ProjectCategory'
 
 const { axios } = useAxios(true)
 const baseUrl: string = '/api/params/storage-locations'
@@ -9,12 +9,12 @@ export interface StorageLocation {
   id?: number | null
   name: string
   business_segment_id?: number
-  segment?: BusinessSegment
+  segment?: ProjectCategory
 }
 
 export interface ResponseWithMeta {
   data: StorageLocation[]
-  segments: BusinessSegment[]
+  segments: ProjectCategory[]
   meta: Meta
 }
 

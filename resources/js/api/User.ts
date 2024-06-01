@@ -4,22 +4,6 @@ import { useAxios } from '@/composables/useAxios'
 const { axios } = useAxios(true)
 const baseUrl: string = '/api/users'
 
-export interface IAaul {
-  token: string
-}
-
-export interface Country {
-  name: string
-}
-
-export interface Profile {
-  country: Country
-  street: string
-  zip: string,
-  city: string
-  phone: string
-}
-
 export interface User {
   id?: number
   email: string
@@ -35,27 +19,22 @@ export interface User {
   password_confirmation?: string
 }
 
-export interface UserWithDetails {
-  user: User
-}
-
 export interface UsersWithMeta {
   data: User[],
   meta: Meta
 }
 
 export interface UsersResponse {
-  users: UsersWithMeta
+  user: User
 }
 
 export const getAllUsers = async (page: number = 1): Promise<UsersWithMeta> => {
-  const { users } = await axios.$get(baseUrl, { page }) as UsersResponse
-  const { meta, data } = users
+  const { meta, data } = await axios.$get(baseUrl, { page }) as UsersWithMeta
   return { meta, data }
 }
 
-export const findUserById = async (id: number): Promise<UserWithDetails> => {
-  const { user } = await axios.$get(`${baseUrl}/${id}`) as unknown as UserWithDetails
+export const findUserById = async (id: number): Promise<UsersResponse> => {
+  const { user } = await axios.$get(`${baseUrl}/${id}`) as unknown as UsersResponse
   return { user }
 }
 export const createUser = async (payload: User) => {

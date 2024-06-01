@@ -35,28 +35,26 @@ const { title } = toRefs(props)
 
 <template>
   <div class="flex flex-col flex-1 w-full h-full overflow-hidden">
-    <div class="bg-white flex-shrink-1 ">
-      <div class="mx-auto max-w-7xl print:max-w-fit print:mx-0">
-        <div>
-          <slot name="org-header">
-            <twice-ui-page-header
-              :title="title"
-            >
-              <template #breadcrumbs>
-                <slot name="breadcrumbs" />
-              </template>
-              <template #title>
-                <slot name="header-title" />
-              </template>
-              <template #toolbar>
-                <slot name="header-toolbar" />
-              </template>
-              <template #pivot>
-                <slot name="pivot" />
-              </template>
-            </twice-ui-page-header>
-          </slot>
-        </div>
+    <div class="flex-shrink-1 ">
+      <div class="my-3">
+        <slot name="org-header">
+          <TwiceUiPageHeader
+            :title="title"
+          >
+            <template #breadcrumbs>
+              <slot name="breadcrumbs" />
+            </template>
+            <template #title>
+              <slot name="header-title" />
+            </template>
+            <template #toolbar>
+              <slot name="header-toolbar" />
+            </template>
+            <template #pivot>
+              <slot name="pivot" />
+            </template>
+          </TwiceUiPageHeader>
+        </slot>
       </div>
     </div>
     <div
@@ -77,7 +75,7 @@ const { title } = toRefs(props)
         >
           <div class="max-w-7xl mx-auto flex flex-col flex-1 space-x-3 print:max-w-[270mm] print:mx-0 !print:text-black">
             <div
-              class="!print:text-black grid grid-cols-3 h-full"
+              class="!print:text-black grid grid-cols-3 h-full my-6"
             >
               <div class="h-full col-span-3 ">
                 <slot name="content-full" />
@@ -99,7 +97,7 @@ const { title } = toRefs(props)
         v-show="loading"
         class="items-center justify-center flex-1 text-center"
       >
-        <twice-ui-spinner :size="8" />
+        <TwiceUiSpinner :size="8" />
       </div>
     </template>
     <div class="h-6" />

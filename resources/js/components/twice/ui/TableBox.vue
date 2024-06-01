@@ -75,13 +75,10 @@ const onAddFirstClicked = () => {
         </div>
         <div
           v-if="metaRecordCount"
-          class="pt-3 px-2.5 text-base flex items-stretch"
+          class="pt-3 px-2.5 text-sm flex items-stretch text-stone-700"
         >
           <div class="flex-1">
-            Seite {{ meta?.current_page }} von {{ meta?.last_page }}
-          </div>
-          <div>
-            {{ meta?.from }} - {{ meta?.to }} von {{ metaRecordCount }} {{ dynamicRecordName }}
+            <span class="font-medium">{{ meta?.from }}</span> bis <span class="font-medium">{{ meta?.to }}</span> von <span class="font-medium">{{ metaRecordCount }}</span> {{ dynamicRecordName }}
           </div>
         </div>
         <div class="mx-auto items-center flex mt-6">
