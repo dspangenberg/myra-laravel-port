@@ -1,88 +1,81 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { getAllTimes, findTimeById, createTime, updateTime } from '@/api/Time'
 import { reactive, ref, type Ref } from 'vue'
-import type { Contact } from '@/api/Contact'
+import type { Time, GroupedTimeEntries, TimeStats } from '@/api/Time'
 import { type Meta } from '@/types/'
 
-export const useContactStore = defineStore('contact-store', () => {
-  const contacts: Ref<Contact[] | null> = ref([])
-  const contact: Ref<Contact | null> = ref(null)
-  const contactEdit: Ref<Contact | null> = ref(null)
+export const useTimeStore = defineStore('time-store', () => {
+  const times: Ref<Time[] | null> = ref([])
+  const groupedTimeEntries: Ref<GroupedTimeEntries | null> = ref(null)
+  const time: Ref<Time | null> = ref(null)
+  const timeEdit: Ref<Time | null> = ref(null)
   const meta: Ref<Meta | null> = ref(null)
   const isLoading: Ref<boolean> = ref(false)
+  const timeStats: Ref<TimeStats | null> = ref(null)
 
-  const store = useContactStore()
+  const store = useTimeStore()
 
   const newRecordTemplate = reactive({
     id: 0,
-    company_id: 0,
-    is_org: true,
-    name: '',
-    first_name: '',
-    salutation_id: 0,
-    title_id: 0,
-    position: '',
-    department: '',
-    short_name: '',
-    ref: '',
-    debtor_number: 0,
-    creditor_number: 0,
-    is_debtor: false,
-    is_creditor: false,
-    is_archived: false,
-    has_dunning_block: false,
-    archived_reason: '',
-    payment_deadline_id: 0,
-    tax_id: 0,
-    hourly: 0,
-    register_court: '',
-    register_number: '',
-    vat_id: '',
+    project_id: 0,
+    user_id: 0,
+    time_category_id: 0,
+    begin_at: '',
+    minutes: 0,
+    end_at: '',
     note: '',
-    dob: ''
+    is_locked: false,
+    mins: 0,
+    is_billable: true,
+    is_timer: false
   })
 
   const getAll = async (page: number = 1) => {
     isLoading.value = true
-    const { data, meta } = await getAllContacts(page)
+    const { data, meta, stats } = await getAllTimes(page)
+
     store.$patch(state => {
-      state.contacts = data
+      state.times = data
+      state.groupedTimeEntries = Object.groupBy(data, ({ ts }) => ts as string) as GroupedTimeEntries
       state.meta = meta
+      state.timeStats = stats
     })
     isLoading.value = false
   }
 
   const add = () => {
     store.$patch(state => {
-      state.contact = newRecordTemplate
-      state.contactEdit = newRecordTemplate
+      state.time = newRecordTemplate
+      state.timeEdit = newRecordTemplate
     })
   }
 
   const findById = async (id: number) => {
-    const { contact: record } = await findContactById(id)
+    const { time: record } = await findTimeById(id)
 
     store.$patch(state => {
-      state.contact = record
-      state.contactEdit = record
+      state.time = record
+      state.timeEdit = record
     })
   }
 
-  const save = async (value: Contact) => {
+  const save = async (value: Time) => {
     if (!value.id) {
-      await createContact(value)
+      await createTime(value)
     } else {
-      await updateContact(value)
+      await updateTime(value)
     }
-    contactEdit.value = null
+    timeEdit.value = null
     await getAll()
   }
 
   return {
+    groupedTimeEntries,
     isLoading,
-    contact,
-    contactEdit,
-    contacts,
+    time,
+    timeEdit,
+    timeStats,
+    times,
     meta,
     newRecordTemplate,
     add,
@@ -93,5 +86,5 @@ export const useContactStore = defineStore('contact-store', () => {
 })
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useContactStore, import.meta.hot))
+  import.meta.hot.accept(acceptHMRUpdate(useTimeStore, import.meta.hot))
 }

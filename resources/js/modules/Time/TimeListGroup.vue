@@ -1,0 +1,61 @@
+<script lang="ts" setup>
+import type { Time } from '@/api/Time'
+import {
+  Table,
+  TableBody
+} from '@/components/shdn/ui/table'
+import { useTemplateFilter } from '@/composables/useTemplateFilter'
+import TimeListItem from './TimeListItem.vue'
+import { useTimeStore } from '@/stores/TimeStore'
+import { useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { sum } from 'moderndash'
+
+const router = useRouter()
+
+const timeStore = useTimeStore()
+const { formatDate, formatDuration } = useTemplateFilter()
+export interface Props {
+  date: string
+  entries: Time[]
+}
+const onSelect = async (id: number) => {
+  await timeStore.findById(id)
+  router.push({ name: 'times-edit', params: { id } })
+}
+const props = defineProps<Props>()
+defineEmits(['select'])
+
+const daySum = computed(() => {
+  return sum(props.entries.map((time) => time.mins))
+})
+
+</script>
+<template>
+  <div
+    class="mb-6"
+  >
+    <div
+      class="flex items-center justify-between text-sm"
+    >
+      <div
+        class="font-medium pl-3.5 pb-1"
+      >
+        {{ formatDate(date, 'dd. DD. MMMM YYYY') }}
+      </div>
+      <div class="font-medium pr-12 pb-1">
+        {{ formatDuration(daySum) }}
+      </div>
+    </div>
+    <Table>
+      <TableBody>
+        <TimeListItem
+          v-for="(time, index) in entries"
+          :key="index"
+          :item="time"
+          @select="onSelect"
+        />
+      </TableBody>
+    </Table>
+  </div>
+</template>

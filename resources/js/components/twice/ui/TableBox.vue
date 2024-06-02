@@ -16,13 +16,14 @@ export interface Props {
   recordName?: string
   useLayout?: boolean
   loading?: boolean
-  meta: Meta | null
+  meta?: Meta | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
   recordCount: 0,
   recordName: 'Datensätze',
+  meta: null,
   useLayout: false
 })
 
@@ -74,7 +75,7 @@ const onAddFirstClicked = () => {
           <slot />
         </div>
         <div
-          v-if="metaRecordCount"
+          v-if="meta?.total"
           class="pt-3 px-2.5 text-sm flex items-stretch text-stone-700"
         >
           <div class="flex-1">
@@ -83,8 +84,9 @@ const onAddFirstClicked = () => {
         </div>
         <div class="mx-auto items-center flex mt-6">
           <twice-ui-pagination
+            v-if="meta"
             :meta="meta"
-            :current-page="meta?.current_page"
+            :current-page="meta?.current_page || 1"
             @update-page="updatePage"
           />
         </div>

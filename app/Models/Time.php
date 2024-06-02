@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  *
@@ -52,6 +53,11 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Time whereTimeCategoryId($value)
  * @method static Builder|Time whereUpdatedAt($value)
  * @method static Builder|Time whereUserId($value)
+ * @property-read TimeCategory|null $category
+ * @property-read Project|null $project
+ * @property-read User|null $user
+ * @method static Builder|Time withMinutes()
+ * @method static Builder|Time byWeekOfYear(int $week, int $year)
  * @mixin Eloquent
  */
 class Time extends Model
@@ -89,5 +95,17 @@ class Time extends Model
   public function project(): HasOne
   {
     return $this->hasOne(Project::class, 'id', 'project_id');
+  }
+
+  public function scopeByWeekOfYear(Builder $query, Int $week, Int $year): void
+  {
+    //       query.whereRaw('WEEK(begin_at, 1) = ?', [week]).whereRaw('YEAR(begin_at)=?', [year])
+    $query
+      ->whereRaw('WEEK(begin_at, 1) = ? AND YEAR(begin_at) = ?', [$week, $year]);
+  }
+  public function scopeWithMinutes(Builder $query): void
+  {
+    $query
+      ->select(DB::raw('*, TIMESTAMPDIFF(MINUTE, begin_at, end_at) as mins, DATE(begin_at) as ts'));
   }
 }

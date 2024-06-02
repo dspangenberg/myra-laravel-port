@@ -13,27 +13,42 @@ export interface Time {
   user_id: number
   user?: User
   time_category_id: number
-  time_category?: TimeCategory
+  ts?: string
+  mins: number
+  category?: TimeCategory
+  minutes: number
   begin_at: string
   end_at: string
+  sum?: number
   note: string
   is_locked: boolean
   is_billable: boolean
   is_timer: boolean
 }
 
+export interface TimeStats {
+  start?: string
+  end?: string
+  week: number
+}
+
 export interface ResponseWithMeta {
   data: Time[],
   meta: Meta
+  stats: TimeStats
 }
 
 export interface Response {
   time: Time
 }
 
+export interface GroupedTimeEntries {
+  [key: string]: Time[]
+}
+
 export const getAllTimes = async (page: number = 1): Promise<ResponseWithMeta> => {
-  const { meta, data } = await axios.$get(baseUrl, { page }) as ResponseWithMeta
-  return { meta, data }
+  const { meta, data, stats } = await axios.$get(baseUrl, { page }) as ResponseWithMeta
+  return { meta, data, stats }
 }
 
 export const findTimeById = async (id: number): Promise<Response> => {

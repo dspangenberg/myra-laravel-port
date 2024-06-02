@@ -5,7 +5,7 @@ export interface Props {
   avatar?: string
   initials?: string,
   fullname?: string
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xs'
 }
 
 withDefaults(defineProps<Props>(), {

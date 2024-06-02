@@ -96,7 +96,7 @@ import UserMenu from './UserMenu.vue'
         <div class="grid gap-1 p-2 ">
           <TwiceUiNavItem
             label="Zeiterfassung"
-            route-name="agenda"
+            route-name="times-list"
             active-route-path="/app/times"
           >
             <template #icon="{ iconProps }">

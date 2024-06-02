@@ -21,5 +21,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
   Route::resource('/contacts', ContactController::class);
   Route::resource('/projects', ProjectController::class);
-  Route::resource('/projects', TimeController::class);
+  Route::resource('/times', TimeController::class);
 });
