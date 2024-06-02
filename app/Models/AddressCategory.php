@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $name
@@ -22,7 +23,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|AddressCategory whereName($value)
  * @method static Builder|AddressCategory whereType($value)
  * @method static Builder|AddressCategory whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class AddressCategory extends Model
 {

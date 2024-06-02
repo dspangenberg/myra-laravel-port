@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Time;
 use Illuminate\Http\Request;
-use App\Http\Resources\TimeCollection;
 use Carbon\Carbon;
-
 
 class TimeController extends Controller
 {
@@ -18,8 +16,6 @@ class TimeController extends Controller
     $startOfWeek = Carbon::now()->startOfWeek();
     $endOfWeek = Carbon::now()->endOfWeek();
 
-    dump($startOfWeek);
-
     $times = Time::query()
       ->with('project')
       ->with('category')
@@ -29,16 +25,36 @@ class TimeController extends Controller
       ->orderBy('begin_at', 'desc')
       ->get();
 
+    $groupedEntries = [];
+
+    $sumByWeekday = collect([
+      'Mo' => 0,
+      'Di' => 0,
+      'Mi' => 0,
+      'Do' => 0,
+      'Fr' => 0,
+      'Sa' => 0,
+      'So' => 0
+    ]);
+
+
+    foreach ($times->groupBy('ts') as $key => $value) {
+      $groupedEntries[$key]['entries'] = $value;
+      $groupedEntries[$key]['sum'] = $value->sum('mins');
+      $sumByWeekday[Carbon::parse($key)->locale('de')->minDayName] = $groupedEntries[$key]['sum'];
+    }
+
     return response()->json([
       'data' => $times,
+      'groupedByDay' => $groupedEntries,
       'stats' => [
         'start' => $startOfWeek,
         'end' => $endOfWeek,
         'week' => $week,
+        'sumByWeekday' => $sumByWeekday,
+        'sumWeek' => $sumByWeekday->sum(),
       ]
     ]);
-
-    // return new TimeCollection($times);
   }
 
   public function store(Request $request)
@@ -56,7 +72,7 @@ class TimeController extends Controller
   public function show(Time $time)
   {
 
-    $time->load('company')->load('title');
+    $time->load('project')->load('category')->load('user');
 
     return response()->json([
       'time' => $time

@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $name
@@ -27,36 +30,36 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $note
  * @property string|null $avatar
  * @property string|null $deleted_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\ProjectCategory|null $category
- * @property-read \App\Models\User|null $lead
- * @property-read \App\Models\Contact|null $owner
- * @method static \Illuminate\Database\Eloquent\Builder|Project newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Project newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Project query()
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereAvatar($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereBeginOn($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereBudgetCosts($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereBudgetHours($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereBudgetPeriod($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereEndOn($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereHourly($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereInvoiceContactId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereIsArchived($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereLeadUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereManagerContactId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereNote($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereOwnerContactId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereParentProjectId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereProjectCategoryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereWebsite($value)
- * @mixin \Eloquent
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read ProjectCategory|null $category
+ * @property-read User|null $lead
+ * @property-read Contact|null $owner
+ * @method static Builder|Project newModelQuery()
+ * @method static Builder|Project newQuery()
+ * @method static Builder|Project query()
+ * @method static Builder|Project whereAvatar($value)
+ * @method static Builder|Project whereBeginOn($value)
+ * @method static Builder|Project whereBudgetCosts($value)
+ * @method static Builder|Project whereBudgetHours($value)
+ * @method static Builder|Project whereBudgetPeriod($value)
+ * @method static Builder|Project whereCreatedAt($value)
+ * @method static Builder|Project whereDeletedAt($value)
+ * @method static Builder|Project whereEndOn($value)
+ * @method static Builder|Project whereHourly($value)
+ * @method static Builder|Project whereId($value)
+ * @method static Builder|Project whereInvoiceContactId($value)
+ * @method static Builder|Project whereIsArchived($value)
+ * @method static Builder|Project whereLeadUserId($value)
+ * @method static Builder|Project whereManagerContactId($value)
+ * @method static Builder|Project whereName($value)
+ * @method static Builder|Project whereNote($value)
+ * @method static Builder|Project whereOwnerContactId($value)
+ * @method static Builder|Project whereParentProjectId($value)
+ * @method static Builder|Project whereProjectCategoryId($value)
+ * @method static Builder|Project whereUpdatedAt($value)
+ * @method static Builder|Project whereWebsite($value)
+ * @mixin Eloquent
  */
 class Project extends Model
 {

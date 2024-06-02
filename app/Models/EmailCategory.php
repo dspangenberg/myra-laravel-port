@@ -2,25 +2,28 @@
 
 namespace App\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $name
  * @property int $type
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|EmailCategory newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|EmailCategory newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|EmailCategory query()
- * @method static \Illuminate\Database\Eloquent\Builder|EmailCategory whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EmailCategory whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EmailCategory whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EmailCategory whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EmailCategory whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @method static Builder|EmailCategory newModelQuery()
+ * @method static Builder|EmailCategory newQuery()
+ * @method static Builder|EmailCategory query()
+ * @method static Builder|EmailCategory whereCreatedAt($value)
+ * @method static Builder|EmailCategory whereId($value)
+ * @method static Builder|EmailCategory whereName($value)
+ * @method static Builder|EmailCategory whereType($value)
+ * @method static Builder|EmailCategory whereUpdatedAt($value)
+ * @mixin Eloquent
  */
 class EmailCategory extends Model
 {

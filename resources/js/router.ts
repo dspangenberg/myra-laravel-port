@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useGlobalStore } from '@/stores/GlobalStore'
-import routesParams from '@/modules/Params/routes'
 import userRoutes from '@/modules/User/routes'
 import contactRoutes from '@/modules/Contact/routes'
 import projectRoutes from '@/modules/Project/routes'
@@ -51,22 +50,14 @@ const router = createRouter({
           component: () => import('@/modules/Dashboard/index.vue')
         },
         {
-          path: 'instructions',
-          component: () => import('@/views/Soon.vue')
-        },
-        {
           path: 'agenda',
+          name: 'agenda',
           component: () => import('@/views/Soon.vue')
         },
         {
           path: 'documents',
           component: () => import('@/views/Soon.vue')
         },
-        {
-          path: 'checks',
-          component: () => import('@/views/Soon.vue')
-        },
-        routesParams,
         contactRoutes,
         projectRoutes,
         timeRoutes,

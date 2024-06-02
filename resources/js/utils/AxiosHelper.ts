@@ -1,12 +1,6 @@
 import axios, { type Axios, AxiosError, type AxiosResponse, type AxiosRequestConfig } from 'axios'
 import queryString from 'query-string'
 
-export interface IKeyValueMulitTypeStore {
-  [key: string]: number | string | boolean | undefined | null
-}
-
-export type IHttpMethods = 'post' | 'get' | 'delete' | 'put' | 'patch'
-
 export interface IAxiosHelpers extends Axios {
   axios: Axios
   setHeader(property: string, data: string | number): void

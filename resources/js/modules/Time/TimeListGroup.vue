@@ -8,28 +8,23 @@ import { useTemplateFilter } from '@/composables/useTemplateFilter'
 import TimeListItem from './TimeListItem.vue'
 import { useTimeStore } from '@/stores/TimeStore'
 import { useRouter } from 'vue-router'
-import { computed } from 'vue'
-import { sum } from 'moderndash'
-
 const router = useRouter()
 
 const timeStore = useTimeStore()
 const { formatDate, formatDuration } = useTemplateFilter()
 export interface Props {
   date: string
+  sum: number
   entries: Time[]
 }
+
+defineProps<Props>()
+
 const onSelect = async (id: number) => {
   await timeStore.findById(id)
   router.push({ name: 'times-edit', params: { id } })
 }
-const props = defineProps<Props>()
 defineEmits(['select'])
-
-const daySum = computed(() => {
-  return sum(props.entries.map((time) => time.mins))
-})
-
 </script>
 <template>
   <div
@@ -44,7 +39,7 @@ const daySum = computed(() => {
         {{ formatDate(date, 'dd. DD. MMMM YYYY') }}
       </div>
       <div class="font-medium pr-12 pb-1">
-        {{ formatDuration(daySum) }}
+        {{ formatDuration(sum) }}
       </div>
     </div>
     <Table>

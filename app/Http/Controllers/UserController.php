@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserResource;
 
 class UserController extends Controller
 {
   public function index()
   {
-    return new UserCollection(User::orderBy('last_name')->paginate($this->recordsPerPage));
+    return UserResource::collection(User::query()
+      ->orderBy('last_name')
+      ->paginate($this->recordsPerPage)
+    );
   }
 
   public function update(Request $request, User $user)
@@ -51,9 +54,7 @@ class UserController extends Controller
   }
 
   public function show(User $user)
-    {
-      return response()->json([
-        'user' => $user
-      ]);
-    }
+  {
+    return new UserResource($user);
+  }
 }

@@ -46,7 +46,7 @@ export interface ResponseWithMeta {
 }
 
 export interface Response {
-  contact: Contact
+  data: Contact
 }
 
 export const getAllContacts = async (page: number = 1): Promise<ResponseWithMeta> => {
@@ -55,8 +55,8 @@ export const getAllContacts = async (page: number = 1): Promise<ResponseWithMeta
 }
 
 export const findContactById = async (id: number): Promise<Response> => {
-  const { contact } = await axios.$get(`${baseUrl}/${id}`) as unknown as Response
-  return { contact }
+  const { data } = await axios.$get(`${baseUrl}/${id}`) as unknown as Response
+  return { data }
 }
 export const createContact = async (payload: Contact) => {
   await axios.$post(baseUrl, payload)

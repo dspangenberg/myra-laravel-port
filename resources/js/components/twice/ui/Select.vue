@@ -37,7 +37,7 @@ export interface Props {
 const props = withDefaults(defineProps<Props>(), {
   id: undefined,
   rules: undefined,
-  label: undefined,
+  label: '',
   placeholder: '(auswählen)',
   selectClass: '',
   disabled: false,
@@ -64,6 +64,7 @@ const { value } = useField<string>(name, rules, { label })
 <template>
   <div class="p-0 m-0 bg-transparent border-0">
     <twice-ui-label
+      v-if="label"
       :label="label"
       :required="required"
       :for="htmlId"

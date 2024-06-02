@@ -48,7 +48,7 @@ const onUpdatePage = (page: number) => {
 </script>
 
 <template>
-  <TwiceUiPageLayout title="Accounts + Kontakte">
+  <TwiceUiPageLayout title="Projekte">
     <template #breadcrumbs>
       <Breadcrumb>
         <BreadcrumbList>
@@ -59,23 +59,23 @@ const onUpdatePage = (page: number) => {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Accounts + Kontakte</BreadcrumbPage>
+            <BreadcrumbPage>Projekte</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
     </template>
     <template #header-toolbar>
       <ShdnUiButton @click="onAddClicked">
-        Kontakt hinzufügen
+        Projekte hinzufügen
       </ShdnUiButton>
     </template>
     <template #content-full>
       <div class="px-0.5">
         <twice-ui-table-box
           v-if="meta"
-          :meta="meta"
-          record-name="Kontakte|Kontakt"
           :loading="isLoading"
+          :meta="meta"
+          record-name="Projekte|Projekt"
           @update-page="onUpdatePage"
         >
           <Table>

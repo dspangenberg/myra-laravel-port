@@ -4,17 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Contact;
 use Illuminate\Http\Request;
-use App\Http\Resources\ContactCollection;
+use App\Http\Resources\ContactResource;
 
 class ContactController extends Controller
 {
   public function index()
   {
-    return new ContactCollection(Contact::query()
+    return ContactResource::collection(Contact::query()
       ->with('company')
       ->with('title')
       ->orderBy('name')
-      ->paginate($this->recordsPerPage));
+      ->paginate($this->recordsPerPage)
+    );
   }
 
   public function store(Request $request)
@@ -33,10 +34,7 @@ class ContactController extends Controller
   {
 
     $contact->load('company')->load('title');
-
-    return response()->json([
-      'contact' => $contact
-    ]);
+    return new ContactResource($contact);
   }
 
   public function update(Request $request, Contact $contact)

@@ -58,12 +58,12 @@ const setTab = inject<Function>('setTab')
 
 const href = computed(() => {
   try {
-    const route = router.resolve({
+    const curRoute = router.resolve({
       name: props.routeName,
       params: props.routeParams,
       query: props.routeQuery
     })
-    return route
+    return curRoute
   } catch (error) {
     console.error(error)
     return ''
@@ -72,10 +72,7 @@ const href = computed(() => {
 
 const isActive = computed(() => {
   if (props.name) {
-    if (activeTab?.value === props.name) {
-      return true
-    }
-    return false
+    return activeTab?.value === props.name
   }
 
   if (props.activeRouteQuery) {

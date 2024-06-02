@@ -19,23 +19,23 @@ export interface User {
   password_confirmation?: string
 }
 
-export interface UsersWithMeta {
+export interface ResponseWithMeta {
   data: User[],
   meta: Meta
 }
 
-export interface UsersResponse {
-  user: User
+export interface Response {
+  data: User
 }
 
-export const getAllUsers = async (page: number = 1): Promise<UsersWithMeta> => {
-  const { meta, data } = await axios.$get(baseUrl, { page }) as UsersWithMeta
+export const getAllUsers = async (page: number = 1): Promise<ResponseWithMeta> => {
+  const { meta, data } = await axios.$get(baseUrl, { page }) as ResponseWithMeta
   return { meta, data }
 }
 
-export const findUserById = async (id: number): Promise<UsersResponse> => {
-  const { user } = await axios.$get(`${baseUrl}/${id}`) as unknown as UsersResponse
-  return { user }
+export const findUserById = async (id: number): Promise<Response> => {
+  const { data } = await axios.$get(`${baseUrl}/${id}`) as unknown as Response
+  return { data }
 }
 export const createUser = async (payload: User) => {
   await axios.$post(baseUrl, payload)

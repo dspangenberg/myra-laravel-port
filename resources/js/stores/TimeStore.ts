@@ -32,11 +32,11 @@ export const useTimeStore = defineStore('time-store', () => {
 
   const getAll = async (page: number = 1) => {
     isLoading.value = true
-    const { data, meta, stats } = await getAllTimes(page)
+    const { data, meta, stats, groupedByDay } = await getAllTimes(page)
 
     store.$patch(state => {
       state.times = data
-      state.groupedTimeEntries = Object.groupBy(data, ({ ts }) => ts as string) as GroupedTimeEntries
+      state.groupedTimeEntries = groupedByDay
       state.meta = meta
       state.timeStats = stats
     })

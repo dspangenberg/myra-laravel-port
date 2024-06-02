@@ -15,7 +15,7 @@ defineEmits(['select'])
 </script>
 <template>
   <TableRow @click="$emit('select', item.id)">
-    <TableCell class="w-10">
+    <TableCell class="w-14">
       <TwiceUiAvatar
         avatar="null"
         :fullname="item?.full_name"

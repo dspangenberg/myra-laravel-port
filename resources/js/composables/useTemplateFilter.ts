@@ -19,7 +19,7 @@ export function useTemplateFilter () {
   }
 
   const formatDuration = (duration: number) => {
-    return dayjs.duration(duration, 'minutes').format('HH:mm')
+    return dayjs.duration(duration, 'minutes').format('H:mm')
   }
 
   return { collectField, formatDate, formatDuration }

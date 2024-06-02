@@ -51,11 +51,11 @@ export const useProjectStore = defineStore('project-store', () => {
   }
 
   const findById = async (id: number) => {
-    const { project: record } = await findProjectById(id)
+    const { data } = await findProjectById(id)
 
     store.$patch(state => {
-      state.project = record
-      state.projectEdit = record
+      state.project = data
+      state.projectEdit = data
     })
   }
 

@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $contact_id
@@ -14,21 +17,21 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $city
  * @property int $address_category_id
  * @property int $country_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|ContactAddress newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|ContactAddress newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|ContactAddress query()
- * @method static \Illuminate\Database\Eloquent\Builder|ContactAddress whereAddress($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ContactAddress whereAddressCategoryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ContactAddress whereCity($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ContactAddress whereContactId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ContactAddress whereCountryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ContactAddress whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ContactAddress whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ContactAddress whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ContactAddress whereZip($value)
- * @mixin \Eloquent
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @method static Builder|ContactAddress newModelQuery()
+ * @method static Builder|ContactAddress newQuery()
+ * @method static Builder|ContactAddress query()
+ * @method static Builder|ContactAddress whereAddress($value)
+ * @method static Builder|ContactAddress whereAddressCategoryId($value)
+ * @method static Builder|ContactAddress whereCity($value)
+ * @method static Builder|ContactAddress whereContactId($value)
+ * @method static Builder|ContactAddress whereCountryId($value)
+ * @method static Builder|ContactAddress whereCreatedAt($value)
+ * @method static Builder|ContactAddress whereId($value)
+ * @method static Builder|ContactAddress whereUpdatedAt($value)
+ * @method static Builder|ContactAddress whereZip($value)
+ * @mixin Eloquent
  */
 class ContactAddress extends Model
 {

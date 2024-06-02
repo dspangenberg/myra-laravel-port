@@ -9,8 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    ShadnUiCheckbox: typeof import('./resources/js/components/shadn/ui/checkbox/index.ts')['default']
-    ShadnUiCheckboxCheckbox: typeof import('./resources/js/components/shadn/ui/checkbox/Checkbox.vue')['default']
     ShdnUiAvatar: typeof import('./resources/js/components/shdn/ui/avatar/index.ts')['default']
     ShdnUiAvatarAvatar: typeof import('./resources/js/components/shdn/ui/avatar/Avatar.vue')['default']
     ShdnUiAvatarAvatarFallback: typeof import('./resources/js/components/shdn/ui/avatar/AvatarFallback.vue')['default']

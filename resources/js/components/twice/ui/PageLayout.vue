@@ -27,6 +27,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const $slots = useSlots()
+
 const hasContentOnRight = computed(() => $slots['content-right'])
 const hasFixedContent = computed(() => $slots.fixed)
 const hasContentFull = computed(() => $slots['content-full'])
@@ -50,8 +51,16 @@ const { title } = toRefs(props)
             <template #toolbar>
               <slot name="header-toolbar" />
             </template>
-            <template #pivot>
-              <slot name="pivot" />
+
+            <template
+              v-if="$slots['header-pivot']"
+              #pivot
+            >
+              <div>
+                <slot
+                  name="header-pivot"
+                />
+              </div>
             </template>
           </TwiceUiPageHeader>
         </slot>

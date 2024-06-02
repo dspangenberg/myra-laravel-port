@@ -36,7 +36,7 @@ export interface ResponseWithMeta {
 }
 
 export interface Response {
-  project: Project
+  data: Project
 }
 
 export const getAllProjects = async (page: number = 1): Promise<ResponseWithMeta> => {
@@ -45,13 +45,13 @@ export const getAllProjects = async (page: number = 1): Promise<ResponseWithMeta
 }
 
 export const findProjectById = async (id: number): Promise<Response> => {
-  const { project } = await axios.$get(`${baseUrl}/${id}`) as unknown as Response
-  return { project }
+  const { data } = await axios.$get(`${baseUrl}/${id}`) as unknown as Response
+  return { data }
 }
-export const createProject = async (payload: Contact) => {
+export const createProject = async (payload: Project) => {
   await axios.$post(baseUrl, payload)
 }
 
-export const updateProject = async (payload: Contact) => {
+export const updateProject = async (payload: Project) => {
   await axios.$put(`${baseUrl}/${payload.id}`, payload)
 }

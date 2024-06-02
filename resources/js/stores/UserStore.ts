@@ -40,9 +40,9 @@ export const useUserStore = defineStore('user-store', () => {
   }
 
   const findById = async (id: number) => {
-    const { user: apiUser } = await findUserById(id)
-    user.value = apiUser
-    userEdit.value = apiUser
+    const { data } = await findUserById(id)
+    user.value = data
+    userEdit.value = data
   }
 
   const save = async (value: User) => {

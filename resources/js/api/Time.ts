@@ -30,25 +30,31 @@ export interface TimeStats {
   start?: string
   end?: string
   week: number
+  sumByWeekday: number[]
+  sumWeek: number
+}
+
+export interface GroupedTimeEntries {
+  [key: string]: {
+    entries: Time[],
+    sum: number
+  }
 }
 
 export interface ResponseWithMeta {
   data: Time[],
   meta: Meta
   stats: TimeStats
+  groupedByDay: GroupedTimeEntries
 }
 
 export interface Response {
   time: Time
 }
 
-export interface GroupedTimeEntries {
-  [key: string]: Time[]
-}
-
 export const getAllTimes = async (page: number = 1): Promise<ResponseWithMeta> => {
-  const { meta, data, stats } = await axios.$get(baseUrl, { page }) as ResponseWithMeta
-  return { meta, data, stats }
+  const { meta, data, groupedByDay, stats } = await axios.$get(baseUrl, { page }) as ResponseWithMeta
+  return { meta, data, stats, groupedByDay }
 }
 
 export const findTimeById = async (id: number): Promise<Response> => {

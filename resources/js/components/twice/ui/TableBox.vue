@@ -102,7 +102,7 @@ const onAddFirstClicked = () => {
               class="mx-auto my-6 text-stone-500"
             />
             <template v-if="useLayout">
-              Sie haben noch keine {{ paramsSubItem.recordName }} hinzufügt.
+              Sie haben noch keine {{ dynamicRecordName }} hinzufügt.
               <div class="p-6">
                 <ShdnUiButton @click="onAddFirstClicked">
                   {{ paramsSubItem.firstButtonTitle }} hinzufügen
@@ -110,7 +110,7 @@ const onAddFirstClicked = () => {
               </div>
             </template>
             <template v-else>
-              Keine {{ recordName }} gefunden.
+              Keine {{ dynamicRecordName }} gefunden.
             </template>
           </div>
         </slot>

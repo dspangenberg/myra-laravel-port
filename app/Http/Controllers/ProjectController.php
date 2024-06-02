@@ -4,66 +4,60 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use Illuminate\Http\Request;
-use App\Http\Resources\ProjectCollection;
+use App\Http\Resources\ProjectResource;
 
 class ProjectController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-      return new ProjectCollection(Project::query()
-        ->orderBy('name')
-        ->with('owner')
-        ->with('category')
-        ->with('lead')
-        ->paginate($this->recordsPerPage));
-    }
+  /**
+   * Display a listing of the resource.
+   */
+  public function index()
+  {
+    return ProjectResource::collection(Project::query()
+      ->with('owner')
+      ->with('category')
+      ->with('lead')
+      ->orderBy('name')
+      ->paginate($this->recordsPerPage)
+    );
+  }
 
-    public function store(Request $request)
-    {
-      $validated = $request->validate([
-        'name' =>'required'
-      ]);
+  public function store(Request $request)
+  {
+    $validated = $request->validate([
+      'name' => 'required'
+    ]);
 
-      $segment = EmailCategory::create($validated);
-      return response()->json([
-       'segment' => $segment
-      ]);
-    }
+    $project = Project::create($validated);
+    return new ProjectResource($project);
+  }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(EmailCategory $businessSegment)
-    {
-        return response()->json([
-         'segment' => $businessSegment
-        ]);
-    }
+  /**
+   * Display the specified resource.
+   */
+  public function show(Project $project)
+  {
+    return new ProjectResource($project);
+  }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, EmailCategory $businessSegment)
-    {
-      $validated = $request->validate([
-        'name' =>'required'
-      ]);
+  /**
+   * Update the specified resource in storage.
+   */
+  public function update(Request $request, Project $project)
+  {
+    $validated = $request->validate([
+      'name' => 'required'
+    ]);
 
-      $businessSegment->update($validated);
+    $project->update($validated);
+    return new ProjectResource($project);
+  }
 
-      return response()->json([
-       'segment' => $businessSegment
-      ]);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(EmailCategory $businessSegment)
-    {
-        //
-    }
+  /**
+   * Remove the specified resource from storage.
+   */
+  public function destroy(Project $project)
+  {
+    //
+  }
 }

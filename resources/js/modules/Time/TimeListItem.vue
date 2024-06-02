@@ -36,7 +36,7 @@ defineEmits(['select'])
       <p class="font-medium">
         {{ item.project?.name }}
       </p>
-      <p class="truncate text-sm text-gray-500 pt-1 line-clamp-1">
+      <p class="truncate text-sm text-gray-500 pt-1 line-clamp-2">
         {{ item?.note }}
       </p>
     </TableCell>

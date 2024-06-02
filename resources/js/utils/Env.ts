@@ -11,7 +11,7 @@ export function Env (key: string | null = null) {
   }
 
   const isDev = () => {
-    return import.meta.env.DEV === true
+    return import.meta.env.DEV
   }
 
   const assetUrl = (file: string) => {

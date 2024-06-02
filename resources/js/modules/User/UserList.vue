@@ -9,7 +9,7 @@ import {
 } from '@/components/shdn/ui/breadcrumb'
 
 import { storeToRefs } from 'pinia'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
 import UserListItem from './UserListItem.vue'
@@ -38,6 +38,8 @@ const onAddClicked = () => {
 onMounted(async () => {
   await userStore.getAll()
 })
+
+const currentPage = ref(1)
 
 const onUpdatePage = (page: number) => {
   currentPage.value = page
@@ -79,8 +81,8 @@ const onUpdatePage = (page: number) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead class="w-10" />
-                <TableHead class="w-64">
+                <TableHead class="w-12" />
+                <TableHead class="w-96">
                   Name
                 </TableHead>
                 <TableHead class="w-auto">

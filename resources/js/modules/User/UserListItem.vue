@@ -17,6 +17,7 @@ defineEmits(['select'])
   <TableRow @click="$emit('select', item.id)">
     <TableCell>
       <twice-ui-avatar
+        size="sm"
         :avatar="item.avatar_url"
         :fullname="item.full_name"
         :initials="item.initials"

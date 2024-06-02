@@ -15,11 +15,6 @@ export interface parentInterval {
   interval: number,
   numberOfIntervals: number,
 }
-export interface MetaRange {
-  url: string,
-  page: number,
-  isActive: boolean
-}
 export interface Meta {
   from: number,
   to: number

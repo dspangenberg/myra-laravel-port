@@ -60,11 +60,11 @@ export const useContactStore = defineStore('contact-store', () => {
   }
 
   const findById = async (id: number) => {
-    const { contact: record } = await findContactById(id)
+    const { data } = await findContactById(id)
 
     store.$patch(state => {
-      state.contact = record
-      state.contactEdit = record
+      state.contact = data
+      state.contactEdit = data
     })
   }
 
