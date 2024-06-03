@@ -21,7 +21,7 @@ export interface Props {
 defineProps<Props>()
 
 const onSelect = async (id: number) => {
-  await timeStore.findById(id)
+  await timeStore.createOrEdit(id)
   router.push({ name: 'times-edit', params: { id } })
 }
 defineEmits(['select'])
@@ -36,7 +36,7 @@ defineEmits(['select'])
       <div
         class="font-medium pl-3.5 pb-1"
       >
-        {{ formatDate(date, 'dd. DD. MMMM YYYY') }}
+        {{ formatDate(date, 'dd. DD. MMMM YYYY', 'en') }}
       </div>
       <div class="font-medium pr-14 pb-1 text-right">
         {{ formatDuration(sum) }}

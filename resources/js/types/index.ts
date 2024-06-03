@@ -25,6 +25,13 @@ export interface Meta {
   total: number
 }
 
+export interface Option {
+  id: string
+  name: string
+  disabled?: boolean
+  group?: string
+}
+
 export interface ParamsLayoutNavigationSubItem {
     label: string
     disabled: boolean

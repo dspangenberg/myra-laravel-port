@@ -10,6 +10,7 @@ import {
 import { useTemplateFilter } from '@/composables/useTemplateFilter'
 import dayjs from 'dayjs'
 import isoWeek from 'dayjs/plugin/isoWeek'
+import type { QueryParams } from '@/api/Time'
 
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref, watch } from 'vue'
@@ -18,7 +19,7 @@ import { useTimeStore } from '@/stores/TimeStore'
 
 import TimeListGroup from './TimeListGroup.vue'
 dayjs.extend(isoWeek)
-const { formatDate, formatDuration } = useTemplateFilter()
+const { formatDuration } = useTemplateFilter()
 
 const router = useRouter()
 const route = useRoute()
@@ -31,17 +32,15 @@ const qs = computed(() => route.query)
 const year = computed(() => qs.value.year || dayjs().year())
 const week = computed(() => qs.value.week || dayjs().isoWeek())
 const date = computed(() => dayjs().year(year.value as number).isoWeek(week.value as number).startOf('isoWeek').format('YYYY-MM-DD'))
-const onAddClicked = () => {
-  timeStore.add()
+const onAddClicked = async () => {
+  await timeStore.createOrEdit(0)
   router.push({ name: 'times-add' })
 }
 
 watch(qs, async (qs) => {
   console.log(qs)
-  await timeStore.getAll(qs)
+  await timeStore.getAll(qs as unknown as QueryParams)
 })
-
-const startDate = computed(() => timeStats.value?.start || dayjs().format('YYYY-MM-DD'))
 
 onMounted(async () => {
   await timeStore.getAll({ type: 'week' })

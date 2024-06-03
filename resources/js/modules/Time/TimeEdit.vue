@@ -1,23 +1,25 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { type Project } from '@/api/Project'
-import { useProjectStore } from '@/stores/ProjectStore'
+import { type Time } from '@/api/Time'
 import { storeToRefs } from 'pinia'
+import { useTimeStore } from '@/stores/TimeStore'
+import type { Option } from '@/types'
 
-const projectStore = useProjectStore()
-const { projectEdit } = storeToRefs(projectStore)
+const timeStore = useTimeStore()
 
-const form = reactive(projectEdit)
+const { timeEdit, categories, projects, users } = storeToRefs(timeStore)
+
+const form = reactive(timeEdit)
 const router = useRouter()
 const formRef = ref(null)
 
 const onClose = () => {
-  router.push({ name: 'projects-list' })
+  router.push({ name: 'times-week' })
 }
 
-const onSubmit = async (values: Project) => {
-  await projectStore.save(values)
+const onSubmit = async (values: Time) => {
+  await timeStore.save(values)
   onClose()
 }
 
@@ -27,8 +29,8 @@ const onSubmit = async (values: Project) => {
   <div>
     <TwiceUiDialog
       :show="true"
-      title="Projekt hinzufügen"
-      width="xs"
+      title="Zeiteintrag hinzufügen"
+      width="lg"
       @hide="onClose"
     >
       <template #content>
@@ -39,43 +41,58 @@ const onSubmit = async (values: Project) => {
           @submitted="onSubmit"
         >
           <twice-ui-form-group>
-            <div class="col-span-12">
+            <div class="col-span-6">
               <twice-ui-input
-                label="Vorname"
-                rules="required"
-                name="first_name"
+                name="begin_at"
+                label="Start"
+              />
+            </div>
+            <div class="col-span-6">
+              <twice-ui-input
+                name="end_at"
+                label="Ende"
               />
             </div>
             <div class="col-span-12">
-              <twice-ui-input
-                label="Name"
+              <twice-ui-select
+                label="Project"
                 rules="required"
-                name="last_name"
+                name="project_id"
+                :options="projects as unknown as Option[]"
               />
             </div>
             <div class="col-span-24">
               <twice-ui-input
-                label="E-Mail-Adresse"
-                rules="required|email"
-                name="email"
+                name="note"
+                type="textarea"
+                label="Notizen"
               />
             </div>
             <div class="col-span-12">
-              <twice-ui-input
-                label="Kennwort"
-                rules="safe-password:14:score|confirmed:@password_confirmation"
-                name="password"
+              <twice-ui-select
+                label="Leistung"
+                rules="required"
+                name="time_category_id"
+                :options="categories as unknown as Option[]"
               />
-              <twice-ui-check-box
-                name="is_admin"
-                label="Administrator"
-                :true-value="true"
-              />
+              <div class="pt-1 flex items-center space-x-2">
+                <twice-ui-check-box
+                  label="abrechenbar"
+                  name="is_billable"
+                />
+                <twice-ui-check-box
+                  label="gesperrt"
+                  name="is_locked"
+                />
+              </div>
             </div>
             <div class="col-span-12">
-              <twice-ui-input
-                label="Wiederholung"
-                name="password_confirmation"
+              <twice-ui-select
+                label="Mitarbeiter*in"
+                rules="required"
+                name="user_id"
+                option-name="full_name"
+                :options="users as unknown as Option[]"
               />
             </div>
           </twice-ui-form-group>

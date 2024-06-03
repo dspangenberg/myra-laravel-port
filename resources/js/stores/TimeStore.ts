@@ -1,10 +1,15 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
-import { getAllTimes, findTimeById, createTime, updateTime } from '@/api/Time'
-import { reactive, ref, type Ref } from 'vue'
+import { createTime, editTime, getAllTimes, findTimeById, storeTime, updateTime } from '@/api/Time'
+import { ref, type Ref } from 'vue'
 import type { Time, GroupedTimeEntries, TimeStats, QueryParams } from '@/api/Time'
-import { type Meta } from '@/types/'
+import type { Project } from '@/api/Project'
+import type { User } from '@/api/User'
+import type { TimeCategory } from '@/api/params/TimeCategory'
+import type { Meta } from '@/types'
 
 export const useTimeStore = defineStore('time-store', () => {
+  const store = useTimeStore()
+
   const times: Ref<Time[] | null> = ref([])
   const groupedTimeEntries: Ref<GroupedTimeEntries | null> = ref(null)
   const time: Ref<Time | null> = ref(null)
@@ -12,23 +17,9 @@ export const useTimeStore = defineStore('time-store', () => {
   const meta: Ref<Meta | null> = ref(null)
   const isLoading: Ref<boolean> = ref(false)
   const timeStats: Ref<TimeStats | null> = ref(null)
-
-  const store = useTimeStore()
-
-  const newRecordTemplate = reactive({
-    id: 0,
-    project_id: 0,
-    user_id: 0,
-    time_category_id: 0,
-    begin_at: '',
-    minutes: 0,
-    end_at: '',
-    note: '',
-    is_locked: false,
-    mins: 0,
-    is_billable: true,
-    is_timer: false
-  })
+  const projects: Ref<Project[] | null> = ref([])
+  const categories: Ref<TimeCategory[] | null> = ref([])
+  const users: Ref<User[] | null> = ref([])
 
   const getAll = async (params?: QueryParams) => {
     isLoading.value = true
@@ -43,25 +34,30 @@ export const useTimeStore = defineStore('time-store', () => {
     isLoading.value = false
   }
 
-  const add = () => {
+  const createOrEdit = async (id: number = 0) => {
+    const { data, projects: apiProjects, categories: apiCategories, users: apiUsers } = id === 0 ? await createTime() : await editTime(id)
+
     store.$patch(state => {
-      state.time = newRecordTemplate
-      state.timeEdit = newRecordTemplate
+      state.categories = apiCategories
+      state.projects = apiProjects
+      state.users = apiUsers
+
+      state.timeEdit = data
     })
   }
 
   const findById = async (id: number) => {
-    const { time: record } = await findTimeById(id)
+    const { data } = await findTimeById(id)
 
     store.$patch(state => {
-      state.time = record
-      state.timeEdit = record
+      state.time = data
+      state.timeEdit = data
     })
   }
 
   const save = async (value: Time) => {
     if (!value.id) {
-      await createTime(value)
+      await storeTime(value)
     } else {
       await updateTime(value)
     }
@@ -70,6 +66,9 @@ export const useTimeStore = defineStore('time-store', () => {
   }
 
   return {
+    categories,
+    projects,
+    users,
     groupedTimeEntries,
     isLoading,
     time,
@@ -77,8 +76,7 @@ export const useTimeStore = defineStore('time-store', () => {
     timeStats,
     times,
     meta,
-    newRecordTemplate,
-    add,
+    createOrEdit,
     getAll,
     findById,
     save

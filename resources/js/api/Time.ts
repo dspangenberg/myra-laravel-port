@@ -57,7 +57,13 @@ export interface ResponseWithMeta {
 }
 
 export interface Response {
-  time: Time
+  data: Time
+}
+
+export interface CreateResponse extends Response {
+  projects: Project[],
+  users: User[]
+  categories: TimeCategory[]
 }
 
 export const getAllTimes = async (params?: QueryParams): Promise<ResponseWithMeta> => {
@@ -66,10 +72,21 @@ export const getAllTimes = async (params?: QueryParams): Promise<ResponseWithMet
 }
 
 export const findTimeById = async (id: number): Promise<Response> => {
-  const { time } = await axios.$get(`${baseUrl}/${id}`) as unknown as Response
-  return { time }
+  const { data } = await axios.$get(`${baseUrl}/${id}`) as Response
+  return { data }
 }
-export const createTime = async (payload: Time) => {
+
+export const createTime = async (): Promise<CreateResponse> => {
+  const { data, projects, users, categories } = await axios.$get(`${baseUrl}/create`) as CreateResponse
+  return { data, projects, users, categories }
+}
+
+export const editTime = async (id: number): Promise<CreateResponse> => {
+  const { data, projects, users, categories } = await axios.$get(`${baseUrl}/${id}/edit`) as CreateResponse
+  return { data, projects, users, categories }
+}
+
+export const storeTime = async (payload: Time) => {
   await axios.$post(baseUrl, payload)
 }
 

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use DateTimeInterface;
 
 /**
  *
@@ -81,6 +82,36 @@ class Time extends Model
     'note',
     'avatar'
   ];
+
+  protected $attributes = [
+    'project_id' => 0,
+    'time_category_id' => 0,
+    'subproject_id' => 0,
+    'user_id' => 0,
+    'invoice_id' => 0,
+    'begin_at' => '',
+    'end_at' => '',
+    'note' => '',
+    'minutes' => 0,
+    'is_timer' => false,
+    'is_locked' => false,
+    'is_billable' => false,
+  ];
+
+  protected function serializeDate(DateTimeInterface $date): string
+  {
+    return $date->format('d.m.Y H:i');
+  }
+  protected function casts(): array
+  {
+    return [
+      'is_timer' => 'boolean',
+      'is_locked' => 'boolean',
+      'is_billable' => 'boolean',
+      'begin_at' => 'datetime',
+      'end_at' => 'datetime',
+    ];
+  }
 
   public function category(): HasOne
   {

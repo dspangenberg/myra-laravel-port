@@ -35,10 +35,9 @@ const { modelValue } = toRefs(props)
 const startOfWeek = computed(() => dayjs(modelValue.value).startOf('isoWeek'))
 const endOfWeek = computed(() => dayjs(modelValue.value).startOf('isoWeek').endOf('isoWeek'))
 const week = computed(() => dayjs(modelValue.value).isoWeek())
-const year = computed(() => dayjs(modelValue.value).year())
 
-const formatedStartOfWeek = computed(() => formatDate(startOfWeek.value.toString()))
-const formatedEndOfWeek = computed(() => formatDate(endOfWeek.value.toString()))
+const formatedStartOfWeek = computed(() => formatDate(startOfWeek.value.toString(), 'DD.MM.YYYY', 'en'))
+const formatedEndOfWeek = computed(() => formatDate(endOfWeek.value.toString(), 'DD.MM.YYYY', 'en'))
 
 const canNext = computed(() => dayjs().isoWeek() > week.value)
 const onPrevClicked = () => {

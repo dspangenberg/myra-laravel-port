@@ -1,10 +1,13 @@
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+
 import 'dayjs/locale/de'
 
 dayjs.extend(duration)
 dayjs.extend(relativeTime)
+dayjs.extend(customParseFormat)
 dayjs.locale('de')
 
 export function useTemplateFilter () {
@@ -13,8 +16,18 @@ export function useTemplateFilter () {
     return records.join(', ')
   }
 
-  const formatDate = (date: string | undefined, format: string = 'DD.MM.YYYY') => {
+  const durationUntilNow = (date: string | undefined) => {
+    const y = dayjs(date, 'DD.MM.YYYY HH:mm')
+    const x = dayjs()
+    const duration = dayjs.duration(x.diff(y)).asMinutes()
+    return formatDuration(duration)
+  }
+
+  const formatDate = (date: string | undefined, format: string = 'DD.MM.YYYY', locale: string = 'de') => {
     if (date === undefined) return ''
+    if (locale === 'de') {
+      return dayjs(date, 'DD.MM.YYYY HH:mm').format(format)
+    }
     return dayjs(date).format(format)
   }
 
@@ -22,5 +35,5 @@ export function useTemplateFilter () {
     return dayjs.duration(duration, 'minutes').format('H:mm')
   }
 
-  return { collectField, formatDate, formatDuration }
+  return { collectField, formatDate, durationUntilNow, formatDuration }
 }

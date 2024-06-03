@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Time;
+use App\Models\Project;
+use App\Models\TimeCategory;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Http\Request;
 use App\Services\TimeService;
 use Carbon\Carbon;
@@ -25,6 +30,43 @@ class TimeController extends Controller
       'data' => $times['times'],
       'groupedByDay' => $times['groupedByDay'],
       'stats' => $times['stats']
+    ]);
+  }
+
+  public function create()
+  {
+
+    $lastEntry = Time::orderBy('id', 'desc')->first();
+    dump($lastEntry);
+
+    $time = new Time();
+    $time->begin_at = Carbon::now();
+    $time->end_at = null;
+    $time->project_id = $lastEntry->project_id;
+    $time->time_category_id = $lastEntry->time_category_id;
+    $time->user_id = Auth::user()->id;
+    $time->is_locked = $lastEntry->is_locked;
+    $time->is_billable = $lastEntry->is_billable;
+    $time->is_timer = false;
+
+    return response()->json([
+      'projects' => Project::orderBy('name')->where('is_archived', false)->get()->toArray(),
+      'data' => $time,
+      'categories' => TimeCategory::orderBy('name')->get()->toArray(),
+      'users' => User::orderBy('last_name')->get()->toArray(),
+    ]);
+  }
+
+  public function edit(Time $time)
+  {
+
+    $time->load('project')->load('category')->load('user');
+
+    return response()->json([
+      'projects' => Project::orderBy('name')->where('is_archived', false)->get()->toArray(),
+      'data' => $time,
+      'categories' => TimeCategory::orderBy('name')->get()->toArray(),
+      'users' => User::orderBy('last_name')->get()->toArray(),
     ]);
   }
 

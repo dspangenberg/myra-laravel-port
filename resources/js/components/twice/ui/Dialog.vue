@@ -46,7 +46,7 @@ const widthClass = computed(() => {
     xs: 'max-w-md',
     sm: 'max-w-xl',
     md: 'max-w-2xl ',
-    lg: 'max-w-4xl',
+    lg: 'max-w-3xl',
     xl: 'max-w-7xl'
   }[props.width]
 })

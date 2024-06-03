@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import type { Time } from '@/api/Time'
-import { IconChevronRight, IconClockDollar, IconLockExclamation, IconClockX } from '@tabler/icons-vue'
+import { IconChevronRight, IconClockDollar, IconClockRecord, IconLockExclamation, IconClockX } from '@tabler/icons-vue'
 import {
   TableCell,
   TableRow
 } from '@/components/shdn/ui/table'
 import { useTemplateFilter } from '@/composables/useTemplateFilter'
-const { formatDate, formatDuration } = useTemplateFilter()
+const { durationUntilNow, formatDate, formatDuration } = useTemplateFilter()
 
 export interface Props {
   item: Time
@@ -26,24 +26,32 @@ defineEmits(['select'])
         />
       </template>
       <template v-else>
-        <IconClockX
-          v-if="!item.is_billable"
-          class="size-6 text-stone-600"
-          stroke-width="1.5"
-        />
-        <IconClockDollar
-          v-if="item.is_billable"
-          class="size-6 text-indigo-400"
-          stroke-width="1.5"
-        />
+        <template v-if="!item.end_at">
+          <IconClockRecord
+            class="size-6 text-blue-600"
+            stroke-width="1.5"
+          />
+        </template>
+        <template v-else>
+          <IconClockX
+            v-if="!item.is_billable"
+            class="size-6 text-stone-600"
+            stroke-width="1.5"
+          />
+          <IconClockDollar
+            v-if="item.is_billable"
+            class="size-6 text-indigo-400"
+            stroke-width="1.5"
+          />
+        </template>
       </template>
     </TableCell>
     <TableCell class="max-w-40 w-40 text-sm pl-0">
       <p class="font-medium">
-        {{ formatDate(item.begin_at, 'HH:mm') }} - {{ formatDate(item.end_at, 'HH:mm') }}
-        <span class="text-stone-500 pl-1">
-          ({{ item?.category?.short_name }})
-        </span>
+        {{ formatDate(item.begin_at, 'HH:mm') }} <span v-if="item.end_at">- {{ formatDate(item.end_at, 'HH:mm') }}</span>
+      </p>
+      <p class="text-stone-500 truncate">
+        {{ item?.category?.name }}
       </p>
     </TableCell>
     <TableCell class="text-sm w-auto">
@@ -63,7 +71,14 @@ defineEmits(['select'])
       />
     </TableCell>
     <TableCell class="text-sm font-medium w-12 text-stone-700">
-      {{ formatDuration(item.mins) }}
+      <template v-if="item.end_at">
+        {{ formatDuration(item.mins) }}
+      </template>
+      <template v-else>
+        <span class="text-red-600 animate-pulse">
+          {{ durationUntilNow(item.begin_at) }}
+        </span>
+      </template>
     </TableCell>
     <TableCell class="w-12">
       <IconChevronRight

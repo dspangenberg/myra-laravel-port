@@ -10,13 +10,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/shdn/ui/select'
-
-export interface Options {
-  id: string
-  name: string
-  disabled?: boolean
-  group?: string
-}
+import { type Option } from '@/types'
 
 export interface Props {
   name: string
@@ -28,8 +22,9 @@ export interface Props {
   disabled?: boolean
   autofocus?: boolean
   required?: boolean
-  options: Options[]
+  options: Option[]
   selectClass?: string
+  optionName?: string
   onlyOptionsWithName?: boolean
   placeholderValue?: number | string | null
 }
@@ -42,7 +37,7 @@ const props = withDefaults(defineProps<Props>(), {
   selectClass: '',
   disabled: false,
   optionsValue: 'id',
-  optionsName: 'name',
+  optionName: 'name',
   optionDisabled: 'disabled',
   onlyOptionsWithName: false,
   placeholderValue: 0,
@@ -94,7 +89,7 @@ const { value } = useField<string>(name, rules, { label })
             :group="item.group"
             :selected="item['id'] === value"
           >
-            {{ item['name'] }}
+            {{ item[optionName] }}
           </SelectItem>
         </SelectGroup>
       </SelectContent>

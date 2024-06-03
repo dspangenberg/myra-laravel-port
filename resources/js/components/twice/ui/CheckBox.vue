@@ -40,7 +40,7 @@ const { value } = useField<number>(name, rules, { label })
     >
     <label
       :for="htmlId"
-      class="flex-1 text-gray-600 text-base cursor-pointer disabled:cursor-not-allowed"
+      class="flex-1 text-black text-base cursor-pointer disabled:cursor-not-allowed"
     >
       <slot>{{ label }}</slot>
     </label>

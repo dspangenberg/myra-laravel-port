@@ -106,7 +106,7 @@ const hasSuffix = computed(() => !!$slots.suffix || props.suffix)
         <input
           :id="htmlId"
           v-model="value"
-          class="w-full h-8 px-2  border-gray-300 text-base text-black block rounded font-sans disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 focus:ring focus:ring-opacity-50 placeholder:text-gray-400"
+          class="w-full h-9 px-2 border-input text-base text-black block rounded font-sans disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 focus:ring focus:ring-opacity-50 placeholder:text-gray-400"
           :class="
             [
               'font-sans',
