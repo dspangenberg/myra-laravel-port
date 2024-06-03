@@ -2,6 +2,11 @@ const routes = {
   path: 'times',
   children: [
     {
+      path: 'week',
+      name: 'times-week',
+      component: () => import('@/modules/Time/TimeList.vue')
+    },
+    {
       path: '',
       name: 'times-list',
       component: () => import('@/modules/Time/TimeList.vue'),

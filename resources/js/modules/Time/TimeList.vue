@@ -8,32 +8,43 @@ import {
   BreadcrumbSeparator
 } from '@/components/shdn/ui/breadcrumb'
 import { useTemplateFilter } from '@/composables/useTemplateFilter'
+import dayjs from 'dayjs'
+import isoWeek from 'dayjs/plugin/isoWeek'
 
 import { storeToRefs } from 'pinia'
-import { onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useTimeStore } from '@/stores/TimeStore'
 
 import TimeListGroup from './TimeListGroup.vue'
+dayjs.extend(isoWeek)
 const { formatDate, formatDuration } = useTemplateFilter()
 
 const router = useRouter()
+const route = useRoute()
 const timeStore = useTimeStore()
 const { times, groupedTimeEntries, isLoading, timeStats } = storeToRefs(timeStore)
 const currentPage = ref(1)
 const currentPivot = ref('week')
 
+const qs = computed(() => route.query)
+const year = computed(() => qs.value.year || dayjs().year())
+const week = computed(() => qs.value.week || dayjs().isoWeek())
+const date = computed(() => dayjs().year(year.value as number).isoWeek(week.value as number).startOf('isoWeek').format('YYYY-MM-DD'))
 const onAddClicked = () => {
   timeStore.add()
   router.push({ name: 'times-add' })
 }
 
-watch(currentPage, async (page) => {
-  await timeStore.getAll(page)
+watch(qs, async (qs) => {
+  console.log(qs)
+  await timeStore.getAll(qs)
 })
 
+const startDate = computed(() => timeStats.value?.start || dayjs().format('YYYY-MM-DD'))
+
 onMounted(async () => {
-  await timeStore.getAll()
+  await timeStore.getAll({ type: 'week' })
 })
 
 const onUpdatePage = (page: number) => {
@@ -73,7 +84,7 @@ const onUpdatePage = (page: number) => {
       <twice-ui-pivot v-model="currentPivot">
         <twice-ui-pivot-item
           name="week"
-          label="Woche"
+          label="Meine Woche"
         />
       </twice-ui-pivot>
     </template>
@@ -85,9 +96,6 @@ const onUpdatePage = (page: number) => {
           :loading="isLoading"
           @update-page="onUpdatePage"
         >
-          <div class="text-base text-center font-medium px-3 mx-64 pb-2">
-            {{ formatDate(timeStats?.start) }} - {{ formatDate(timeStats?.end) }}
-          </div>
           <div class="mb-6 border-t rounded-md shadow border-stone-100 bg-white text-sm mx-64">
             <div class="grid grid-cols-9 text-center divide-x">
               <div class="py-3">
@@ -119,6 +127,9 @@ const onUpdatePage = (page: number) => {
                 </div>
               </div>
             </div>
+          </div>
+          <div class="text-base text-center font-medium pb-2">
+            <twice-ui-week-select v-model="date" />
           </div>
           <TimeListGroup
             v-for="(value, key) in groupedTimeEntries"

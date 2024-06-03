@@ -1,7 +1,7 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { getAllTimes, findTimeById, createTime, updateTime } from '@/api/Time'
 import { reactive, ref, type Ref } from 'vue'
-import type { Time, GroupedTimeEntries, TimeStats } from '@/api/Time'
+import type { Time, GroupedTimeEntries, TimeStats, QueryParams } from '@/api/Time'
 import { type Meta } from '@/types/'
 
 export const useTimeStore = defineStore('time-store', () => {
@@ -30,9 +30,9 @@ export const useTimeStore = defineStore('time-store', () => {
     is_timer: false
   })
 
-  const getAll = async (page: number = 1) => {
+  const getAll = async (params?: QueryParams) => {
     isLoading.value = true
-    const { data, meta, stats, groupedByDay } = await getAllTimes(page)
+    const { data, meta, stats, groupedByDay } = await getAllTimes(params)
 
     store.$patch(state => {
       state.times = data

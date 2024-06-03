@@ -3,6 +3,7 @@ import { useAxios } from '@/composables/useAxios'
 import { type Project } from '@/api/Project'
 import { type User } from '@/api/User'
 import { TimeCategory } from '@/api/params/TimeCategory'
+
 const { axios } = useAxios(true)
 const baseUrl: string = '/api/times'
 
@@ -30,6 +31,7 @@ export interface TimeStats {
   start?: string
   end?: string
   week: number
+  year: number
   sumByWeekday: number[]
   sumWeek: number
 }
@@ -39,6 +41,12 @@ export interface GroupedTimeEntries {
     entries: Time[],
     sum: number
   }
+}
+
+export interface QueryParams {
+  type: 'week' | 'all' | 'filtered'
+  year?: number
+  week?: number
 }
 
 export interface ResponseWithMeta {
@@ -52,8 +60,8 @@ export interface Response {
   time: Time
 }
 
-export const getAllTimes = async (page: number = 1): Promise<ResponseWithMeta> => {
-  const { meta, data, groupedByDay, stats } = await axios.$get(baseUrl, { page }) as ResponseWithMeta
+export const getAllTimes = async (params?: QueryParams): Promise<ResponseWithMeta> => {
+  const { meta, data, groupedByDay, stats } = await axios.$get(baseUrl, params) as ResponseWithMeta
   return { meta, data, stats, groupedByDay }
 }
 

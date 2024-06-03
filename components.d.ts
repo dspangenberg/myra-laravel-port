@@ -170,5 +170,6 @@ declare module 'vue' {
     TwiceUiTab: typeof import('./resources/js/components/twice/ui/Tab.vue')['default']
     TwiceUiTableBox: typeof import('./resources/js/components/twice/ui/TableBox.vue')['default']
     TwiceUiTabs: typeof import('./resources/js/components/twice/ui/Tabs.vue')['default']
+    TwiceUiWeekSelect: typeof import('./resources/js/components/twice/ui/WeekSelect.vue')['default']
   }
 }

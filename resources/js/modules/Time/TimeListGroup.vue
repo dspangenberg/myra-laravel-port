@@ -38,7 +38,7 @@ defineEmits(['select'])
       >
         {{ formatDate(date, 'dd. DD. MMMM YYYY') }}
       </div>
-      <div class="font-medium pr-12 pb-1">
+      <div class="font-medium pr-14 pb-1 text-right">
         {{ formatDuration(sum) }}
       </div>
     </div>

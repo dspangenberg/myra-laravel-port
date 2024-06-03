@@ -4,68 +4,36 @@ namespace App\Http\Controllers;
 
 use App\Models\Time;
 use Illuminate\Http\Request;
+use App\Services\TimeService;
 use Carbon\Carbon;
+use App\Http\Requests\StoreTimeRequest;
 
 class TimeController extends Controller
 {
-  public function index() {
+  public function index(Request $request) {
 
-    $week = Carbon::now()->weekOfYear - 1;
-    $year = Carbon::now()->year;
+    $times = [];
 
-    $startOfWeek = Carbon::now()->startOfWeek();
-    $endOfWeek = Carbon::now()->endOfWeek();
-
-    $times = Time::query()
-      ->with('project')
-      ->with('category')
-      ->with('user')
-      ->withMinutes()
-      ->byWeekOfYear($week, $year)
-      ->orderBy('begin_at', 'desc')
-      ->get();
-
-    $groupedEntries = [];
-
-    $sumByWeekday = collect([
-      'Mo' => 0,
-      'Di' => 0,
-      'Mi' => 0,
-      'Do' => 0,
-      'Fr' => 0,
-      'Sa' => 0,
-      'So' => 0
-    ]);
-
-
-    foreach ($times->groupBy('ts') as $key => $value) {
-      $groupedEntries[$key]['entries'] = $value;
-      $groupedEntries[$key]['sum'] = $value->sum('mins');
-      $sumByWeekday[Carbon::parse($key)->locale('de')->minDayName] = $groupedEntries[$key]['sum'];
+    $type = $request->query('type', 'week');
+    if ($type === 'week') {
+      $week = $request->query('week', Carbon::now()->weekOfYear);
+      $year = $request->query('year', Carbon::now()->year);
+      $times = TimeService::getTimeByWeekOfYear($week, $year);
     }
 
     return response()->json([
-      'data' => $times,
-      'groupedByDay' => $groupedEntries,
-      'stats' => [
-        'start' => $startOfWeek,
-        'end' => $endOfWeek,
-        'week' => $week,
-        'sumByWeekday' => $sumByWeekday,
-        'sumWeek' => $sumByWeekday->sum(),
-      ]
+      'data' => $times['times'],
+      'groupedByDay' => $times['groupedByDay'],
+      'stats' => $times['stats']
     ]);
   }
 
-  public function store(Request $request)
+  public function store(StoreTimeRequest $request)
   {
-    $validated = $request->validate([
-      'name' => 'required'
-    ]);
 
-    $contact = Time::create($validated);
+    $time = Time::create($request->validated());
     return response()->json([
-      'contact' => $contact
+      'contact' => $time
     ]);
   }
 
@@ -79,13 +47,9 @@ class TimeController extends Controller
     ]);
   }
 
-  public function update(Request $request, Time $time)
+  public function update(StoreTimeRequest $request, Time $time)
   {
-    $validated = $request->validate([
-      'name' => 'required'
-    ]);
-
-    $time->update($validated);
+    $time->update($request->validated());
 
     return response()->json([
       'time' => $time

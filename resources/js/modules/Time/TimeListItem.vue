@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { Time } from '@/api/Time'
-import { IconChevronRight, IconClock } from '@tabler/icons-vue'
+import { IconChevronRight, IconClockDollar, IconLockExclamation, IconClockX } from '@tabler/icons-vue'
 import {
   TableCell,
   TableRow
@@ -19,10 +19,24 @@ defineEmits(['select'])
 <template>
   <TableRow @click="$emit('select', item.id)">
     <TableCell class="w-12 max-w-12 min-w-12 text-center pr-0">
-      <IconClock
-        class="size-6 text-stone-400"
-        stroke-width="1.5"
-      />
+      <template v-if="item.is_locked">
+        <IconLockExclamation
+          class="size-6 text-red-600"
+          stroke-width="1.5"
+        />
+      </template>
+      <template v-else>
+        <IconClockX
+          v-if="!item.is_billable"
+          class="size-6 text-stone-600"
+          stroke-width="1.5"
+        />
+        <IconClockDollar
+          v-if="item.is_billable"
+          class="size-6 text-indigo-400"
+          stroke-width="1.5"
+        />
+      </template>
     </TableCell>
     <TableCell class="max-w-40 w-40 text-sm pl-0">
       <p class="font-medium">
