@@ -20,3 +20,6 @@ yarn-error.log
 /database/database.sqlite
 /database/private-data
 /.pnpm-store
+/storage/app/fonts/*.ttf
+/storage/app/letterheads/*.pdf
+
