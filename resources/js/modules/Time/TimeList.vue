@@ -50,6 +50,10 @@ const onUpdatePage = (page: number) => {
   currentPage.value = page
 }
 
+const onCreatePdfClicked = async () => {
+  await timeStore.createPdf()
+}
+
 </script>
 
 <template>
@@ -130,6 +134,9 @@ const onUpdatePage = (page: number) => {
           <div class="text-base text-center font-medium pb-2">
             <twice-ui-week-select v-model="date" />
           </div>
+          <shdn-ui-button @click="onCreatePdfClicked">
+            Pdf erstellen
+          </shdn-ui-button>
           <TimeListGroup
             v-for="(value, key) in groupedTimeEntries"
             :key="key"

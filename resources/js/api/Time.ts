@@ -76,6 +76,16 @@ export const findTimeById = async (id: number): Promise<Response> => {
   return { data }
 }
 
+export const createProofOfActivityPdf = async () => {
+  const response = await axios.$get(`${baseUrl}/pdf`, {}, { responseType: 'blob' })
+  const url = window.URL.createObjectURL(new Blob([response as unknown as BlobPart]))
+  const link = document.createElement('a')
+  link.href = url
+  link.setAttribute('download', 'file.pdf')
+  document.body.appendChild(link)
+  link.click()
+}
+
 export const createTime = async (): Promise<CreateResponse> => {
   const { data, projects, users, categories } = await axios.$get(`${baseUrl}/create`) as CreateResponse
   return { data, projects, users, categories }

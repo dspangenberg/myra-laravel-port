@@ -1,0 +1,10 @@
+@page {
+  size: A4;
+  margin: 9.88cm 4.49cm 2cm 2.5cm;
+}
+
+@page:first {
+  margin-top: 4cm;
+  margin-bottom: 2cm;
+}
+

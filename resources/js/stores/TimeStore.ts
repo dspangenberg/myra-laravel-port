@@ -1,5 +1,13 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
-import { createTime, editTime, getAllTimes, findTimeById, storeTime, updateTime } from '@/api/Time'
+import {
+  createTime,
+  createProofOfActivityPdf,
+  editTime,
+  getAllTimes,
+  findTimeById,
+  storeTime,
+  updateTime
+} from '@/api/Time'
 import { ref, type Ref } from 'vue'
 import type { Time, GroupedTimeEntries, TimeStats, QueryParams } from '@/api/Time'
 import type { Project } from '@/api/Project'
@@ -34,6 +42,9 @@ export const useTimeStore = defineStore('time-store', () => {
     isLoading.value = false
   }
 
+  const createPdf = async () => {
+    await createProofOfActivityPdf()
+  }
   const createOrEdit = async (id: number = 0) => {
     const { data, projects: apiProjects, categories: apiCategories, users: apiUsers } = id === 0 ? await createTime() : await editTime(id)
 
@@ -77,6 +88,7 @@ export const useTimeStore = defineStore('time-store', () => {
     times,
     meta,
     createOrEdit,
+    createPdf,
     getAll,
     findById,
     save

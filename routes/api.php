@@ -17,9 +17,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-  Route::resource('/users', UserController::class);
+  Route::get('/times/pdf', [TimeController::class, 'pdf']);
 
+  Route::resource('/users', UserController::class);
   Route::resource('/contacts', ContactController::class);
   Route::resource('/projects', ProjectController::class);
   Route::resource('/times', TimeController::class);
+
+
 });

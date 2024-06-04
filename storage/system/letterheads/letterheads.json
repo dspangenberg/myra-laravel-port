@@ -1,0 +1,16 @@
+{
+  "letterheads": [
+    {
+      "name": "default",
+      "title": "Standardbriefbogen",
+      "pdf-file": "PDF-Letterhead.pdf",
+      "css-file": "PDF-Letterhead.css"
+    },
+    {
+      "name": "logo-only",
+      "title": "nur Logo",
+      "pdf-file": "PDF-Letterhead-2.pdf",
+      "css-file": "PDF-Letterhead-2.css"
+    }
+  ]
+}

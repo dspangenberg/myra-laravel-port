@@ -1,0 +1,9 @@
+{
+  "layouts": [
+    {
+      "name": "proof-of-activity",
+      "letterhead": "default",
+      "css-file": "proof-of-activity.css"
+    }
+  ]
+}

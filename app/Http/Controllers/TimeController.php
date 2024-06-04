@@ -6,12 +6,14 @@ use App\Models\Time;
 use App\Models\Project;
 use App\Models\TimeCategory;
 use App\Models\User;
+use App\Services\PdfService;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 use App\Services\TimeService;
 use Carbon\Carbon;
 use App\Http\Requests\StoreTimeRequest;
+use Mpdf\MpdfException;
 
 class TimeController extends Controller
 {
@@ -31,6 +33,23 @@ class TimeController extends Controller
       'groupedByDay' => $times['groupedByDay'],
       'stats' => $times['stats']
     ]);
+  }
+
+  /**
+   * @throws MpdfException
+   */
+  public function pdf(Request $request) {
+    $times = [];
+
+    $type = $request->query('type', 'week');
+    if ($type === 'week') {
+      $week = $request->query('week', Carbon::now()->weekOfYear);
+      $year = $request->query('year', Carbon::now()->year);
+      $times = TimeService::getTimeByWeekOfYear($week, $year);
+    }
+
+    $pdfFile = PdfService::createPdf('proof-of-activity', 'pdf.proof-of-activity.index', ['times' => $times]);
+    return response()->file($pdfFile);
   }
 
   public function create()

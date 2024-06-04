@@ -36,6 +36,12 @@ return [
             'throw' => false,
         ],
 
+        'system' => [
+          'driver' => 'local',
+          'root' => storage_path('system'),
+          'throw' => false,
+        ],
+
         'json' => [
           'driver' => 'local',
           'root' => database_path('data'),
