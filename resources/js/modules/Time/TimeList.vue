@@ -11,6 +11,7 @@ import { useTemplateFilter } from '@/composables/useTemplateFilter'
 import dayjs from 'dayjs'
 import isoWeek from 'dayjs/plugin/isoWeek'
 import type { QueryParams } from '@/api/Time'
+import { IconFileTypePdf, IconCircleDashedPlus } from '@tabler/icons-vue'
 
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref, watch } from 'vue'
@@ -37,6 +38,10 @@ const onAddClicked = async () => {
   router.push({ name: 'times-add' })
 }
 
+const isOpen = ref(false)
+const pdfDataUrl = ref()
+const pdfBase64 = ref('')
+
 watch(qs, async (qs) => {
   console.log(qs)
   await timeStore.getAll(qs as unknown as QueryParams)
@@ -51,7 +56,10 @@ const onUpdatePage = (page: number) => {
 }
 
 const onCreatePdfClicked = async () => {
-  await timeStore.createPdf()
+  const { dataUrl: resUrl, base64: resBase64 } = await timeStore.createPdf(qs.value as unknown as QueryParams)
+  pdfDataUrl.value = resUrl
+  pdfBase64.value = resBase64
+  isOpen.value = true
 }
 
 </script>
@@ -79,9 +87,23 @@ const onCreatePdfClicked = async () => {
       </h1>
     </template>
     <template #header-toolbar>
-      <ShdnUiButton @click="onAddClicked">
-        Eintrag hinzufügen
+      <ShdnUiButton
+        size="icon"
+        variant="ghost"
+        @click="onAddClicked"
+      >
+        <IconCircleDashedPlus
+          class="size-6"
+        />
       </ShdnUiButton>
+
+      <shdn-ui-button
+        size="icon"
+        variant="ghost"
+        @click="onCreatePdfClicked"
+      >
+        <IconFileTypePdf class="size-6" />
+      </shdn-ui-button>
     </template>
     <template #header-pivot>
       <twice-ui-pivot v-model="currentPivot">
@@ -92,6 +114,13 @@ const onCreatePdfClicked = async () => {
       </twice-ui-pivot>
     </template>
     <template #content-full>
+      <twice-ui-pdf-viewer
+        v-if="pdfDataUrl"
+        :is-open="isOpen"
+        :base64="pdfBase64"
+        :data-url="pdfDataUrl"
+        @close="isOpen=false"
+      />
       <div class="px-0.5">
         <twice-ui-table-box
           record-name="Zeiteinträge"
@@ -134,9 +163,6 @@ const onCreatePdfClicked = async () => {
           <div class="text-base text-center font-medium pb-2">
             <twice-ui-week-select v-model="date" />
           </div>
-          <shdn-ui-button @click="onCreatePdfClicked">
-            Pdf erstellen
-          </shdn-ui-button>
           <TimeListGroup
             v-for="(value, key) in groupedTimeEntries"
             :key="key"

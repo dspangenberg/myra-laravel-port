@@ -113,7 +113,7 @@ const heightClass = computed(() => {
                   <div class="flex items-center bg-stone-100">
                     <DialogTitle
                       as="h3"
-                      class="flex-1 py-3 pl-4 text-lg font-bold leading-6 text-gray-900"
+                      class="flex-1 py-3 pl-4 text-lg font-bold leading-6 text-gray-900 flex items-center"
                     >
                       <slot name="title">
                         <span v-if="Array.isArray(getTitle)">
@@ -123,6 +123,9 @@ const heightClass = computed(() => {
                           {{ getTitle }}
                         </span>
                       </slot>
+                      <div class="px-6">
+                        <slot name="toolbar" />
+                      </div>
                     </DialogTitle>
 
                     <button

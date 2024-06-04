@@ -42,8 +42,9 @@ export const useTimeStore = defineStore('time-store', () => {
     isLoading.value = false
   }
 
-  const createPdf = async () => {
-    await createProofOfActivityPdf()
+  const createPdf = async (params?: QueryParams) => {
+    const content = await createProofOfActivityPdf(params)
+    return content
   }
   const createOrEdit = async (id: number = 0) => {
     const { data, projects: apiProjects, categories: apiCategories, users: apiUsers } = id === 0 ? await createTime() : await editTime(id)

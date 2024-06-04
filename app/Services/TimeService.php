@@ -61,6 +61,7 @@ static function groupTimesByDate(Collection $times): array {
     $groupedEntries = [];
     foreach ($times->groupBy('ts') as $key => $value) {
       $groupedEntries[$key]['entries'] = $value;
+      $groupedEntries[$key]['date'] = Carbon::parse($key)->settings(['locale'=>'de'])->isoFormat('dddd, DD. MMMM YYYY');
       $groupedEntries[$key]['sum'] = $value->sum('mins');
     }
     return $groupedEntries;

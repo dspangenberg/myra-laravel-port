@@ -1,5 +1,6 @@
 import axios, { type Axios, AxiosError, type AxiosResponse, type AxiosRequestConfig } from 'axios'
 import queryString from 'query-string'
+import { base64ToUint8Array } from 'uint8array-extras'
 
 export interface IAxiosHelpers extends Axios {
   axios: Axios
@@ -8,9 +9,11 @@ export interface IAxiosHelpers extends Axios {
   setBaseURL(baseUrl: string): void
   $post<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
   $get<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
+  $getBase64<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
   $delete<T = any, R = AxiosResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>;
   $put<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
   $patch<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
+  blobToDataUri(blob: Blob): Promise<string>
 }
 
 const setHeader = (axios: Axios) => (property: string, data: string | number) => {
@@ -44,6 +47,10 @@ const axiosHelpers = (_axios: Axios): IAxiosHelpers => {
     return error as Error
   }
 
+  $axios.setHeader = setHeader(axios)
+  $axios.setBaseURL = setBaseURL(axios)
+  $axios.setToken = setToken(axios)
+
   $axios.$delete = async (url, config) => {
     try {
       const response: AxiosResponse = await axios.delete(url, config)
@@ -54,6 +61,8 @@ const axiosHelpers = (_axios: Axios): IAxiosHelpers => {
   }
 
   $axios.$get = async (url, params, config) => {
+    $axios.setHeader('accept', 'application/json')
+
     if (params) {
       const qs = queryString.stringify(params)
       if (qs) {
@@ -64,6 +73,46 @@ const axiosHelpers = (_axios: Axios): IAxiosHelpers => {
     try {
       const response: AxiosResponse = await axios.get(url, config)
       return Promise.resolve(response.data)
+    } catch (error) {
+      return Promise.reject(getError(error as Error | AxiosError))
+    }
+  }
+
+  $axios.blobToDataUri = (blob): Promise<string> => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      reader.onload = _e => resolve(reader.result as string)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      reader.onerror = _e => reject(reader.error)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      reader.onabort = _e => reject(new Error('Read aborted'))
+      reader.readAsDataURL(blob)
+    })
+  }
+
+  $axios.$getBase64 = async (url, params, config) => {
+    $axios.setHeader('accept', 'application/pdf')
+
+    const realConfig: AxiosRequestConfig = {
+      ...config,
+      responseEncoding: 'blob'
+    }
+
+    if (params) {
+      const qs = queryString.stringify(params)
+      if (qs) {
+        url = `${url}?${qs}`
+      }
+    }
+
+    try {
+      const response: AxiosResponse = await axios.get(url, realConfig)
+
+      const array = base64ToUint8Array(response.data)
+      const blob = new Blob([array], { type: 'application/pdf' })
+      const dataUrl = await $axios.blobToDataUri(blob)
+      return Promise.resolve({ dataUrl, base64: response.data })
     } catch (error) {
       return Promise.reject(getError(error as Error | AxiosError))
     }
@@ -96,9 +145,6 @@ const axiosHelpers = (_axios: Axios): IAxiosHelpers => {
     }
   }
 
-  $axios.setHeader = setHeader(axios)
-  $axios.setBaseURL = setBaseURL(axios)
-  $axios.setToken = setToken(axios)
   return $axios
 }
 

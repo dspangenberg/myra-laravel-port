@@ -43,7 +43,6 @@ const canNext = computed(() => dayjs().isoWeek() > week.value)
 const onPrevClicked = () => {
   const date = dayjs(startOfWeek.value)
   const week = date.subtract(1, 'weeks')
-  console.log(week.year(), week.isoWeek())
   router.push({ query: { week: week.isoWeek(), year: week.year() } })
 }
 
@@ -57,18 +56,6 @@ const onTodayClicked = () => {
   const date = dayjs()
   router.push({ query: { week: date.isoWeek(), year: date.year() } })
 }
-
-/*
-const nextLink = computed(() => {
-  const nextWeek = endOfWeek.value.plus(7, 'days')
-  return `/times?year=${nextWeek.weekYear}&week=${nextWeek.weekNumber}`
-})
-
-const prevLink = computed(() => {
-  const prevWeek = startOfWeek.value.minus(7, 'days')
-  return `/times?year=${prevWeek.weekYear}&week=${prevWeek.weekNumber}`
-})
-*/
 
 </script>
 <template>

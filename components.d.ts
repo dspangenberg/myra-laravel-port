@@ -152,6 +152,7 @@ declare module 'vue' {
     TwiceUiPageLayout: typeof import('./resources/js/components/twice/ui/PageLayout.vue')['default']
     TwiceUiPageSection: typeof import('./resources/js/components/twice/ui/PageSection.vue')['default']
     TwiceUiPagination: typeof import('./resources/js/components/twice/ui/Pagination.vue')['default']
+    TwiceUiPdfViewer: typeof import('./resources/js/components/twice/ui/PdfViewer.vue')['default']
     TwiceUiPivot: typeof import('./resources/js/components/twice/ui/Pivot.vue')['default']
     TwiceUiPivotItem: typeof import('./resources/js/components/twice/ui/PivotItem.vue')['default']
     TwiceUiRadio: typeof import('./resources/js/components/twice/ui/Radio.vue')['default']

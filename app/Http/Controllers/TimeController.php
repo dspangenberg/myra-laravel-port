@@ -17,6 +17,10 @@ use Mpdf\MpdfException;
 
 class TimeController extends Controller
 {
+  /**
+   * @throws MpdfException
+   */
+
   public function index(Request $request) {
 
     $times = [];
@@ -28,29 +32,18 @@ class TimeController extends Controller
       $times = TimeService::getTimeByWeekOfYear($week, $year);
     }
 
-    return response()->json([
-      'data' => $times['times'],
-      'groupedByDay' => $times['groupedByDay'],
-      'stats' => $times['stats']
-    ]);
-  }
-
-  /**
-   * @throws MpdfException
-   */
-  public function pdf(Request $request) {
-    $times = [];
-
-    $type = $request->query('type', 'week');
-    if ($type === 'week') {
-      $week = $request->query('week', Carbon::now()->weekOfYear);
-      $year = $request->query('year', Carbon::now()->year);
-      $times = TimeService::getTimeByWeekOfYear($week, $year);
+    if ($request->expectsJson()) {
+      return response()->json([
+        'data' => $times['times'],
+        'groupedByDay' => $times['groupedByDay'],
+        'stats' => $times['stats']
+      ]);  // ...
     }
 
-    $pdfFile = PdfService::createPdf('proof-of-activity', 'pdf.proof-of-activity.index', ['times' => $times]);
-    return response()->file($pdfFile);
+    $pdfContent = PdfService::createPdf('proof-of-activity', 'pdf.proof-of-activity.index', ['times' => $times]);
+    return response($pdfContent);
   }
+
 
   public function create()
   {

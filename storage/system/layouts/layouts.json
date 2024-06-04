@@ -2,7 +2,7 @@
   "layouts": [
     {
       "name": "proof-of-activity",
-      "letterhead": "default",
+      "letterhead": "logo-only",
       "css-file": "proof-of-activity.css"
     }
   ]

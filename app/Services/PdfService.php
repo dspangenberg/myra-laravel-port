@@ -7,6 +7,7 @@ use Mpdf\Mpdf;
 use Mpdf\MpdfException;
 use Mpdf\Output\Destination;
 use Mpdf\Config\FontVariables;
+use Illuminate\Support\Str;
 
 class PdfService
 {
@@ -29,7 +30,8 @@ class PdfService
     $layoutCss = Storage::disk('system')->get('layouts/'.$layout['css-file']);
 
     $defaultLetterheadCss = Storage::disk('system')->get('letterheads/default.css');
-    $letterheadCss = Storage::disk('system')->get('letterheads/'.$letterhead['css-file'].'.css');
+    $letterheadCss = Storage::disk('system')->get('letterheads/'.$letterhead['css-file']);
+    $letterheadPdfFile = storage_path('system/letterheads/'.$letterhead['pdf-file']);
 
     $styles = [
       'layout_default_css' => $defaultLayoutCss,
@@ -42,6 +44,8 @@ class PdfService
 
     $html = View::make($view, $data)->render();
 
+    dump($html);
+
     $customFontData = [];
     foreach ($fonts['fonts'] as $value) {
       $customFontData[$value['alias']] = $value['filenames'];
@@ -50,8 +54,8 @@ class PdfService
     $tmpDir = storage_path('system/tmp');
     $filename = storage_path('system/tmp/' . uniqid(). '.pdf');
 
-    $defaultConfig = (new FontVariables())->getDefaults();
-    $fontData = $defaultConfig['fontdata'];
+    $defaultFontConfig = (new FontVariables())->getDefaults();
+    $fontData = $defaultFontConfig['fontdata'];
 
     $mpdf = new Mpdf([
       'tempDir' => $tmpDir,
@@ -60,8 +64,14 @@ class PdfService
 
     $mpdf->AddFontDirectory(storage_path('system/fonts'));
 
+    $mpdf->SetDocTemplate($letterheadPdfFile,true);
     $mpdf->WriteHTML($html);
-    $mpdf->Output($filename, Destination::FILE);
-    return $filename;
+    $mpdf->SetTitle('Blabla');
+    $mpdf->SetCreator('twiceware_myra');
+
+
+    $content = $mpdf->Output('', Destination::STRING_RETURN);
+
+    return Str::toBase64($content);
   }
 }

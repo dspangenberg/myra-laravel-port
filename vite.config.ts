@@ -4,6 +4,7 @@ import laravel from 'laravel-vite-plugin'
 import vue from '@vitejs/plugin-vue'
 import Components from 'unplugin-vue-components/vite'
 import svgLoader from 'vite-svg-loader'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 export default defineConfig({
   plugins: [
@@ -25,6 +26,14 @@ export default defineConfig({
       dts: true,
       deep: true,
       directoryAsNamespace: true
+    }),
+    nodePolyfills({
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true
+      },
+      protocolImports: true
     }),
     svgLoader({
       svgoConfig: {
@@ -49,6 +58,14 @@ export default defineConfig({
       }
     })
   ],
+  optimizeDeps: {
+    include: ['pdfjs-dist'], // optionally specify dependency name
+    esbuildOptions: {
+      supported: {
+        'top-level-await': true
+      }
+    }
+  },
   resolve: {
     alias: {
       '@/': fileURLToPath(new URL('./resources/js', import.meta.url))

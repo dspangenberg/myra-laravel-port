@@ -89,7 +89,7 @@ const { value } = useField<string>(name, rules, { label })
             :group="item.group"
             :selected="item['id'] === value"
           >
-            {{ item[optionName] }}
+            {{ item[optionName as keyof Option] }}
           </SelectItem>
         </SelectGroup>
       </SelectContent>

@@ -1,10 +1,10 @@
-import { type Meta } from '@/types/'
+import { type Meta, TypedArray } from '@/types/'
 import { useAxios } from '@/composables/useAxios'
 import { type Project } from '@/api/Project'
 import { type User } from '@/api/User'
 import { TimeCategory } from '@/api/params/TimeCategory'
-
 const { axios } = useAxios(true)
+
 const baseUrl: string = '/api/times'
 
 export interface Time {
@@ -76,14 +76,9 @@ export const findTimeById = async (id: number): Promise<Response> => {
   return { data }
 }
 
-export const createProofOfActivityPdf = async () => {
-  const response = await axios.$get(`${baseUrl}/pdf`, {}, { responseType: 'blob' })
-  const url = window.URL.createObjectURL(new Blob([response as unknown as BlobPart]))
-  const link = document.createElement('a')
-  link.href = url
-  link.setAttribute('download', 'file.pdf')
-  document.body.appendChild(link)
-  link.click()
+export const createProofOfActivityPdf = async (params?: QueryParams): Promise<string> => {
+  const { dataUrl, base64 } = await axios.$getBase64(baseUrl, params)
+  return { dataUrl, base64 }
 }
 
 export const createTime = async (): Promise<CreateResponse> => {
