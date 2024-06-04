@@ -22,4 +22,5 @@ yarn-error.log
 /.pnpm-store
 /storage/app/fonts/*.ttf
 /storage/app/letterheads/*.pdf
+**/.DS_Store
 
