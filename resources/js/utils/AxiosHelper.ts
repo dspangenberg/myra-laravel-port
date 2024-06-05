@@ -1,6 +1,7 @@
 import axios, { type Axios, AxiosError, type AxiosResponse, type AxiosRequestConfig } from 'axios'
 import queryString from 'query-string'
 import { base64ToUint8Array } from 'uint8array-extras'
+import { type PdfResponse } from '@/types'
 
 export interface IAxiosHelpers extends Axios {
   axios: Axios
@@ -9,7 +10,7 @@ export interface IAxiosHelpers extends Axios {
   setBaseURL(baseUrl: string): void
   $post<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
   $get<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
-  $getBase64<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
+  $getPdf<D = any>(url: string, data?: D, config?: AxiosRequestConfig): Promise<PdfResponse>;
   $delete<T = any, R = AxiosResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>;
   $put<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
   $patch<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
@@ -91,7 +92,7 @@ const axiosHelpers = (_axios: Axios): IAxiosHelpers => {
     })
   }
 
-  $axios.$getBase64 = async (url, params, config) => {
+  $axios.$getPdf = async (url, params, config) => {
     $axios.setHeader('accept', 'application/pdf')
 
     const realConfig: AxiosRequestConfig = {

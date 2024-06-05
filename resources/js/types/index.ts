@@ -34,6 +34,11 @@ export interface Option {
   group?: string
 }
 
+export interface PdfResponse {
+  dataUrl: string
+  base64: string
+}
+
 export interface ParamsLayoutNavigationSubItem {
     label: string
     disabled: boolean

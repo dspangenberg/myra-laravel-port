@@ -58,6 +58,9 @@ export default defineConfig({
       }
     })
   ],
+  build: {
+    target: 'esnext'
+  },
   optimizeDeps: {
     include: ['pdfjs-dist'], // optionally specify dependency name
     esbuildOptions: {

@@ -1,4 +1,4 @@
-import { type Meta, TypedArray } from '@/types/'
+import { type Meta, PdfResponse } from '@/types/'
 import { useAxios } from '@/composables/useAxios'
 import { type Project } from '@/api/Project'
 import { type User } from '@/api/User'
@@ -76,8 +76,8 @@ export const findTimeById = async (id: number): Promise<Response> => {
   return { data }
 }
 
-export const createProofOfActivityPdf = async (params?: QueryParams): Promise<string> => {
-  const { dataUrl, base64 } = await axios.$getBase64(baseUrl, params)
+export const createProofOfActivityPdf = async (params?: QueryParams): Promise<PdfResponse> => {
+  const { dataUrl, base64 } = await axios.$getPdf(baseUrl, params)
   return { dataUrl, base64 }
 }
 

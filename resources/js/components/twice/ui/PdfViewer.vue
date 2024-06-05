@@ -12,6 +12,19 @@ interface Props {
   base64: string
 }
 
+interface PdfMetadata {
+  info: {
+    Author: string
+    CreationDate: string
+    Creator: string
+    ModDate: string
+    Producer: string
+    Subject: string
+    Title: string
+    Trapped: string
+  }
+}
+
 const props = withDefaults(defineProps<Props>(), {
   isOpen: false,
   dataUrl: null
@@ -47,8 +60,7 @@ watch(dataUrl, async (dataUrl) => {
     const loadingTask = PDFJS.getDocument(dataUrl)
     if (loadingTask) {
       const pdfDoc = await loadingTask.promise
-      const metadata = await pdfDoc.getMetadata()
-      console.log(metadata.info)
+      const metadata: PdfMetadata = await pdfDoc.getMetadata() as unknown as PdfMetadata
       pdf.value = loadingTask
       title.value = metadata.info.Title || 'PDF-Anzeige'
     }

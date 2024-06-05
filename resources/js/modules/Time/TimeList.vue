@@ -111,6 +111,10 @@ const onCreatePdfClicked = async () => {
           name="week"
           label="Meine Woche"
         />
+        <twice-ui-pivot-item
+          name="billable"
+          label="Abrechenbare Zeiten"
+        />
       </twice-ui-pivot>
     </template>
     <template #content-full>
