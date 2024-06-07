@@ -11,6 +11,12 @@
       "title": "nur Logo",
       "pdf-file": "PDF-Letterhead-2.pdf",
       "css-file": "PDF-Letterhead-2.css"
+    },
+    {
+      "name": "without-sender",
+      "title": "ohne Absenderzeile",
+      "pdf-file": "PDF-Letterhead-ohne-Absender.pdf",
+      "css-file": "PDF-Letterhead-ohne-Absender.css"
     }
   ]
 }

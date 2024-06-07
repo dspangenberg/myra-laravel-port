@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+
 use App\Models\Time;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -9,7 +10,8 @@ use Spatie\QueryBuilder\AllowedFilter;
 
 class TimeService
 {
-  static public function getTimeByWeekOfYear(Int $week, Int $year): array {
+  static public function getTimeByWeekOfYear(int $week, int $year): array
+  {
 
     $date = Carbon::now();
     $date->setISODate($year, $week);
@@ -22,12 +24,16 @@ class TimeService
       ->with('category')
       ->with('user')
       ->withMinutes()
+      ->whereNotNull('begin_at')
       ->byWeekOfYear($week, $year)
       ->orderBy('begin_at', 'desc')
       ->get();
 
-    $groupedEntries = self::groupTimesByDate($times->toArray());
+    $groupedEntries = self::groupByDate($times);
     $sumByWeekday = self::getSumByWeekday($groupedEntries);
+    $groupedByProjectandDaten = self::groupByProjectsAndDate($times);
+
+    $sum = collect($groupedByProjectandDaten)->sum('sum');
 
     return [
       'stats' => [
@@ -37,91 +43,76 @@ class TimeService
         'year' => $year,
         'sumByWeekday' => $sumByWeekday,
         'sumWeek' => $sumByWeekday->sum(),
+        'sum' => $sum
       ],
-      'times' => $times ,
+      'projectStats' => [],
+      'data' => $times,
       'meta' => [],
-      'groupedByDay' => $groupedEntries
+      'groupedByProject' => $groupedEntries,
+      'groupedByDate' => $groupedEntries
     ];
   }
 
-  static function oldestEntry($request): string {
-    $last = QueryBuilder::for(Time::class, $request)
+  static function filter($request, $perPage): array
+  {
+    $times = QueryBuilder::for(Time::class, $request)
       ->allowedFilters([
-      AllowedFilter::scope('view'),
-    ])
-      ->with('project')
-      ->withMinutes()
-      ->orderBy('begin_at', 'asc')
-      ->whereNotNull('begin_at')
-      ->first();
-    return $last['begin_at']->format('d.m.Y');
-  }
-  static function filter($request, $perPage): array {
-      $filteredTimes = QueryBuilder::for(Time::class, $request)
-      ->allowedFilters([
+        'project_id',
         AllowedFilter::scope('view'),
       ])
       ->with('project')
       ->withMinutes()
       ->with('category')
       ->with('user')
+      ->whereNotNull('begin_at')
+      ->whereNotNull('end_at')
       ->orderBy('begin_at', 'desc')
       ->paginate($perPage, $request->get('page', 1));
 
-      return $filteredTimes->toArray();
+    $groupedByDate = self::groupByDate(collect($times->items()));
+    $sum = collect($groupedByDate)->sum('sum');
+    $end = collect($groupedByDate)->last();
+
+    return [
+      'stats' => [
+        'start' => Carbon::now(),
+        'end' => $end['date'],
+        'sum' => $sum
+      ],
+      'data' => $times->items(),
+      'meta' => [
+        'total' => $times->total(),
+        'per_page' => $times->perPage(),
+        'from' => $times->firstItem(),
+        'current_page' => $times->currentPage(),
+        'to' => $times->lastItem(),
+      ],
+      'groupedByProject' => self::groupByProjectsAndDate(collect($times->items())),
+      'groupedByDate' => $groupedByDate
+    ];
   }
 
-static function getProjectStats ($request, $times): array {
-  $filters = $request->query('filter');
-  if ($filters['view'] === 'billable') {
-    $end = self::oldestEntry($request);
-    $stop = null;
-  } else {
-    $stop = Carbon::now()->subtract('months', 3);
-    $end = Carbon::now()->subtract('months', 3)->format('d.m.Y');
+
+  static function getTimesFromQuery(array $times): array
+  {
+    $groupedEntries = self::groupByDate($times['data']);
+    return [
+      'stats' => [
+      ],
+      'times' => $times,
+      'meta' => [
+        'total' => $times['total'],
+        'per_page' => $times['per_page'],
+        'from' => $times['from'],
+        'current_page' => $times['current_page'],
+        'to' => $times['to']
+      ],
+      'groupedByDay' => $groupedEntries
+    ];
   }
 
-  $timeByProjects = QueryBuilder::for(Time::class, $request)
-    ->allowedFilters([
-      AllowedFilter::scope('view'),
-    ])
-    ->maxDuration($stop)
-    ->selectRaw('project_id, projects.name, SUM(TIMESTAMPDIFF(MINUTE, begin_at, end_at)) as mins')
-    ->join('projects', 'projects.id', 'times.project_id')
-    ->groupBy('project_id')
-    ->get();
-
-  $sortedProjectEntries=[];
-  $sortedProject = collect($timeByProjects->sortBy( ['name', 'asc']));
-  foreach ($sortedProject->groupBy('name') as $key => $value) {
-    $sortedProjectEntries[$key] = $value;
-  }
-
-  $stats = [
-    'start' => Carbon::now()->format('d.m.Y'),
-    'end' => $end
-  ];
-
-  return ['sortedProjectEntries' => $sortedProjectEntries, 'stats' => $stats];
-}
-static function getTimesFromQuery (array $times): array {
-  $groupedEntries = self::groupTimesByDate($times['data']);
-  return [
-    'stats' => [
-    ],
-    'times' => $times,
-    'meta' => [
-      'total' => $times['total'],
-      'per_page' => $times['per_page'],
-      'from' => $times['from'],
-      'current_page' => $times['current_page'],
-      'to' => $times['to']
-    ],
-    'groupedByDay' => $groupedEntries
-  ];
-}
-
-static function getSumByWeekday(array $times): Collection {
+  static function getSumByWeekday(array $times): Collection
+  {
     $sumByWeekday = collect([
       'Mo' => 0,
       'Di' => 0,
@@ -137,13 +128,40 @@ static function getSumByWeekday(array $times): Collection {
     }
     return $sumByWeekday;
   }
-static function groupTimesByDate(array $times): array {
+
+  static function groupByDate(Collection $times, $withSum = false): array
+  {
     $groupedEntries = [];
-    foreach (collect($times)->groupBy('ts') as $key => $value) {
-      $groupedEntries[$key]['entries'] = $value;
-      $groupedEntries[$key]['date'] = Carbon::parse($key)->settings(['locale'=>'de'])->isoFormat('dddd, DD. MMMM YYYY');
+    $sum = 0;
+    foreach ($times->groupBy('ts') as $key => $value) {
+      $groupedEntries[$key]['entries'] = $value->sortBy(['begin_at', 'asc']);
+      $groupedEntries[$key]['date'] = Carbon::parse($key);
+      $groupedEntries[$key]['formatedDate'] = Carbon::parse($key)->settings(['locale' => 'de'])->isoFormat('dddd, DD. MMMM YYYY');
       $groupedEntries[$key]['sum'] = $value->sum('mins');
+      $sum = $sum + $groupedEntries[$key]['sum'];
+    }
+    if ($withSum) {
+      return ['entries' => $groupedEntries,'sum' => $sum];
     }
     return $groupedEntries;
+  }
+
+
+  static function groupByProjectsAndDate(Collection $times): array
+  {
+
+    $projects = $times->pluck('project.name', 'project.id');
+    dump($projects);
+
+    $groupedEntries = array();
+    foreach ($times->groupBy('project.id') as $key => $value) {
+      $groupedByDate = self::groupByDate($value, true);
+      $groupedEntries[$key]['entries'] = collect($groupedByDate['entries'])->sortBy(['date', 'asc']);
+      $groupedEntries[$key]['sum'] = $groupedByDate['sum'];
+      $groupedEntries[$key]['name'] = $projects->get($key);
+    }
+
+
+    return collect($groupedEntries)->sortBy(['name', 'asc'])->toArray();
   }
 }

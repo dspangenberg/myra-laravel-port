@@ -9,6 +9,7 @@
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "league/commonmark": "^2.4",
         "monolog/monolog": "^3.6",
         "mpdf/mpdf": "^8.2",
         "spatie/laravel-multitenancy": "^3.0",
@@ -30,7 +31,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+      "files":[
+        "app/Helpers/Myra.php"
+      ]
     },
     "autoload-dev": {
         "psr-4": {

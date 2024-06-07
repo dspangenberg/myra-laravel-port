@@ -9,7 +9,7 @@ import {
   updateTime
 } from '@/api/Time'
 import { ref, type Ref } from 'vue'
-import type { Time, GroupedTimeEntries, TimeStats, QueryParams, TimesByProject } from '@/api/Time'
+import type { Time, GroupedByProject, GroupedByDate, TimeStats, QueryParams } from '@/api/Time'
 import type { Project } from '@/api/Project'
 import type { User } from '@/api/User'
 import type { TimeCategory } from '@/api/params/TimeCategory'
@@ -19,8 +19,8 @@ export const useTimeStore = defineStore('time-store', () => {
   const store = useTimeStore()
 
   const times: Ref<Time[] | null> = ref([])
-  const groupedTimeEntries: Ref<GroupedTimeEntries | null> = ref(null)
-  const timesByProject: Ref<TimesByProject | null> = ref(null)
+  const timesByDate: Ref<GroupedByDate | null> = ref(null)
+  const timesByProject: Ref<GroupedByProject | null> = ref(null)
   const time: Ref<Time | null> = ref(null)
   const timeEdit: Ref<Time | null> = ref(null)
   const meta: Ref<Meta | null> = ref(null)
@@ -32,21 +32,20 @@ export const useTimeStore = defineStore('time-store', () => {
 
   const getAll = async (params?: string) => {
     isLoading.value = true
-    const { data, meta, stats, groupedByDay, timesByProject: apiTimesByProject } = await getAllTimes(params)
+    const data = await getAllTimes(params)
 
     store.$patch(state => {
-      state.times = data
-      state.groupedTimeEntries = groupedByDay
-      state.meta = meta
-      state.timeStats = stats
-      state.timesByProject = apiTimesByProject
+      state.times = data.data
+      state.timesByDate = data.groupedByDate
+      state.timesByProject = data.groupedByProject
+      state.meta = data.meta
+      state.timeStats = data.stats
     })
     isLoading.value = false
   }
 
-  const createPdf = async (params?: QueryParams) => {
-    const content = await createProofOfActivityPdf(params)
-    return content
+  const createPdf = async (qs: string) => {
+    return await createProofOfActivityPdf(qs)
   }
   const createOrEdit = async (id: number = 0) => {
     const { data, projects: apiProjects, categories: apiCategories, users: apiUsers } = id === 0 ? await createTime() : await editTime(id)
@@ -82,13 +81,13 @@ export const useTimeStore = defineStore('time-store', () => {
     categories,
     projects,
     users,
-    groupedTimeEntries,
+    timesByDate,
+    timesByProject,
+    timeStats,
+    times,
     isLoading,
     time,
     timeEdit,
-    timeStats,
-    times,
-    timesByProject,
     meta,
     createOrEdit,
     createPdf,

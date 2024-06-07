@@ -64,13 +64,6 @@ const axiosHelpers = (_axios: Axios): IAxiosHelpers => {
   $axios.$get = async (url, params, config) => {
     $axios.setHeader('accept', 'application/json')
 
-    if (params) {
-      const qs = queryString.stringify(params)
-      if (qs) {
-        url = `${url}?${qs}`
-      }
-    }
-
     try {
       const response: AxiosResponse = await axios.get(url, config)
       return Promise.resolve(response.data)
@@ -94,21 +87,14 @@ const axiosHelpers = (_axios: Axios): IAxiosHelpers => {
 
   $axios.$getPdf = async (url, params, config) => {
     $axios.setHeader('accept', 'application/pdf')
-
+    console.log(params)
     const realConfig: AxiosRequestConfig = {
       ...config,
       responseEncoding: 'blob'
     }
 
-    if (params) {
-      const qs = queryString.stringify(params)
-      if (qs) {
-        url = `${url}?${qs}`
-      }
-    }
-
     try {
-      const response: AxiosResponse = await axios.get(url, realConfig)
+      const response: AxiosResponse = await axios.get(url, params, realConfig)
 
       const array = base64ToUint8Array(response.data)
       const blob = new Blob([array], { type: 'application/pdf' })

@@ -9,6 +9,6 @@ abstract class Controller
 
   public function __construct()
   {
-    $this->recordsPerPage = $value = Config::get('app.records_per_page');
+    $this->recordsPerPage = $value = Config::get('app.records_per_page', 20);
   }
 }

@@ -13,9 +13,9 @@ const { timeEdit, categories, projects, users } = storeToRefs(timeStore)
 const form = reactive(timeEdit)
 const router = useRouter()
 const formRef = ref(null)
-
+s
 const onClose = () => {
-  router.push({ name: 'times-week' })
+  router.push({ name: 'times-list' })
 }
 
 const onSubmit = async (values: Time) => {

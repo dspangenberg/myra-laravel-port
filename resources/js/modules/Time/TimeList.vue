@@ -11,14 +11,12 @@ import { useTemplateFilter } from '@/composables/useTemplateFilter'
 import { query } from '@vortechron/query-builder-ts'
 import dayjs from 'dayjs'
 import isoWeek from 'dayjs/plugin/isoWeek'
-import type { QueryParams } from '@/api/Time'
-import { IconFileTypePdf, IconCircleDashedPlus } from '@tabler/icons-vue'
-
+import { IconPrinter, IconCircleDashedPlus } from '@tabler/icons-vue'
 import { storeToRefs } from 'pinia'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTimeStore } from '@/stores/TimeStore'
-import TimePivot from './TimePivot.vue'
+import TimeWeekStats from './TimeWeekStats.vue'
 import TimeListGroup from './TimeListGroup.vue'
 dayjs.extend(isoWeek)
 const { formatDate, formatSumDuration } = useTemplateFilter()
@@ -26,14 +24,11 @@ const { formatDate, formatSumDuration } = useTemplateFilter()
 const router = useRouter()
 const route = useRoute()
 const timeStore = useTimeStore()
-const { times, groupedTimeEntries, isLoading, meta, timesByProject, timeStats } = storeToRefs(timeStore)
+const { times, timesByDate, isLoading, meta, timesByProject, timeStats } = storeToRefs(timeStore)
 const currentPage = ref(1)
-const currentPivot = ref('week')
 
 const qs = computed(() => route.query)
-const year = computed(() => qs.value.year || dayjs().year())
-const week = computed(() => qs.value.week || dayjs().isoWeek())
-const date = computed(() => dayjs().year(year.value as number).isoWeek(week.value as number).startOf('isoWeek').format('YYYY-MM-DD'))
+
 const onAddClicked = async () => {
   await timeStore.createOrEdit(0)
   router.push({ name: 'times-add' })
@@ -43,33 +38,46 @@ const isOpen = ref(false)
 const pdfDataUrl = ref()
 const pdfBase64 = ref('')
 
-watch(qs, async (qs) => {
-  console.log(route.name, qs)
-  let q
-  if (route.name === 'times-list') {
-    const theQuery = query()
-      .param('type', 'list')
-      .filter('view', qs.view)
-      .page(qs.page || 1)
+const onProjectClicked = async (id: number) => {
+  router.push({ query: { ...qs.value, project_id: id as unknown as string } })
+}
 
-    q = theQuery.build()
+const laravelRoute = computed(() => {
+  if (qs.value.keys?.length === 0) {
+    return ''
   }
-  console.log(q)
 
-  await timeStore.getAll(q)
-}, { immediate: true })
+  const page: number = parseInt(qs?.value.page as string) || 1
 
-onMounted(async () => {
-  // await timeStore.getAll('?type=list')
+  const theQuery = query()
+    .param('type', route.params?.type as string || 'list')
+    .page(page)
+
+  if (qs.value.entries !== null) {
+    Object.entries(qs.value).forEach(([key, value]) => {
+      if (key && value) {
+        theQuery.filter(key, value.toString())
+      }
+    })
+  }
+  return theQuery.build() || ''
 })
+
+watch(qs, async () => {
+  await timeStore.getAll(laravelRoute.value)
+}, { immediate: true })
 
 const onUpdatePage = (page: number) => {
   router.push({ query: { ...qs.value, page } })
   currentPage.value = page
 }
 
+const year = computed(() => qs.value.year || dayjs().year())
+const week = computed(() => qs.value.week || dayjs().isoWeek())
+const date = computed(() => dayjs().year(year.value as number).isoWeek(week.value as number).startOf('isoWeek').format('YYYY-MM-DD'))
+
 const onCreatePdfClicked = async () => {
-  const { dataUrl: resUrl, base64: resBase64 } = await timeStore.createPdf(qs.value as unknown as QueryParams)
+  const { dataUrl: resUrl, base64: resBase64 } = await timeStore.createPdf(laravelRoute.value)
   pdfDataUrl.value = resUrl
   pdfBase64.value = resBase64
   isOpen.value = true
@@ -115,11 +123,33 @@ const onCreatePdfClicked = async () => {
         variant="ghost"
         @click="onCreatePdfClicked"
       >
-        <IconFileTypePdf class="size-6" />
+        <IconPrinter class="size-6" />
       </shdn-ui-button>
     </template>
     <template #header-pivot>
-      <TimePivot />
+      <twice-ui-pivot>
+        <twice-ui-pivot-item
+          label="Meine Woche"
+          route-name="times-list"
+          :route-params="{type: 'week'}"
+          active-route-path="/app/times/week"
+        />
+        <twice-ui-pivot-item
+          label="Liste"
+          route-name="times-list"
+          :route-params="{type: 'list'}"
+          :route-query="{view: 'all'}"
+          active-route-path="/app/times/list"
+          :active-route-query="{view: 'all'}"
+        />
+        <twice-ui-pivot-item
+          label="Abrechenbare Zeiten"
+          route-name="times-list"
+          :route-query="{view: 'billable'}"
+          active-route-path="/app/times/list"
+          :active-route-query="{view: 'billable'}"
+        />
+      </twice-ui-pivot>
     </template>
     <template #content-full>
       <twice-ui-pdf-viewer
@@ -139,26 +169,41 @@ const onCreatePdfClicked = async () => {
           @update-page="onUpdatePage"
         >
           <template #header>
-            <div class="text-sm font-medium ml-4 ">
-              {{ timeStats?.end }} - {{ timeStats?.start }}
-            </div>
-            <div class="rounded  bg-white grid grid-cols-4 shadow text-sm mb-6 mt-1">
-              <div
-                v-for="(value, key) in timesByProject"
-                :key="key"
-                class="flex px-2 py-3 items-center border"
-              >
-                <div class="flex-1 truncate pr-2">
-                  {{ key }}
-                </div>
-                <div class="flex-none text-right font-medium">
-                  {{ formatSumDuration(value[0].mins as number) }}
+            <template v-if="route.params.type === 'week'">
+              <div class="flex-grow flex-1 flex">
+                <twice-ui-week-select v-model="date" />
+              </div>
+              <div class="flex-grow flex-1 flex">
+                <TimeWeekStats v-if="!isLoading" />
+              </div>
+            </template>
+            <template v-else>
+              <div class="text-sm font-medium ml-4 ">
+                {{ formatDate(timeStats?.end) }} - {{ formatDate(timeStats?.start) }}
+              </div>
+              <div class="rounded  bg-white grid grid-cols-4 shadow text-sm mb-6 mt-1">
+                <div
+                  v-for="(value, key) in timesByProject"
+                  :key="key"
+                  class="flex px-2 py-3 items-center border"
+                >
+                  <div class="flex-1 truncate pr-2">
+                    <a
+                      href="#"
+                      @click="onProjectClicked(key)"
+                    >
+                      {{ value.name }}
+                    </a>
+                  </div>
+                  <div class="flex-none text-right font-medium">
+                    {{ formatSumDuration(value.sum as number) }}
+                  </div>
                 </div>
               </div>
-            </div>
+            </template>
           </template>
           <TimeListGroup
-            v-for="(value, key) in groupedTimeEntries"
+            v-for="(value, key) in timesByDate"
             :key="key"
             :date="key as string"
             :sum="value.sum"

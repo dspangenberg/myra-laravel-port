@@ -22,9 +22,10 @@ class TimeController extends Controller
    */
 
   public function index(Request $request) {
-    $sortedProjectEntries = [];
     $type = $request->query('type', 'week');
-    $page = $request->query('page', 1);
+
+    $perPage = $request->expectsJson() ? $this->recordsPerPage : 1000;
+
     if ($type === 'week') {
       $week = Carbon::now()->weekOfYear;
       $year = Carbon::now()->year;
@@ -37,25 +38,21 @@ class TimeController extends Controller
       $times = TimeService::getTimeByWeekOfYear($week, $year);
     } else {
 
-      $filteredTimes = TimeService::filter($request, $this->recordsPerPage);
-      $times = TimeService::getTimesFromQuery($filteredTimes);
-      $res = TimeService::getProjectStats($request, $times);
-      $sortedProjectEntries = $res['sortedProjectEntries'];
-      $times['stats'] = $res['stats'];
+      $times = TimeService::filter($request, $perPage);
     }
 
 
     if ($request->expectsJson()) {
-      return response()->json([
-        'data' => $times['times'],
-        'timesByProject' => $sortedProjectEntries,
-        'groupedByDay' => $times['groupedByDay'],
-        'stats' => $times['stats'],
-        'meta' => $times['meta'] ?: []
-      ]);  // ...
+      return response()->json($times);
     }
 
-    $pdfContent = PdfService::createPdf('proof-of-activity', 'pdf.proof-of-activity.index', ['times' => $times]);
+    $now = Carbon::now()->format('d.m.Y');
+    $title = "Leistungsnachweis vom $now";
+
+
+    $pdfContent = PdfService::createPdf('proof-of-activity', 'pdf.proof-of-activity.index', ['times' => $times, ''], [
+      'title' => $title,
+    ]);
     return response($pdfContent);
   }
 

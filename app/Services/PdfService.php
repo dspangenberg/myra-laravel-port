@@ -14,7 +14,7 @@ class PdfService
   /**
    * @throws MpdfException
    */
-  static public function createPdf(String $layoutName, String $view, Array $data): string {
+  static public function createPdf(String $layoutName, String $view, Array $data, Array $config): string {
 
     $layouts = Storage::disk('system')->json('layouts/layouts.json');
     $letterheads = Storage::disk('system')->json('letterheads/letterheads.json');
@@ -40,11 +40,14 @@ class PdfService
       'letterhead_css' => $letterheadCss
     ];
 
+    $defaultConfig = [
+      'title' => '',
+      'hide' => false
+    ];
+
+    $data['pdf_footer'] = array_merge($defaultConfig, $config);
     $data['styles'] = $styles;
-
     $html = View::make($view, $data)->render();
-
-    dump($html);
 
     $customFontData = [];
     foreach ($fonts['fonts'] as $value) {
@@ -65,7 +68,7 @@ class PdfService
 
     $mpdf->SetDocTemplate($letterheadPdfFile,true);
     $mpdf->WriteHTML($html);
-    $mpdf->SetTitle('Blabla');
+    $mpdf->SetTitle( $data['pdf_footer']['title']);
     $mpdf->SetCreator('twiceware_myra');
 
 

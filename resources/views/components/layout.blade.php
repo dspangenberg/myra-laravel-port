@@ -12,5 +12,7 @@
   </head>
   <body>
     {{ $slot }}
+    <x-footer :footer="$footer" />
   </body>
 </html>
+

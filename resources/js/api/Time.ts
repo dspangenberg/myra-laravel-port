@@ -36,10 +36,18 @@ export interface TimeStats {
   sumWeek: number
 }
 
-export interface GroupedTimeEntries {
+export interface GroupedByDate {
   [key: string]: {
     entries: Time[],
     sum: number
+  }
+}
+
+export interface GroupedByProject {
+  [key: number]: {
+    entries: GroupedByDate[],
+    sum: number
+    name: string
   }
 }
 
@@ -49,18 +57,12 @@ export interface QueryParams {
   week?: number
 }
 
-export interface TimesByProject {
-  project_id: number
-  name: string
-  mins: number
-}
-
 export interface ResponseWithMeta {
   data: Time[],
   meta: Meta
   stats: TimeStats
-  groupedByDay: GroupedTimeEntries,
-  timesByProject: TimesByProject
+  groupedByDate: GroupedByDate,
+  groupedByProject: GroupedByProject
 }
 
 export interface Response {
@@ -73,9 +75,8 @@ export interface CreateResponse extends Response {
   categories: TimeCategory[]
 }
 
-export const getAllTimes = async (q: string = ''): Promise<ResponseWithMeta> => {
-  const { meta, data, groupedByDay, stats, timesByProject } = await axios.$get(`${baseUrl}/${q}`) as ResponseWithMeta
-  return { meta, data, stats, groupedByDay, timesByProject }
+export const getAllTimes = async (qs: string = ''): Promise<ResponseWithMeta> => {
+  return await axios.$get(`${baseUrl}/${qs}`) as ResponseWithMeta
 }
 
 export const findTimeById = async (id: number): Promise<Response> => {
@@ -83,8 +84,9 @@ export const findTimeById = async (id: number): Promise<Response> => {
   return { data }
 }
 
-export const createProofOfActivityPdf = async (params?: QueryParams): Promise<PdfResponse> => {
-  const { dataUrl, base64 } = await axios.$getPdf(baseUrl, params)
+export const createProofOfActivityPdf = async (qs: string = ''): Promise<PdfResponse> => {
+  console.log(qs)
+  const { dataUrl, base64 } = await axios.$getPdf(`${baseUrl}/${qs}`) as PdfResponse
   return { dataUrl, base64 }
 }
 
