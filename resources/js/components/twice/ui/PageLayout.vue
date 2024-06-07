@@ -35,8 +35,8 @@ const { title } = toRefs(props)
 </script>
 
 <template>
-  <div class="flex flex-col flex-1 w-full h-full overflow-hidden">
-    <div class="flex-shrink-1 ">
+  <div class="flex flex-col flex-1 w-full overflow-y-hidden h-full items-stretch ">
+    <div class="flex-none">
       <div class="my-3">
         <slot name="org-header">
           <TwiceUiPageHeader
@@ -66,49 +66,8 @@ const { title } = toRefs(props)
         </slot>
       </div>
     </div>
-    <div
-      v-if="hasFixedContent"
-      class="flex flex-1 w-full h-full px-1 py-6 mx-auto overflow-hidden max-w-7xl"
-    >
-      <slot name="fixed" />
+    <div class="flex flex-1 overflow-y-hidden max-w-7xl mx-auto flex-col w-full">
+      <slot name="content-full" />
     </div>
-    <template v-if="hasContentFull || hasContentOnRight">
-      <div
-        v-show="!loading"
-        :class="[overflow ? 'flex overflow-y-auto flex-1' : 'flex flex-1']"
-        class="flex flex-col flex-1 py-3"
-      >
-        <div
-
-          class="flex items-start flex-1"
-        >
-          <div class="max-w-7xl mx-auto flex flex-col flex-1 space-x-3 print:max-w-[270mm] print:mx-0 !print:text-black">
-            <div
-              class="!print:text-black grid grid-cols-3 h-full my-6"
-            >
-              <div class="h-full col-span-3 ">
-                <slot name="content-full" />
-              </div>
-              <div class="flex-1 col-span-2">
-                <slot name="content-left" />
-              </div>
-              <div
-                v-if="hasContentOnRight"
-                class="ml-12"
-              >
-                <slot name="content-right" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        v-show="loading"
-        class="items-center justify-center flex-1 text-center"
-      >
-        <TwiceUiSpinner :size="8" />
-      </div>
-    </template>
-    <div class="h-6" />
   </div>
 </template>

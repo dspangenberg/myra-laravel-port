@@ -9,7 +9,7 @@ import {
   updateTime
 } from '@/api/Time'
 import { ref, type Ref } from 'vue'
-import type { Time, GroupedTimeEntries, TimeStats, QueryParams } from '@/api/Time'
+import type { Time, GroupedTimeEntries, TimeStats, QueryParams, TimesByProject } from '@/api/Time'
 import type { Project } from '@/api/Project'
 import type { User } from '@/api/User'
 import type { TimeCategory } from '@/api/params/TimeCategory'
@@ -20,6 +20,7 @@ export const useTimeStore = defineStore('time-store', () => {
 
   const times: Ref<Time[] | null> = ref([])
   const groupedTimeEntries: Ref<GroupedTimeEntries | null> = ref(null)
+  const timesByProject: Ref<TimesByProject | null> = ref(null)
   const time: Ref<Time | null> = ref(null)
   const timeEdit: Ref<Time | null> = ref(null)
   const meta: Ref<Meta | null> = ref(null)
@@ -29,15 +30,16 @@ export const useTimeStore = defineStore('time-store', () => {
   const categories: Ref<TimeCategory[] | null> = ref([])
   const users: Ref<User[] | null> = ref([])
 
-  const getAll = async (params?: QueryParams) => {
+  const getAll = async (params?: string) => {
     isLoading.value = true
-    const { data, meta, stats, groupedByDay } = await getAllTimes(params)
+    const { data, meta, stats, groupedByDay, timesByProject: apiTimesByProject } = await getAllTimes(params)
 
     store.$patch(state => {
       state.times = data
       state.groupedTimeEntries = groupedByDay
       state.meta = meta
       state.timeStats = stats
+      state.timesByProject = apiTimesByProject
     })
     isLoading.value = false
   }
@@ -53,7 +55,6 @@ export const useTimeStore = defineStore('time-store', () => {
       state.categories = apiCategories
       state.projects = apiProjects
       state.users = apiUsers
-
       state.timeEdit = data
     })
   }
@@ -87,6 +88,7 @@ export const useTimeStore = defineStore('time-store', () => {
     timeEdit,
     timeStats,
     times,
+    timesByProject,
     meta,
     createOrEdit,
     createPdf,

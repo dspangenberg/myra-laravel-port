@@ -22,21 +22,36 @@ class TimeController extends Controller
    */
 
   public function index(Request $request) {
-
-    $times = [];
-
+    $sortedProjectEntries = [];
     $type = $request->query('type', 'week');
+    $page = $request->query('page', 1);
     if ($type === 'week') {
-      $week = $request->query('week', Carbon::now()->weekOfYear);
-      $year = $request->query('year', Carbon::now()->year);
+      $week = Carbon::now()->weekOfYear;
+      $year = Carbon::now()->year;
+
+      $filters = $request->query('filter');
+       if ($filters) {
+         $week = $filters['week'] ?: $week;
+         $year = $filters['year'] ?: $year;
+       }
       $times = TimeService::getTimeByWeekOfYear($week, $year);
+    } else {
+
+      $filteredTimes = TimeService::filter($request, $this->recordsPerPage);
+      $times = TimeService::getTimesFromQuery($filteredTimes);
+      $res = TimeService::getProjectStats($request, $times);
+      $sortedProjectEntries = $res['sortedProjectEntries'];
+      $times['stats'] = $res['stats'];
     }
+
 
     if ($request->expectsJson()) {
       return response()->json([
         'data' => $times['times'],
+        'timesByProject' => $sortedProjectEntries,
         'groupedByDay' => $times['groupedByDay'],
-        'stats' => $times['stats']
+        'stats' => $times['stats'],
+        'meta' => $times['meta'] ?: []
       ]);  // ...
     }
 
@@ -49,7 +64,6 @@ class TimeController extends Controller
   {
 
     $lastEntry = Time::orderBy('id', 'desc')->first();
-    dump($lastEntry);
 
     $time = new Time();
     $time->begin_at = Carbon::now();

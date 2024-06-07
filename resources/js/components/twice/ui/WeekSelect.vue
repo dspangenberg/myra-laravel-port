@@ -59,41 +59,39 @@ const onTodayClicked = () => {
 
 </script>
 <template>
-  <div class="block">
-    <div class="flex w-fit justify-between items-center my-1 overflow-hidden border-gray-200 rounded-md  dark:bg-gray-700 dark:border-gray-600">
-      <div class="m-1">
-        <shdn-ui-button
-          size="icon"
-          variant="ghost"
-          @click="onPrevClicked"
-        >
-          <IconChevronLeft class="size-5" />
-        </shdn-ui-button>
-      </div>
-      <div
-        class="flex items-center px-0.5 text-sm leading-none font-bold text-gray-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:text-gray-50"
+  <div class="flex items-center justify-start my-1 overflow-hidden border-gray-200 rounded-md  dark:bg-gray-700 dark:border-gray-600 flex-none">
+    <div class="m-1">
+      <shdn-ui-button
+        size="icon"
+        variant="ghost"
+        @click="onPrevClicked"
       >
-        {{ formatedStartOfWeek }} - {{ formatedEndOfWeek }}
-      </div>
-      <div class="m-1">
-        <shdn-ui-button
-          size="icon"
-          variant="ghost"
-          :disabled="!canNext"
-          @click="onNextClicked"
-        >
-          <IconChevronRight class="size-5" />
-        </shdn-ui-button>
-      </div>
-      <div class="m-1">
-        <shdn-ui-button
-          size="icon"
-          variant="ghost"
-          @click="onTodayClicked"
-        >
-          <IconCalendarDot class="size-5" />
-        </shdn-ui-button>
-      </div>
+        <IconChevronLeft class="size-5" />
+      </shdn-ui-button>
+    </div>
+    <div
+      class="flex items-center px-0.5 text-sm leading-none font-bold text-gray-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:text-gray-50"
+    >
+      {{ formatedStartOfWeek }} - {{ formatedEndOfWeek }}
+    </div>
+    <div class="m-1">
+      <shdn-ui-button
+        size="icon"
+        variant="ghost"
+        :disabled="!canNext"
+        @click="onNextClicked"
+      >
+        <IconChevronRight class="size-5" />
+      </shdn-ui-button>
+    </div>
+    <div class="m-1">
+      <shdn-ui-button
+        size="icon"
+        variant="ghost"
+        @click="onTodayClicked"
+      >
+        <IconCalendarDot class="size-5" />
+      </shdn-ui-button>
     </div>
   </div>
 </template>

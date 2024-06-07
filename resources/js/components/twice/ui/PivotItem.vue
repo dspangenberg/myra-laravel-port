@@ -1,18 +1,15 @@
 <script setup lang="ts">
 import { computed, inject, type Ref } from 'vue'
-import { type RouteParams, type LocationQuery, useRouter, useRoute } from 'vue-router'
+import { type LocationQuery, type RouteParams, useRoute, useRouter } from 'vue-router'
+import { IKeyValueMulitTypeStore } from '@/types'
 
 const router = useRouter()
 const route = useRoute()
 
-interface ActiveRouteQuery {
-  [key: string]: string
-}
-
 export interface Props {
   active?: boolean
   activeRoutePath?: string
-  activeRouteQuery?: ActiveRouteQuery
+  activeRouteQuery?: IKeyValueMulitTypeStore
   badgeAnimate?: boolean
   badgeColor?: string
   badgeCount?: number
@@ -29,7 +26,7 @@ export interface Props {
   open?: boolean
   routeName?: string,
   routeParams?: RouteParams,
-  routeQuery?: LocationQuery
+  routeQuery?: IKeyValueMulitTypeStore,
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -58,12 +55,11 @@ const setTab = inject<Function>('setTab')
 
 const href = computed(() => {
   try {
-    const curRoute = router.resolve({
+    return router.resolve({
       name: props.routeName,
       params: props.routeParams,
-      query: props.routeQuery
+      query: props.routeQuery as unknown as LocationQuery | undefined
     })
-    return curRoute
   } catch (error) {
     console.error(error)
     return ''
@@ -75,14 +71,13 @@ const isActive = computed(() => {
     return activeTab?.value === props.name
   }
 
+  const currentRoute = route.path
   if (props.activeRouteQuery) {
     const key = Object.keys(props.activeRouteQuery)[0]
     const value = Object.values(props.activeRouteQuery)[0]
-
-    return route.query[key] === value
+    return currentRoute.startsWith(props.activeRoutePath) && route.query[key] === value
   }
 
-  const currentRoute = route.path
   if (props.activeRoutePath) {
     return currentRoute.startsWith(props.activeRoutePath)
   }

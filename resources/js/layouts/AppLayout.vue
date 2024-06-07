@@ -6,7 +6,7 @@ import UserMenu from './UserMenu.vue'
 </script>
 
 <template>
-  <div class="flex flex-1 w-full md:pl-64 overflow-hidden">
+  <div class="flex flex-1 w-full md:pl-64 overflow-hidden h-screen">
     <aside
       class="fixed left-0 z-20 flex-col hidden h-full border-r inset-y md:flex border-stone-200/50 w-64 bg-stone-100/75"
     >
@@ -135,7 +135,7 @@ import UserMenu from './UserMenu.vue'
           <UserMenu />
         </div>
       </header>
-      <main class="grid flex-1 overflow-hidden overflow-y-auto bg-stone-50">
+      <main class="flex flex-1 flex-col bg-stone-50 h-full overflow-y-hidden">
         <router-view />
       </main>
     </div>

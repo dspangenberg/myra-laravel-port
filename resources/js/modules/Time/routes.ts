@@ -4,10 +4,22 @@ const routes = {
     {
       path: 'week',
       name: 'times-week',
-      component: () => import('@/modules/Time/TimeList.vue')
+      component: () => import('@/modules/Time/TimeWeek.vue'),
+      children: [
+        {
+          path: ':id/edit',
+          name: 'times-edit',
+          component: () => import('@/modules/Time/TimeEdit.vue')
+        },
+        {
+          path: 'add',
+          name: 'times-add',
+          component: () => import('@/modules/Time/TimeEdit.vue')
+        }
+      ]
     },
     {
-      path: '',
+      path: 'list',
       name: 'times-list',
       component: () => import('@/modules/Time/TimeList.vue'),
       children: [

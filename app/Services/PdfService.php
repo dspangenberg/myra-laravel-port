@@ -52,7 +52,6 @@ class PdfService
     }
 
     $tmpDir = storage_path('system/tmp');
-    $filename = storage_path('system/tmp/' . uniqid(). '.pdf');
 
     $defaultFontConfig = (new FontVariables())->getDefaults();
     $fontData = $defaultFontConfig['fontdata'];

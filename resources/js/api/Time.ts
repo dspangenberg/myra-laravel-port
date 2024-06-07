@@ -44,16 +44,23 @@ export interface GroupedTimeEntries {
 }
 
 export interface QueryParams {
-  type: 'week' | 'all' | 'filtered'
+  type: 'week' | 'list'
   year?: number
   week?: number
+}
+
+export interface TimesByProject {
+  project_id: number
+  name: string
+  mins: number
 }
 
 export interface ResponseWithMeta {
   data: Time[],
   meta: Meta
   stats: TimeStats
-  groupedByDay: GroupedTimeEntries
+  groupedByDay: GroupedTimeEntries,
+  timesByProject: TimesByProject
 }
 
 export interface Response {
@@ -66,9 +73,9 @@ export interface CreateResponse extends Response {
   categories: TimeCategory[]
 }
 
-export const getAllTimes = async (params?: QueryParams): Promise<ResponseWithMeta> => {
-  const { meta, data, groupedByDay, stats } = await axios.$get(baseUrl, params) as ResponseWithMeta
-  return { meta, data, stats, groupedByDay }
+export const getAllTimes = async (q: string = ''): Promise<ResponseWithMeta> => {
+  const { meta, data, groupedByDay, stats, timesByProject } = await axios.$get(`${baseUrl}/${q}`) as ResponseWithMeta
+  return { meta, data, stats, groupedByDay, timesByProject }
 }
 
 export const findTimeById = async (id: number): Promise<Response> => {

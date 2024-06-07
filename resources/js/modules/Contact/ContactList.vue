@@ -70,27 +70,24 @@ const onUpdatePage = (page: number) => {
       </ShdnUiButton>
     </template>
     <template #content-full>
-      <div class="px-0.5">
-        <twice-ui-table-box
-          v-if="meta"
-          :meta="meta"
-          record-name="Kontakten|Kontakt"
-          :loading="isLoading"
-          @update-page="onUpdatePage"
-        >
-          <Table>
-            <TableBody>
-              <ContactListItem
-                v-for="(contact, index) in contacts"
-                :key="index"
-                :item="contact"
-                @select="onSelect"
-              />
-            </TableBody>
-          </Table>
-        </twice-ui-table-box>
-      </div>
-      <router-view />
+      <twice-ui-table-box
+        record-name="Kontakte"
+        :record-count="contacts?.length"
+        :loading="isLoading"
+        :meta="meta"
+        @update-page="onUpdatePage"
+      >
+        <Table>
+          <TableBody>
+            <ContactListItem
+              v-for="(contact, index) in contacts"
+              :key="index"
+              :item="contact"
+              @select="onSelect"
+            />
+          </TableBody>
+        </Table>
+      </twice-ui-table-box>
     </template>
   </TwiceUiPageLayout>
 </template>

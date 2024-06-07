@@ -7,12 +7,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from '@/components/shdn/ui/breadcrumb'
-import { useTemplateFilter } from '@/composables/useTemplateFilter'
-import { query } from '@vortechron/query-builder-ts'
 import dayjs from 'dayjs'
 import isoWeek from 'dayjs/plugin/isoWeek'
 import type { QueryParams } from '@/api/Time'
 import { IconFileTypePdf, IconCircleDashedPlus } from '@tabler/icons-vue'
+import { query } from '@vortechron/query-builder-ts'
 
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref, watch } from 'vue'
@@ -20,15 +19,14 @@ import { useRouter, useRoute } from 'vue-router'
 import { useTimeStore } from '@/stores/TimeStore'
 import TimePivot from './TimePivot.vue'
 import TimeListGroup from './TimeListGroup.vue'
+import TimeWeekStats from './TimeWeekStats.vue'
 dayjs.extend(isoWeek)
-const { formatDate, formatSumDuration } = useTemplateFilter()
 
 const router = useRouter()
 const route = useRoute()
 const timeStore = useTimeStore()
-const { times, groupedTimeEntries, isLoading, meta, timesByProject, timeStats } = storeToRefs(timeStore)
+const { groupedTimeEntries, isLoading, times } = storeToRefs(timeStore)
 const currentPage = ref(1)
-const currentPivot = ref('week')
 
 const qs = computed(() => route.query)
 const year = computed(() => qs.value.year || dayjs().year())
@@ -44,27 +42,21 @@ const pdfDataUrl = ref()
 const pdfBase64 = ref('')
 
 watch(qs, async (qs) => {
-  console.log(route.name, qs)
-  let q
-  if (route.name === 'times-list') {
-    const theQuery = query()
-      .param('type', 'list')
-      .filter('view', qs.view)
-      .page(qs.page || 1)
+  const theQuery = query()
+    .param('type', 'week')
+    .filter('year', qs.year as string)
+    .filter('week', qs.week as string)
+    .page(1)
 
-    q = theQuery.build()
-  }
-  console.log(q)
-
+  const q = theQuery.build()
   await timeStore.getAll(q)
-}, { immediate: true })
+})
 
 onMounted(async () => {
-  // await timeStore.getAll('?type=list')
+  await timeStore.getAll('?type=week')
 })
 
 const onUpdatePage = (page: number) => {
-  router.push({ query: { ...qs.value, page } })
   currentPage.value = page
 }
 
@@ -135,26 +127,14 @@ const onCreatePdfClicked = async () => {
           :border="false"
           :record-count="times?.length"
           :loading="isLoading"
-          :meta="meta"
           @update-page="onUpdatePage"
         >
           <template #header>
-            <div class="text-sm font-medium ml-4 ">
-              {{ timeStats?.end }} - {{ timeStats?.start }}
+            <div class="flex-grow flex-1 flex">
+              <twice-ui-week-select v-model="date" />
             </div>
-            <div class="rounded  bg-white grid grid-cols-4 shadow text-sm mb-6 mt-1">
-              <div
-                v-for="(value, key) in timesByProject"
-                :key="key"
-                class="flex px-2 py-3 items-center border"
-              >
-                <div class="flex-1 truncate pr-2">
-                  {{ key }}
-                </div>
-                <div class="flex-none text-right font-medium">
-                  {{ formatSumDuration(value[0].mins as number) }}
-                </div>
-              </div>
+            <div class="flex-grow flex-1 flex">
+              <TimeWeekStats v-if="!isLoading" />
             </div>
           </template>
           <TimeListGroup

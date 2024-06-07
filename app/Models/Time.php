@@ -128,6 +128,27 @@ class Time extends Model
     return $this->hasOne(Project::class, 'id', 'project_id');
   }
 
+
+
+public function scopeMaxDuration(Builder $query, $date): Builder {
+    if ($date) {
+      $query->where('begin_at', '>=', $date);
+    }
+    return $query;
+  }
+
+  public function scopeView(Builder $query, $view): Builder
+  {
+    if ($view === 'billable') {
+      return $query
+        ->where('is_billable', true)
+        ->where('is_locked', false)
+        ->where('invoice_id', 0);
+        // ->whereNotIn('project_id', [1, 7, 8, 9, 12, 13, 14, 15]); // ACHTUNG: Solange noch TN-Einträge ohne InoviceId enthalten sind
+    }
+    return $query;
+  }
+
   public function scopeByWeekOfYear(Builder $query, Int $week, Int $year): void
   {
     //       query.whereRaw('WEEK(begin_at, 1) = ?', [week]).whereRaw('YEAR(begin_at)=?', [year])

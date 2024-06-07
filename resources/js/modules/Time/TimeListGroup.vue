@@ -42,15 +42,17 @@ defineEmits(['select'])
         {{ formatDuration(sum) }}
       </div>
     </div>
-    <Table>
-      <TableBody>
-        <TimeListItem
-          v-for="(time, index) in entries"
-          :key="index"
-          :item="time"
-          @select="onSelect"
-        />
-      </TableBody>
-    </Table>
+    <div>
+      <Table>
+        <TableBody>
+          <TimeListItem
+            v-for="(time, index) in entries"
+            :key="index"
+            :item="time"
+            @select="onSelect"
+          />
+        </TableBody>
+      </Table>
+    </div>
   </div>
 </template>

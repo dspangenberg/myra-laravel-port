@@ -12,6 +12,7 @@
         "monolog/monolog": "^3.6",
         "mpdf/mpdf": "^8.2",
         "spatie/laravel-multitenancy": "^3.0",
+        "spatie/laravel-query-builder": "^6.0",
         "stancl/tenancy": "^3.8"
     },
     "require-dev": {

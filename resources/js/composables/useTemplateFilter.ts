@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
+import numbro from 'numbro'
 
 import 'dayjs/locale/de'
 
@@ -30,10 +31,17 @@ export function useTemplateFilter () {
     }
     return dayjs(date).format(format)
   }
+  const formatSumDuration = (duration: number) => {
+    const dayJSduration = dayjs.duration(duration, 'minute')
+    const nbHours = dayJSduration.days() * 24 + dayJSduration.hours()
+    const nbMinutes = dayJSduration.minutes()
+    const minutes = numbro(nbMinutes).format('00')
+    return `${nbHours}:${minutes}`
+  }
 
   const formatDuration = (duration: number) => {
     return dayjs.duration(duration, 'minutes').format('H:mm')
   }
 
-  return { collectField, formatDate, durationUntilNow, formatDuration }
+  return { collectField, formatDate, durationUntilNow, formatDuration, formatSumDuration }
 }
