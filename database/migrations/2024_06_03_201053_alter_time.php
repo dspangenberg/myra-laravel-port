@@ -6,17 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-  public function up(): void
-  {
-    Schema::table('times', function (Blueprint $table) {
-      $table->text('note')->change()->nullable();
-    });
-  }
+    public function up(): void
+    {
+        Schema::table('times', function (Blueprint $table) {
+            $table->text('note')->change()->nullable();
+        });
+    }
 
-  /**
-   * Reverse the migrations.
-   */
-  public function down(): void
-  {
-  }
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+    }
 };

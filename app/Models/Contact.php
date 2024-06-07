@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
- * 
- *
  * @property int $id
  * @property int|null $company_id
  * @property int $is_org
@@ -47,6 +45,7 @@ use Illuminate\Support\Carbon;
  * @property-read string $initials
  * @property-read string $reverse_full_name
  * @property-read Title|null $title
+ *
  * @method static Builder|Contact newModelQuery()
  * @method static Builder|Contact newQuery()
  * @method static Builder|Contact query()
@@ -81,101 +80,108 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Contact whereUpdatedAt($value)
  * @method static Builder|Contact whereVatId($value)
  * @method static Builder|Contact whereWebsite($value)
+ *
  * @mixin Eloquent
  */
 class Contact extends Model
 {
+    protected $appends = [
+        'full_name',
+        'reverse_full_name',
+        'initials',
+    ];
 
-  protected $appends = [
-    'full_name',
-    'reverse_full_name',
-    'initials',
-  ];
-  protected $attributes = [
-    'name' => '',
-    'first_name' => '',
-    'position' => '',
-    'company_id' => 0,
-    'department' => '',
-    'short_name' => '',
-    'is_org' => false,
-    'is_debtor' => false,
-    'is_creditor' => false,
-    'is_archived' => false,
-    'has_dunning_block' => false,
-    'payment_deadline_id' => 0,
-    'tax_id' => 0,
-    'hourly' => 0,
-    'register_court' => '',
-    'register_number' => '',
-    'vat_id' => '',
-    'website' => '',
-    'dob' => null,
-    'archived_reason' => '',
-    'deleted_at' => null
-  ];
+    protected $attributes = [
+        'name' => '',
+        'first_name' => '',
+        'position' => '',
+        'company_id' => 0,
+        'department' => '',
+        'short_name' => '',
+        'is_org' => false,
+        'is_debtor' => false,
+        'is_creditor' => false,
+        'is_archived' => false,
+        'has_dunning_block' => false,
+        'payment_deadline_id' => 0,
+        'tax_id' => 0,
+        'hourly' => 0,
+        'register_court' => '',
+        'register_number' => '',
+        'vat_id' => '',
+        'website' => '',
+        'dob' => null,
+        'archived_reason' => '',
+        'deleted_at' => null,
+    ];
 
-  protected $fillable = [
-    'company_id',
-    'is_org',
-    'name',
-    'title_id',
-    'salutation_id',
-    'first_name',
-    'position',
-    'department',
-    'short_name',
-    'ref',
-    'catgory_id',
-    'is_debtor',
-    'is_creditor',
-    'creditor_number',
-    'debtor_number',
-    'is_archived',
-    'archived_reason',
-    'has_dunning_block',
-    'payment_deadline_id',
-    'tax_id',
-    'hourly',
-    'register_court',
-    'register_number',
-    'vat_id',
-    'website',
-    'dob'
-  ];
+    protected $fillable = [
+        'company_id',
+        'is_org',
+        'name',
+        'title_id',
+        'salutation_id',
+        'first_name',
+        'position',
+        'department',
+        'short_name',
+        'ref',
+        'catgory_id',
+        'is_debtor',
+        'is_creditor',
+        'creditor_number',
+        'debtor_number',
+        'is_archived',
+        'archived_reason',
+        'has_dunning_block',
+        'payment_deadline_id',
+        'tax_id',
+        'hourly',
+        'register_court',
+        'register_number',
+        'vat_id',
+        'website',
+        'dob',
+    ];
 
-  public function getFullNameAttribute(): string
-  {
-    if ($this->first_name) {
-      $title = $this->title? $this->title->name : '';
-      return trim("$title $this->first_name $this->name");
+    public function getFullNameAttribute(): string
+    {
+        if ($this->first_name) {
+            $title = $this->title ? $this->title->name : '';
+
+            return trim("$title $this->first_name $this->name");
+        }
+
+        return $this->name;
     }
-    return $this->name;
-  }
 
-  public function getInitialsAttribute(): string
-  {
-    if ($this->first_name) {
-      return substr($this->first_name, 0, 1) . substr($this->name, 0, 1);
+    public function getInitialsAttribute(): string
+    {
+        if ($this->first_name) {
+            return substr($this->first_name, 0, 1).substr($this->name, 0, 1);
+        }
+
+        return substr($this->name, 0, 1);
     }
-    return substr($this->name, 0, 1);
-  }
 
-  public function getReverseFullNameAttribute(): string
-  {
-    if ($this->first_name) {
-      $title = $this->title? $this->title->name : '';
-      return "$this->name, $this->first_name $title";
+    public function getReverseFullNameAttribute(): string
+    {
+        if ($this->first_name) {
+            $title = $this->title ? $this->title->name : '';
+
+            return "$this->name, $this->first_name $title";
+        }
+
+        return $this->name;
     }
-    return $this->name;
-  }
-  public function company(): HasOne
-  {
-    return $this->hasOne(Contact::class, 'id', 'company_id');
-  }
 
-  public function title(): HasOne
-  {
-    return $this->hasOne(Title::class, 'id', 'title_id');
-  }
+    public function company(): HasOne
+    {
+        return $this->hasOne(Contact::class, 'id', 'company_id');
+    }
+
+    public function title(): HasOne
+    {
+        return $this->hasOne(Title::class, 'id', 'title_id');
+    }
 }

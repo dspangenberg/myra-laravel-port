@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
- *
- *
  * @property int $id
  * @property int $contact_id
  * @property string|null $address
@@ -19,6 +17,7 @@ use Illuminate\Support\Carbon;
  * @property int $country_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static Builder|ContactAddress newModelQuery()
  * @method static Builder|ContactAddress newQuery()
  * @method static Builder|ContactAddress query()
@@ -31,16 +30,17 @@ use Illuminate\Support\Carbon;
  * @method static Builder|ContactAddress whereId($value)
  * @method static Builder|ContactAddress whereUpdatedAt($value)
  * @method static Builder|ContactAddress whereZip($value)
+ *
  * @mixin Eloquent
  */
 class ContactAddress extends Model
 {
     protected $fillable = [
-      'contact_id',
-      'address',
-      'zip',
-      'city',
-      'address_category_id',
-      'country_id'
+        'contact_id',
+        'address',
+        'zip',
+        'city',
+        'address_category_id',
+        'country_id',
     ];
 }

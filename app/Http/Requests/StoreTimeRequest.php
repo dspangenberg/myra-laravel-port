@@ -22,15 +22,15 @@ class StoreTimeRequest extends FormRequest
      */
     public function rules(): array
     {
-      return [
-        'begin_at' => 'required',
-        'end_at' => 'nullable|after:begin_at',
-        'project_id' => 'required',
-        'time_category_id' => 'required',
-        'user_id' => 'required',
-        'is_billable' => 'boolean',
-        'is_locked' => 'boolean',
-        'note' => 'nullable'
-      ];
+        return [
+            'begin_at' => 'required',
+            'end_at' => 'nullable|after:begin_at',
+            'project_id' => 'required',
+            'time_category_id' => 'required',
+            'user_id' => 'required',
+            'is_billable' => 'boolean',
+            'is_locked' => 'boolean',
+            'note' => 'nullable',
+        ];
     }
 }

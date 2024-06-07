@@ -12,9 +12,10 @@ class AuthController extends Controller
 {
     public function logout(Request $request): JsonResponse
     {
-      $request->user()->currentAccessToken()->delete();
-      return response()->json([
-        'status' => 200]);
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'status' => 200]);
     }
 
     public function login(Request $request): JsonResponse
@@ -24,18 +25,18 @@ class AuthController extends Controller
             $validateUser = Validator::make($request->all(),
                 [
                     'email' => 'required',
-                    'password' => 'required'
+                    'password' => 'required',
                 ]);
 
-            if($validateUser->fails()){
+            if ($validateUser->fails()) {
                 return response()->json([
                     'status' => false,
                     'message' => 'validation error',
-                    'errors' => $validateUser->errors()
+                    'errors' => $validateUser->errors(),
                 ], 401);
             }
 
-            if(!Auth::attempt($request->only(['email', 'password']))){
+            if (! Auth::attempt($request->only(['email', 'password']))) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Email & Password does not exist.',
@@ -45,14 +46,14 @@ class AuthController extends Controller
             $user = User::where('email', $request->email)->first();
 
             return response()->json([
-                'token' => $user->createToken("API_TOKEN")->plainTextToken,
-                'user' => $user
+                'token' => $user->createToken('API_TOKEN')->plainTextToken,
+                'user' => $user,
             ]);
 
         } catch (\Throwable $e) {
             return response()->json([
                 'status' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

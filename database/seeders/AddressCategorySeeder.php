@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\AddressCategory;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
 class AddressCategorySeeder extends Seeder
@@ -13,15 +13,15 @@ class AddressCategorySeeder extends Seeder
      */
     public function run(): void
     {
-      AddressCategory::truncate();
+        AddressCategory::truncate();
 
-      $address_categories = Storage::disk('json')->json('address_categories.json');
-      foreach ($address_categories as $key => $value) {
-        AddressCategory::create([
-          'id' => $value['id'],
-          'name' => $value['name'],
-          'type' => $value['type']
-        ]);
-      }
+        $address_categories = Storage::disk('json')->json('address_categories.json');
+        foreach ($address_categories as $key => $value) {
+            AddressCategory::create([
+                'id' => $value['id'],
+                'name' => $value['name'],
+                'type' => $value['type'],
+            ]);
+        }
     }
 }

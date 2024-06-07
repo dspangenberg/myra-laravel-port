@@ -2,56 +2,58 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ContactResource;
 use App\Models\Contact;
 use Illuminate\Http\Request;
-use App\Http\Resources\ContactResource;
 
 class ContactController extends Controller
 {
-  public function index()
-  {
-    return ContactResource::collection(Contact::query()
-      ->with('company')
-      ->with('title')
-      ->orderBy('name')
-      ->paginate($this->recordsPerPage)
-    );
-  }
+    public function index()
+    {
+        return ContactResource::collection(Contact::query()
+            ->with('company')
+            ->with('title')
+            ->orderBy('name')
+            ->paginate($this->recordsPerPage)
+        );
+    }
 
-  public function store(Request $request)
-  {
-    $validated = $request->validate([
-      'name' => 'required'
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required',
+        ]);
 
-    $contact = Contact::create($validated);
-    return response()->json([
-      'contact' => $contact
-    ]);
-  }
+        $contact = Contact::create($validated);
 
-  public function show(Contact $contact)
-  {
+        return response()->json([
+            'contact' => $contact,
+        ]);
+    }
 
-    $contact->load('company')->load('title');
-    return new ContactResource($contact);
-  }
+    public function show(Contact $contact)
+    {
 
-  public function update(Request $request, Contact $contact)
-  {
-    $validated = $request->validate([
-      'name' => 'required'
-    ]);
+        $contact->load('company')->load('title');
 
-    $contact->update($validated);
+        return new ContactResource($contact);
+    }
 
-    return response()->json([
-      'contact' => $contact
-    ]);
-  }
+    public function update(Request $request, Contact $contact)
+    {
+        $validated = $request->validate([
+            'name' => 'required',
+        ]);
 
-  public function destroy(Contact $contact)
-  {
-    //
-  }
+        $contact->update($validated);
+
+        return response()->json([
+            'contact' => $contact,
+        ]);
+    }
+
+    public function destroy(Contact $contact)
+    {
+        //
+    }
 }

@@ -18,23 +18,23 @@ class DatabaseSeeder extends Seeder
         $count = User::count();
 
         if ($count === 0) {
-          User::factory()->create([
-            'last_name' => 'Spangenberg',
-            'first_name' => 'Danny',
-            'email' => 'test@example.com',
-        ]);
-      }
+            User::factory()->create([
+                'last_name' => 'Spangenberg',
+                'first_name' => 'Danny',
+                'email' => 'test@example.com',
+            ]);
+        }
 
-      $this->call([
-        AddressCategorySeeder::class,
-        CountrySeeder::class,
-        EmailCategorySeeder::class,
-        PhoneCategorySeeder::class,
-        ProjectCategorySeeder::class,
-        SalutationSeeder::class,
-        TaxSeeder::class,
-        TimeCategorySeeder::class,
-        TitleSeeder::class,
-      ]);
+        $this->call([
+            AddressCategorySeeder::class,
+            CountrySeeder::class,
+            EmailCategorySeeder::class,
+            PhoneCategorySeeder::class,
+            ProjectCategorySeeder::class,
+            SalutationSeeder::class,
+            TaxSeeder::class,
+            TimeCategorySeeder::class,
+            TitleSeeder::class,
+        ]);
     }
 }

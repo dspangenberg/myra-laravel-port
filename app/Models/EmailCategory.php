@@ -8,13 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
- *
- *
  * @property int $id
  * @property string $name
  * @property int $type
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static Builder|EmailCategory newModelQuery()
  * @method static Builder|EmailCategory newQuery()
  * @method static Builder|EmailCategory query()
@@ -23,14 +22,15 @@ use Illuminate\Support\Carbon;
  * @method static Builder|EmailCategory whereName($value)
  * @method static Builder|EmailCategory whereType($value)
  * @method static Builder|EmailCategory whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class EmailCategory extends Model
 {
     protected $fillable = [
-      'name',
-      'days',
-      'is_immediately',
-      'is_default',
+        'name',
+        'days',
+        'is_immediately',
+        'is_default',
     ];
 }

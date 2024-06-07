@@ -6,19 +6,16 @@ use Database\Factories\UserFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Laravel\Sanctum\PersonalAccessToken;
 
-
 /**
- *
- *
  * @property int $id
  * @property string $last_name
  * @property string $email
@@ -37,6 +34,7 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @property-read int|null $notifications_count
  * @property-read Collection<int, PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
+ *
  * @method static UserFactory factory($count = null, $state = [])
  * @method static Builder|User newModelQuery()
  * @method static Builder|User newQuery()
@@ -52,6 +50,7 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @method static Builder|User wherePassword($value)
  * @method static Builder|User whereRememberToken($value)
  * @method static Builder|User whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class User extends Authenticatable
@@ -85,23 +84,23 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-      'password',
-      'remember_token',
+        'password',
+        'remember_token',
     ];
 
     public function getFullNameAttribute(): string
     {
-      return "$this->first_name $this->last_name";
+        return "$this->first_name $this->last_name";
     }
 
     public function getInitialsAttribute(): string
     {
-      return substr($this->first_name, 0,1) . substr($this->last_name, 0,1);
+        return substr($this->first_name, 0, 1).substr($this->last_name, 0, 1);
     }
 
     public function getReverseFullNameAttribute(): string
     {
-      return "$this->last_name, $this->first_name";
+        return "$this->last_name, $this->first_name";
     }
 
     /**

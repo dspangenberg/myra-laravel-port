@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
- *
- *
  * @property int $id
  * @property string $name
  * @property string $invoice_text
@@ -18,6 +16,7 @@ use Illuminate\Support\Carbon;
  * @property int $is_default
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static Builder|Tax newModelQuery()
  * @method static Builder|Tax newQuery()
  * @method static Builder|Tax query()
@@ -29,15 +28,16 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Tax whereNeedsVatId($value)
  * @method static Builder|Tax whereUpdatedAt($value)
  * @method static Builder|Tax whereValue($value)
+ *
  * @mixin Eloquent
  */
 class Tax extends Model
 {
     protected $fillable = [
-      'name',
-      'invoice_text',
-      'value',
-      'needs_vat_id',
-      'is_default'
+        'name',
+        'invoice_text',
+        'value',
+        'needs_vat_id',
+        'is_default',
     ];
 }

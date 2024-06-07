@@ -37,21 +37,21 @@ return [
         ],
 
         'system' => [
-          'driver' => 'local',
-          'root' => storage_path('system'),
-          'throw' => false,
+            'driver' => 'local',
+            'root' => storage_path('system'),
+            'throw' => false,
         ],
 
         'json' => [
-          'driver' => 'local',
-          'root' => database_path('data'),
-          'throw' => false,
+            'driver' => 'local',
+            'root' => database_path('data'),
+            'throw' => false,
         ],
 
         'private' => [
-          'driver' => 'local',
-          'root' => database_path('private-data'),
-          'throw' => false,
+            'driver' => 'local',
+            'root' => database_path('private-data'),
+            'throw' => false,
         ],
 
         'public' => [

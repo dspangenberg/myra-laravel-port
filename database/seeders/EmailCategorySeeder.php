@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\EmailCategory;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class EmailCategorySeeder extends Seeder
 {
@@ -13,15 +13,15 @@ class EmailCategorySeeder extends Seeder
      */
     public function run(): void
     {
-      EmailCategory::truncate();
+        EmailCategory::truncate();
 
-      $email_categories = Storage::disk('json')->json('email_categories.json');
-      foreach ($email_categories as $key => $value) {
-        EmailCategory::create([
-          'id' => $value['id'],
-          'name' => $value['name'],
-          'type' => $value['type']
-        ]);
-      }
+        $email_categories = Storage::disk('json')->json('email_categories.json');
+        foreach ($email_categories as $key => $value) {
+            EmailCategory::create([
+                'id' => $value['id'],
+                'name' => $value['name'],
+                'type' => $value['type'],
+            ]);
+        }
     }
 }
