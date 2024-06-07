@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Time } from '@/api/Time'
+import type { GroupedEntries, Time } from '@/api/Time'
 import {
   Table,
   TableBody
@@ -7,22 +7,23 @@ import {
 import { useTemplateFilter } from '@/composables/useTemplateFilter'
 import TimeListItem from './TimeListItem.vue'
 import { useTimeStore } from '@/stores/TimeStore'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
+const route = useRoute()
 
 const timeStore = useTimeStore()
 const { formatDate, formatDuration } = useTemplateFilter()
 export interface Props {
   date: string
   sum: number
-  entries: Time[]
+  entries: GroupedEntries
 }
 
 defineProps<Props>()
 
 const onSelect = async (id: number) => {
   await timeStore.createOrEdit(id)
-  router.push({ name: 'times-edit', params: { id } })
+  router.push({ name: 'times-edit', params: { id, type: route.params.type }, query: route.query })
 }
 defineEmits(['select'])
 </script>
@@ -48,7 +49,7 @@ defineEmits(['select'])
           <TimeListItem
             v-for="(time, index) in entries"
             :key="index"
-            :item="time"
+            :item="time as unknown as Time"
             @select="onSelect"
           />
         </TableBody>

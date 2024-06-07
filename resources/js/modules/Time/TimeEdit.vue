@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { type Time } from '@/api/Time'
 import { storeToRefs } from 'pinia'
 import { useTimeStore } from '@/stores/TimeStore'
@@ -12,10 +12,11 @@ const { timeEdit, categories, projects, users } = storeToRefs(timeStore)
 
 const form = reactive(timeEdit)
 const router = useRouter()
+const route = useRoute()
 const formRef = ref(null)
-s
+
 const onClose = () => {
-  router.push({ name: 'times-list' })
+  router.push({ name: 'times-list', query: route.query })
 }
 
 const onSubmit = async (values: Time) => {

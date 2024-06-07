@@ -42,9 +42,9 @@ export const useContactStore = defineStore('contact-store', () => {
     dob: ''
   })
 
-  const getAll = async (page: number = 1) => {
+  const getAll = async (qs: string) => {
     isLoading.value = true
-    const { data, meta } = await getAllContacts(page)
+    const { data, meta } = await getAllContacts(qs)
     store.$patch(state => {
       state.contacts = data
       state.meta = meta
@@ -75,7 +75,7 @@ export const useContactStore = defineStore('contact-store', () => {
       await updateContact(value)
     }
     contactEdit.value = null
-    await getAll()
+    await getAll('')
   }
 
   return {

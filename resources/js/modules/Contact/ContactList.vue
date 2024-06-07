@@ -7,21 +7,24 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from '@/components/shdn/ui/breadcrumb'
+import { useLaravelQuery } from '@/composables/useLaravelQuery'
 
 import { storeToRefs } from 'pinia'
-import { onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useContactStore } from '@/stores/ContactStore'
 import ContactListItem from './ContactListItem.vue'
 import {
   Table,
   TableBody
 } from '@/components/shdn/ui/table'
-
+const route = useRoute()
 const router = useRouter()
 const contactStore = useContactStore()
 const { contacts, meta, isLoading } = storeToRefs(contactStore)
-const currentPage = ref(1)
+const qs = computed(() => route.query)
+
+const { queryString } = useLaravelQuery(['page'])
 
 const onSelect = async (id: number) => {
   await contactStore.findById(id)
@@ -33,16 +36,12 @@ const onAddClicked = () => {
   router.push({ name: 'users-add' })
 }
 
-watch(currentPage, async (page) => {
-  await contactStore.getAll(page)
-})
-
-onMounted(async () => {
-  await contactStore.getAll()
-})
+watch(qs, async () => {
+  await contactStore.getAll(queryString.value)
+}, { immediate: true })
 
 const onUpdatePage = (page: number) => {
-  currentPage.value = page
+  router.push({ query: { ...qs.value, page } })
 }
 
 </script>

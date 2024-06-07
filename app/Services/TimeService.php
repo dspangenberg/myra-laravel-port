@@ -31,9 +31,9 @@ class TimeService
 
     $groupedEntries = self::groupByDate($times);
     $sumByWeekday = self::getSumByWeekday($groupedEntries);
-    $groupedByProjectandDaten = self::groupByProjectsAndDate($times);
+    $groupedByProjectandDate = self::groupByProjectsAndDate($times);
 
-    $sum = collect($groupedByProjectandDaten)->sum('sum');
+    $sum = collect($groupedByProjectandDate)->sum('sum');
 
     return [
       'stats' => [
@@ -48,7 +48,7 @@ class TimeService
       'projectStats' => [],
       'data' => $times,
       'meta' => [],
-      'groupedByProject' => $groupedEntries,
+      'groupedByProject' => $groupedByProjectandDate,
       'groupedByDate' => $groupedEntries
     ];
   }
@@ -67,6 +67,7 @@ class TimeService
       ->whereNotNull('begin_at')
       ->whereNotNull('end_at')
       ->orderBy('begin_at', 'desc')
+      ->where('begin_at', '>=', Carbon::now()->subtract('years', 1))
       ->paginate($perPage, $request->get('page', 1));
 
     $groupedByDate = self::groupByDate(collect($times->items()));
@@ -76,7 +77,7 @@ class TimeService
     return [
       'stats' => [
         'start' => Carbon::now(),
-        'end' => $end['date'],
+        'end' => $end ? $end['date'] : Carbon::now(),
         'sum' => $sum
       ],
       'data' => $times->items(),
@@ -151,7 +152,6 @@ class TimeService
   {
 
     $projects = $times->pluck('project.name', 'project.id');
-    dump($projects);
 
     $groupedEntries = array();
     foreach ($times->groupBy('project.id') as $key => $value) {

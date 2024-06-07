@@ -39,8 +39,8 @@ export interface Response {
   data: Project
 }
 
-export const getAllProjects = async (page: number = 1): Promise<ResponseWithMeta> => {
-  const { meta, data } = await axios.$get(baseUrl, { page }) as ResponseWithMeta
+export const getAllProjects = async (qs: string = ''): Promise<ResponseWithMeta> => {
+  const { meta, data } = await axios.$get(`${baseUrl}/${qs}`) as ResponseWithMeta
   return { meta, data }
 }
 

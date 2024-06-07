@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed, watch } from 'vue'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,47 +9,46 @@ import {
   BreadcrumbSeparator
 } from '@/components/shdn/ui/breadcrumb'
 
+import { useLaravelQuery } from '@/composables/useLaravelQuery'
 import { storeToRefs } from 'pinia'
-import { onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+
+import { useRoute, useRouter } from 'vue-router'
 import { useProjectStore } from '@/stores/ProjectStore'
 import ProjectListItem from './ProjectListItem.vue'
 import {
   Table,
   TableBody
 } from '@/components/shdn/ui/table'
-
+const route = useRoute()
 const router = useRouter()
 const projectStore = useProjectStore()
 const { projects, meta, isLoading } = storeToRefs(projectStore)
-const currentPage = ref(1)
+const qs = computed(() => route.query)
+
+const { queryString } = useLaravelQuery(['page'])
 
 const onSelect = async (id: number) => {
   await projectStore.findById(id)
-  router.push({ name: 'users-edit', params: { id } })
+  router.push({ name: 'projects-details', params: { id } })
 }
 
 const onAddClicked = () => {
   projectStore.add()
-  router.push({ name: 'users-add' })
+  router.push({ name: 'projects-add' })
 }
 
-watch(currentPage, async (page) => {
-  await projectStore.getAll(page)
-})
-
-onMounted(async () => {
-  await projectStore.getAll()
-})
+watch(qs, async () => {
+  await projectStore.getAll(queryString.value)
+}, { immediate: true })
 
 const onUpdatePage = (page: number) => {
-  currentPage.value = page
+  router.push({ query: { ...qs.value, page } })
 }
 
 </script>
 
 <template>
-  <TwiceUiPageLayout title="Projekte">
+  <TwiceUiPageLayout title="Accounts + Kontakte">
     <template #breadcrumbs>
       <Breadcrumb>
         <BreadcrumbList>
@@ -59,38 +59,35 @@ const onUpdatePage = (page: number) => {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Projekte</BreadcrumbPage>
+            <BreadcrumbPage>Accounts + Kontakte</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
     </template>
     <template #header-toolbar>
       <ShdnUiButton @click="onAddClicked">
-        Projekte hinzufügen
+        Kontakt hinzufügen
       </ShdnUiButton>
     </template>
     <template #content-full>
-      <div class="px-0.5">
-        <twice-ui-table-box
-          v-if="meta"
-          :loading="isLoading"
-          :meta="meta"
-          record-name="Projekte|Projekt"
-          @update-page="onUpdatePage"
-        >
-          <Table>
-            <TableBody>
-              <ProjectListItem
-                v-for="(project, index) in projects"
-                :key="index"
-                :item="project"
-                @select="onSelect"
-              />
-            </TableBody>
-          </Table>
-        </twice-ui-table-box>
-      </div>
-      <router-view />
+      <twice-ui-table-box
+        record-name="Projekte"
+        :record-count="projects?.length"
+        :loading="isLoading"
+        :meta="meta"
+        @update-page="onUpdatePage"
+      >
+        <Table>
+          <TableBody>
+            <ProjectListItem
+              v-for="(project, index) in projects"
+              :key="index"
+              :item="project"
+              @select="onSelect"
+            />
+          </TableBody>
+        </Table>
+      </twice-ui-table-box>
     </template>
   </TwiceUiPageLayout>
 </template>

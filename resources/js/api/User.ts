@@ -28,8 +28,8 @@ export interface Response {
   data: User
 }
 
-export const getAllUsers = async (page: number = 1): Promise<ResponseWithMeta> => {
-  const { meta, data } = await axios.$get(baseUrl, { page }) as ResponseWithMeta
+export const getAllUsers = async (qs: string = ''): Promise<ResponseWithMeta> => {
+  const { meta, data } = await axios.$get(`${baseUrl}/${qs}`) as ResponseWithMeta
   return { meta, data }
 }
 

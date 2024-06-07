@@ -8,9 +8,9 @@ import {
   BreadcrumbSeparator
 } from '@/components/shdn/ui/breadcrumb'
 import { useTemplateFilter } from '@/composables/useTemplateFilter'
-import { query } from '@vortechron/query-builder-ts'
 import dayjs from 'dayjs'
 import isoWeek from 'dayjs/plugin/isoWeek'
+import { useLaravelQuery } from '@/composables/useLaravelQuery'
 import { IconPrinter, IconCircleDashedPlus } from '@tabler/icons-vue'
 import { storeToRefs } from 'pinia'
 import { computed, ref, watch } from 'vue'
@@ -25,51 +25,30 @@ const router = useRouter()
 const route = useRoute()
 const timeStore = useTimeStore()
 const { times, timesByDate, isLoading, meta, timesByProject, timeStats } = storeToRefs(timeStore)
-const currentPage = ref(1)
 
+const { queryString } = useLaravelQuery(['page'], { type: 'list' })
 const qs = computed(() => route.query)
 
 const onAddClicked = async () => {
-  await timeStore.createOrEdit(0)
   router.push({ name: 'times-add' })
+  router.push({ name: 'times-add', params: { type: route.params.type }, query: route.query })
 }
 
 const isOpen = ref(false)
 const pdfDataUrl = ref()
 const pdfBase64 = ref('')
+const waitingForPdf = ref(false)
 
 const onProjectClicked = async (id: number) => {
   router.push({ query: { ...qs.value, project_id: id as unknown as string } })
 }
 
-const laravelRoute = computed(() => {
-  if (qs.value.keys?.length === 0) {
-    return ''
-  }
-
-  const page: number = parseInt(qs?.value.page as string) || 1
-
-  const theQuery = query()
-    .param('type', route.params?.type as string || 'list')
-    .page(page)
-
-  if (qs.value.entries !== null) {
-    Object.entries(qs.value).forEach(([key, value]) => {
-      if (key && value) {
-        theQuery.filter(key, value.toString())
-      }
-    })
-  }
-  return theQuery.build() || ''
-})
-
 watch(qs, async () => {
-  await timeStore.getAll(laravelRoute.value)
+  await timeStore.getAll(queryString.value)
 }, { immediate: true })
 
 const onUpdatePage = (page: number) => {
   router.push({ query: { ...qs.value, page } })
-  currentPage.value = page
 }
 
 const year = computed(() => qs.value.year || dayjs().year())
@@ -77,9 +56,11 @@ const week = computed(() => qs.value.week || dayjs().isoWeek())
 const date = computed(() => dayjs().year(year.value as number).isoWeek(week.value as number).startOf('isoWeek').format('YYYY-MM-DD'))
 
 const onCreatePdfClicked = async () => {
-  const { dataUrl: resUrl, base64: resBase64 } = await timeStore.createPdf(laravelRoute.value)
+  waitingForPdf.value = true
+  const { dataUrl: resUrl, base64: resBase64 } = await timeStore.createPdf(queryString.value)
   pdfDataUrl.value = resUrl
   pdfBase64.value = resBase64
+  waitingForPdf.value = false
   isOpen.value = true
 }
 
@@ -123,7 +104,12 @@ const onCreatePdfClicked = async () => {
         variant="ghost"
         @click="onCreatePdfClicked"
       >
-        <IconPrinter class="size-6" />
+        <template v-if="waitingForPdf">
+          <twice-ui-spinner :size="6" />
+        </template>
+        <template v-else>
+          <IconPrinter class="size-6" />
+        </template>
       </shdn-ui-button>
     </template>
     <template #header-pivot>
@@ -145,6 +131,7 @@ const onCreatePdfClicked = async () => {
         <twice-ui-pivot-item
           label="Abrechenbare Zeiten"
           route-name="times-list"
+          :route-params="{type: 'list'}"
           :route-query="{view: 'billable'}"
           active-route-path="/app/times/list"
           :active-route-query="{view: 'billable'}"

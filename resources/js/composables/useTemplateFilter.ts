@@ -26,6 +26,9 @@ export function useTemplateFilter () {
 
   const formatDate = (date: string | undefined, format: string = 'DD.MM.YYYY', locale: string = 'de') => {
     if (date === undefined) return ''
+    if (date?.length > 16) {
+      locale = 'en'
+    }
     if (locale === 'de') {
       return dayjs(date, 'DD.MM.YYYY HH:mm').format(format)
     }

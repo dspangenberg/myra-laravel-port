@@ -33,9 +33,9 @@ export const useProjectStore = defineStore('project-store', () => {
     budget_period: 'y'
   })
 
-  const getAll = async (page: number = 1) => {
+  const getAll = async (qs: string = '') => {
     isLoading.value = true
-    const { data, meta } = await getAllProjects(page)
+    const { data, meta } = await getAllProjects(qs)
     store.$patch(state => {
       state.projects = data
       state.meta = meta

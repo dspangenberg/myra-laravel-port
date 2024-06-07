@@ -36,16 +36,24 @@ export interface TimeStats {
   sumWeek: number
 }
 
+export interface GroupedEntries {
+  entries: {
+    [key: number]: Time
+  },
+}
+
 export interface GroupedByDate {
   [key: string]: {
-    entries: Time[],
+    entries:GroupedEntries,
+    date: string,
+    formatedDate: string
     sum: number
   }
 }
 
 export interface GroupedByProject {
   [key: number]: {
-    entries: GroupedByDate[],
+    entries: GroupedEntries,
     sum: number
     name: string
   }
@@ -85,7 +93,6 @@ export const findTimeById = async (id: number): Promise<Response> => {
 }
 
 export const createProofOfActivityPdf = async (qs: string = ''): Promise<PdfResponse> => {
-  console.log(qs)
   const { dataUrl, base64 } = await axios.$getPdf(`${baseUrl}/${qs}`) as PdfResponse
   return { dataUrl, base64 }
 }
@@ -97,6 +104,7 @@ export const createTime = async (): Promise<CreateResponse> => {
 
 export const editTime = async (id: number): Promise<CreateResponse> => {
   const { data, projects, users, categories } = await axios.$get(`${baseUrl}/${id}/edit`) as CreateResponse
+  console.log({ data, projects, users, categories })
   return { data, projects, users, categories }
 }
 
