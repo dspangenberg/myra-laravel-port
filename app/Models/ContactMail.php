@@ -6,8 +6,12 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use DateTimeInterface;
+
 
 /**
+ *
+ *
  * @property int $id
  * @property int $contact_id
  * @property int $email_category_id
@@ -15,7 +19,6 @@ use Illuminate\Support\Carbon;
  * @property string $email
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @method static Builder|ContactMail newModelQuery()
  * @method static Builder|ContactMail newQuery()
  * @method static Builder|ContactMail query()
@@ -26,7 +29,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|ContactMail whereId($value)
  * @method static Builder|ContactMail wherePos($value)
  * @method static Builder|ContactMail whereUpdatedAt($value)
- *
  * @mixin Eloquent
  */
 class ContactMail extends Model
@@ -36,5 +38,34 @@ class ContactMail extends Model
         'email_category_id',
         'pos',
         'email',
+        'created_at',
+        'updated_at',
     ];
+
+    protected function serializeDate(DateTimeInterface $date): string
+    {
+        return $date->format('d.m.Y H:i');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+        ];
+    }
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
+    protected $attributes = [
+        'contact_id' => 0,
+        'pos' => 0,
+        'email_category_id' => 0,
+        'email' => '',
+    ];
+
+
 }

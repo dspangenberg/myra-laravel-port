@@ -7,6 +7,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from '@/components/shdn/ui/breadcrumb'
+import { promptModal } from 'jenesius-vue-modal'
 import { useTemplateFilter } from '@/composables/useTemplateFilter'
 import dayjs from 'dayjs'
 import isoWeek from 'dayjs/plugin/isoWeek'
@@ -18,6 +19,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useTimeStore } from '@/stores/TimeStore'
 import TimeWeekStats from './TimeWeekStats.vue'
 import TimeListGroup from './TimeListGroup.vue'
+
 dayjs.extend(isoWeek)
 const { formatDate, formatSumDuration } = useTemplateFilter()
 
@@ -30,13 +32,10 @@ const { queryString } = useLaravelQuery(['page'], { type: 'list' })
 const qs = computed(() => route.query)
 
 const onAddClicked = async () => {
-  router.push({ name: 'times-add' })
+  await timeStore.createOrEdit(0)
   router.push({ name: 'times-add', params: { type: route.params.type }, query: route.query })
 }
 
-const isOpen = ref(false)
-const pdfDataUrl = ref()
-const pdfBase64 = ref('')
 const waitingForPdf = ref(false)
 
 const onProjectClicked = async (id: number) => {
@@ -58,10 +57,11 @@ const date = computed(() => dayjs().year(year.value as number).isoWeek(week.valu
 const onCreatePdfClicked = async () => {
   waitingForPdf.value = true
   const { dataUrl: resUrl, base64: resBase64 } = await timeStore.createPdf(queryString.value)
-  pdfDataUrl.value = resUrl
-  pdfBase64.value = resBase64
   waitingForPdf.value = false
-  isOpen.value = true
+  await promptModal('pdfViewer', {
+    base64: resBase64,
+    dataUrl: resUrl
+  })
 }
 
 </script>
@@ -100,6 +100,7 @@ const onCreatePdfClicked = async () => {
       </ShdnUiButton>
 
       <shdn-ui-button
+        :disabled="waitingForPdf"
         size="icon"
         variant="ghost"
         @click="onCreatePdfClicked"
@@ -139,13 +140,6 @@ const onCreatePdfClicked = async () => {
       </twice-ui-pivot>
     </template>
     <template #content-full>
-      <twice-ui-pdf-viewer
-        v-if="pdfDataUrl"
-        :is-open="isOpen"
-        :base64="pdfBase64"
-        :data-url="pdfDataUrl"
-        @close="isOpen=false"
-      />
       <div class="px-0.5 min-h-0 flex-grow bg-transparent mt-6">
         <twice-ui-table-box
           record-name="Zeiteinträge"
@@ -165,16 +159,19 @@ const onCreatePdfClicked = async () => {
               </div>
             </template>
             <template v-else>
-              <div class="text-sm font-medium ml-4 ">
+              <div class="text-sm font-medium ml-4 py-3">
                 {{ formatDate(timeStats?.end) }} - {{ formatDate(timeStats?.start) }}
               </div>
-              <div class="rounded  bg-white grid grid-cols-4 shadow text-sm mb-6 mt-1">
+              <div
+                v-if="route.query?.view === 'billable'"
+                class="rounded  bg-white grid grid-cols-4 shadow text-sm mb-6 mt-1 divide-x"
+              >
                 <div
                   v-for="(value, key) in timesByProject"
                   :key="key"
-                  class="flex px-2 py-3 items-center border"
+                  class="flex items-center px-4 py-2"
                 >
-                  <div class="flex-1 truncate pr-2">
+                  <div class="flex-1 truncate p-4">
                     <a
                       href="#"
                       @click="onProjectClicked(key)"
@@ -182,7 +179,7 @@ const onCreatePdfClicked = async () => {
                       {{ value.name }}
                     </a>
                   </div>
-                  <div class="flex-none text-right font-medium">
+                  <div class="flex-none text-right font-medium px-4 py-2">
                     {{ formatSumDuration(value.sum as number) }}
                   </div>
                 </div>

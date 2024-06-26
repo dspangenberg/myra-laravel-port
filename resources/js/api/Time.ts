@@ -3,6 +3,7 @@ import { useAxios } from '@/composables/useAxios'
 import { type Project } from '@/api/Project'
 import { type User } from '@/api/User'
 import { TimeCategory } from '@/api/params/TimeCategory'
+import { EditOrCreateResponse } from '@/api/Contact'
 const { axios } = useAxios(true)
 
 const baseUrl: string = '/api/times'
@@ -97,11 +98,10 @@ export const createProofOfActivityPdf = async (qs: string = ''): Promise<PdfResp
   return { dataUrl, base64 }
 }
 
-export const createTime = async (): Promise<CreateResponse> => {
-  const { data, projects, users, categories } = await axios.$get(`${baseUrl}/create`) as CreateResponse
-  return { data, projects, users, categories }
+export const createOrEditTime = async (id?: number): Promise<CreateResponse> => {
+  const url = id ? `${baseUrl}/${id}/edit` : `${baseUrl}/create`
+  return await axios.$get(url)
 }
-
 export const editTime = async (id: number): Promise<CreateResponse> => {
   const { data, projects, users, categories } = await axios.$get(`${baseUrl}/${id}/edit`) as CreateResponse
   console.log({ data, projects, users, categories })

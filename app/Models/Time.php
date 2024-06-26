@@ -11,6 +11,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
+ * 
+ *
  * @property int $id
  * @property int $project_id
  * @property int $time_category_id
@@ -30,7 +32,6 @@ use Illuminate\Support\Facades\DB;
  * @property string|null $ping_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @method static Builder|Time newModelQuery()
  * @method static Builder|Time newQuery()
  * @method static Builder|Time query()
@@ -53,14 +54,13 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|Time whereTimeCategoryId($value)
  * @method static Builder|Time whereUpdatedAt($value)
  * @method static Builder|Time whereUserId($value)
- *
  * @property-read TimeCategory|null $category
  * @property-read Project|null $project
  * @property-read User|null $user
- *
  * @method static Builder|Time withMinutes()
  * @method static Builder|Time byWeekOfYear(int $week, int $year)
- *
+ * @method static Builder|Time maxDuration($date)
+ * @method static Builder|Time view($view)
  * @mixin Eloquent
  */
 class Time extends Model
@@ -105,31 +105,7 @@ class Time extends Model
         return $date->format('d.m.Y H:i');
     }
 
-    protected function casts(): array
-    {
-        return [
-            'is_timer' => 'boolean',
-            'is_locked' => 'boolean',
-            'is_billable' => 'boolean',
-            'begin_at' => 'datetime',
-            'end_at' => 'datetime',
-        ];
-    }
 
-    public function category(): HasOne
-    {
-        return $this->hasOne(TimeCategory::class, 'id', 'time_category_id');
-    }
-
-    public function user(): HasOne
-    {
-        return $this->hasOne(User::class, 'id', 'user_id');
-    }
-
-    public function project(): HasOne
-    {
-        return $this->hasOne(Project::class, 'id', 'project_id');
-    }
 
     public function scopeMaxDuration(Builder $query, $date): Builder
     {
@@ -147,7 +123,7 @@ class Time extends Model
                 ->where('is_billable', true)
                 ->where('is_locked', false)
                 ->where('invoice_id', 0);
-            // ->whereNotIn('project_id', [1, 7, 8, 9, 12, 13, 14, 15]); // ACHTUNG: Solange noch TN-Einträge ohne InoviceId enthalten sind
+            // ->whereNotIn('project_id', [1, 7, 8, 9, 12, 13, 14, 15]); // ACHTUNG: Solange noch TN-Einträge ohne InvoiceId enthalten sind
         }
 
         return $query;
@@ -164,5 +140,30 @@ class Time extends Model
     {
         $query
             ->select(DB::raw('*, TIMESTAMPDIFF(MINUTE, begin_at, end_at) as mins, DATE(begin_at) as ts'));
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'is_timer' => 'boolean',
+            'is_locked' => 'boolean',
+            'is_billable' => 'boolean',
+            'begin_at' => 'datetime',
+            'end_at' => 'datetime',
+        ];
+    }
+    public function category(): HasOne
+    {
+        return $this->hasOne(TimeCategory::class, 'id', 'time_category_id');
+    }
+
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    public function project(): HasOne
+    {
+        return $this->hasOne(Project::class, 'id', 'project_id');
     }
 }

@@ -1,23 +1,48 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { type User } from '@/api/User'
-import { useUserStore } from '@/stores/UserStore'
+import { computed, ref, reactive } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { type Contact } from '@/api/Contact'
+import { useContactStore } from '@/stores/ContactStore'
 import { storeToRefs } from 'pinia'
+import ContactEditAdvanced from './ContactEditAdvanced.vue'
+import ContactEditBase from './ContactEditBase.vue'
+import ContactEditAccount from './ContactEditAccount.vue'
 
-const userStore = useUserStore()
-const { userEdit } = storeToRefs(userStore)
+const contactStore = useContactStore()
+const { contact, contactEdit } = storeToRefs(contactStore)
 
-const form = reactive(userEdit)
+const form = reactive(contactEdit)
 const router = useRouter()
+const route = useRoute()
 const formRef = ref(null)
+const activeTab = ref('base')
 
 const onClose = () => {
-  router.push({ name: 'users-list' })
+  if (route.params?.id) {
+    router.push({ name: 'contacts-details', params: { id: route.params.id } })
+  } else {
+    router.push({ name: 'contacts-list' })
+  }
 }
 
-const onSubmit = async (values: User) => {
-  await userStore.save(values)
+const title = computed(() => contact.value?.full_name + ' bearbeiten')
+
+const component = computed(() => {
+  switch (activeTab.value) {
+    case 'base':
+      return ContactEditBase
+    case 'advanced':
+      return ContactEditAdvanced
+    case 'account':
+      return ContactEditAccount
+    default:
+      return ContactEditBase
+  }
+})
+
+const onSubmit = async (values: Contact) => {
+  console.log(values)
+  await contactStore.save(values)
   onClose()
 }
 
@@ -27,10 +52,26 @@ const onSubmit = async (values: User) => {
   <div>
     <TwiceUiDialog
       :show="true"
-      title="Benutzer*in hinzufügen"
-      width="xs"
+      :title="title"
+      width="md"
       @hide="onClose"
     >
+      <template #header>
+        <twice-ui-tabs v-model="activeTab">
+          <twice-ui-tab
+            name="base"
+            title="Stammdaten"
+          />
+          <twice-ui-tab
+            name="advanced"
+            title="Weitere Daten"
+          />
+          <twice-ui-tab
+            title="Debitor-, Kreditor und Firmendaten"
+            name="account"
+          />
+        </twice-ui-tabs>
+      </template>
       <template #content>
         <twice-ui-form
           id="form"
@@ -38,62 +79,20 @@ const onSubmit = async (values: User) => {
           :initial-values="form"
           @submitted="onSubmit"
         >
-          <twice-ui-form-group>
-            <div class="col-span-12">
-              <twice-ui-input
-                label="Vorname"
-                rules="required"
-                name="first_name"
-              />
-            </div>
-            <div class="col-span-12">
-              <twice-ui-input
-                label="Name"
-                rules="required"
-                name="last_name"
-              />
-            </div>
-            <div class="col-span-24">
-              <twice-ui-input
-                label="E-Mail-Adresse"
-                rules="required|email"
-                name="email"
-              />
-            </div>
-            <div class="col-span-12">
-              <twice-ui-input
-                label="Kennwort"
-                rules="safe-password:14:score|confirmed:@password_confirmation"
-                name="password"
-              />
-              <twice-ui-check-box
-                name="is_admin"
-                label="Administrator"
-                :true-value="true"
-              />
-            </div>
-            <div class="col-span-12">
-              <twice-ui-input
-                label="Wiederholung"
-                name="password_confirmation"
-              />
-            </div>
-          </twice-ui-form-group>
+          <component :is="component" />
         </twice-ui-form>
       </template>
       <template #footer>
-        <ShdnUiButton
-          variant="secondary"
-          @click="onClose"
-        >
+        <twice-ui-button @click="onClose">
           Abbrechen
-        </ShdnUiButton>
-        <ShdnUiButton
+        </twice-ui-button>
+        <twice-ui-button
           form="form"
           type="submit"
+          variant="primary"
         >
           Speichern
-        </ShdnUiButton>
+        </twice-ui-button>
       </template>
     </TwiceUiDialog>
   </div>

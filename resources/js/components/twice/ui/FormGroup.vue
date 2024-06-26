@@ -18,7 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
   grid: true,
   margin: true,
   title: '',
-  titleClass: 'font-medium text-base text-black uppercase'
+  titleClass: 'font-medium text-base text-black mt-6 pb-3 border-b'
 })
 
 const gridCols = computed(() => {
@@ -32,7 +32,7 @@ const gridCols = computed(() => {
 </script>
 
 <template>
-  <div class="px-4 flex-1">
+  <div class="flex-1 border-stone-100">
     <div
       v-if="title !== ''"
       class="px-6 pb-1.5"
@@ -43,7 +43,7 @@ const gridCols = computed(() => {
       </slot>
     </div>
     <div
-      :class="[ border || title !== '' ? 'border-t border-stone-100' : '', grid ? 'grid  gap-x-3 gap-y-2.5 m-0 p-0' : '', margin ? 'pt-3' : 'not-first:mt-2', grid ? gridCols : '']"
+      :class="[ border || title !== '' ? ' border-stone-100' : '', grid ? 'px-6 grid  gap-x-3 gap-y-2.5 m-0 p-0' : '', margin ? 'mt-3' : 'not-first:mt-2', grid ? gridCols : '']"
       class="px-0 mb-1 last:mb-3 flex-1"
     >
       <slot />

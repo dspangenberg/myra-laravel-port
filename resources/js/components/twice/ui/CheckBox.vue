@@ -27,16 +27,18 @@ const xid = id2()
 const htmlId = computed(() => `checkbox-${xid}`)
 
 const { value } = useField<number>(name, rules, { label })
+defineEmits(['input'])
 
 </script>
 <template>
-  <div class="flex items-center space-x-2">
+  <div class="flex items-center space-x-1.5">
     <input
       :id="htmlId"
       v-model="value"
       type="checkbox"
       :value="trueValue"
       class="h-4 w-4 flex-none rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 focus:ring-offset-0 cursor-pointer disabled:cursor-not-allowed disabled:text-gray-400"
+      @change="$emit('input', $event.target.checked)"
     >
     <label
       :for="htmlId"

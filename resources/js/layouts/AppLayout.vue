@@ -1,8 +1,9 @@
 <!--suppress ALL -->
 <script setup lang="ts">
 import { Button } from '@/components/shdn/ui/button'
-import { IconReceiptEuro, IconSearch, IconLayoutKanban, IconBell, IconClockEdit, IconCalendarDot, IconGauge, IconBuildingCommunity, IconSignature, IconFolder } from '@tabler/icons-vue'
+import { IconReceiptEuro, IconSearch, IconLayoutKanban, IconBell, IconClockEdit, IconGauge, IconBuildingCommunity, IconContract, IconFolder } from '@tabler/icons-vue'
 import UserMenu from './UserMenu.vue'
+import { container as WidgetContainerModal } from 'jenesius-vue-modal'
 </script>
 
 <template>
@@ -36,18 +37,8 @@ import UserMenu from './UserMenu.vue'
             <template #icon="{ iconProps }">
               <IconGauge
                 v-bind="iconProps"
+                exact
               />
-            </template>
-          </TwiceUiNavItem>
-          <TwiceUiNavItem
-            disabled
-            label="Agenda"
-            route-name="agenda"
-            active-route-path="/app/agenda"
-            exact
-          >
-            <template #icon="{ iconProps }">
-              <IconCalendarDot v-bind="iconProps" />
             </template>
           </TwiceUiNavItem>
         </div>
@@ -56,7 +47,6 @@ import UserMenu from './UserMenu.vue'
             label="Accounts + Kontakte"
             route-name="contacts-list"
             active-route-path="/app/contacts"
-            exact
           >
             <template #icon="{ iconProps }">
               <IconBuildingCommunity v-bind="iconProps" />
@@ -65,9 +55,7 @@ import UserMenu from './UserMenu.vue'
           <TwiceUiNavItem
             label="Dokumente"
             route-name="agenda"
-            disabled
             active-route-path="/app/agenda"
-            exact
           >
             <template #icon="{ iconProps }">
               <IconFolder v-bind="iconProps" />
@@ -83,13 +71,12 @@ import UserMenu from './UserMenu.vue'
             </template>
           </TwiceUiNavItem>
           <TwiceUiNavItem
-            disabled
             label="Verträge"
             route-name="agenda"
             active-route-path="/app/agenda"
           >
             <template #icon="{ iconProps }">
-              <IconSignature v-bind="iconProps" />
+              <IconContract v-bind="iconProps" />
             </template>
           </TwiceUiNavItem>
         </div>
@@ -106,10 +93,8 @@ import UserMenu from './UserMenu.vue'
           </TwiceUiNavItem>
           <TwiceUiNavItem
             label="Fakturierung + Fibu"
-            disabled
             route-name="agenda"
             active-route-path="/app/agenda"
-            exact
           >
             <template #icon="{ iconProps }">
               <IconReceiptEuro v-bind="iconProps" />
@@ -120,7 +105,9 @@ import UserMenu from './UserMenu.vue'
     </aside>
     <div class="flex flex-col flex-1 overflow-hidden">
       <header class="sticky top-0 z-10 flex h-[57px] items-center gap-1  px-4 pt-2 flex-none border-stone-100">
-        <div class="flex-1" />
+        <div class="flex-1">
+          <widget-container-modal />
+        </div>
         <div class="p-2">
           <Button
             v-tooltip="'Benachrichtigungen'"

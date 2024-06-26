@@ -18,6 +18,7 @@ import {
   Table,
   TableBody
 } from '@/components/shdn/ui/table'
+import { IconCircleDashedPlus } from '@tabler/icons-vue'
 const route = useRoute()
 const router = useRouter()
 const contactStore = useContactStore()
@@ -31,13 +32,15 @@ const onSelect = async (id: number) => {
   router.push({ name: 'contacts-details', params: { id } })
 }
 
-const onAddClicked = () => {
-  contactStore.add()
-  router.push({ name: 'users-add' })
+const onAddClicked = async () => {
+  await contactStore.createOrEdit()
+  router.push({ name: 'contacts-add', query: route.query })
 }
 
 watch(qs, async () => {
-  await contactStore.getAll(queryString.value)
+  if (route.name === 'contacts-list') {
+    await contactStore.getAll(queryString.value)
+  }
 }, { immediate: true })
 
 const onUpdatePage = (page: number) => {
@@ -64,8 +67,14 @@ const onUpdatePage = (page: number) => {
       </Breadcrumb>
     </template>
     <template #header-toolbar>
-      <ShdnUiButton @click="onAddClicked">
-        Kontakt hinzufügen
+      <ShdnUiButton
+        size="icon"
+        variant="ghost"
+        @click="onAddClicked"
+      >
+        <IconCircleDashedPlus
+          class="size-6"
+        />
       </ShdnUiButton>
     </template>
     <template #content-full>
@@ -76,6 +85,9 @@ const onUpdatePage = (page: number) => {
         :meta="meta"
         @update-page="onUpdatePage"
       >
+        <template #header>
+          <router-view />
+        </template>
         <Table>
           <TableBody>
             <ContactListItem

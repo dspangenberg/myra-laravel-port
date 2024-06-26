@@ -7,6 +7,7 @@ import '@fontsource/clear-sans/500.css'
 import '@fontsource/clear-sans/700.css'
 import '@/utils/Validation'
 
+import '@/utils/Dialogs'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import VueBaseTooltip from 'vue-base-tooltip'

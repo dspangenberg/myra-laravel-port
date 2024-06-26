@@ -93,25 +93,6 @@ class TimeService
         ];
     }
 
-    public static function getTimesFromQuery(array $times): array
-    {
-        $groupedEntries = self::groupByDate($times['data']);
-
-        return [
-            'stats' => [
-            ],
-            'times' => $times,
-            'meta' => [
-                'total' => $times['total'],
-                'per_page' => $times['per_page'],
-                'from' => $times['from'],
-                'current_page' => $times['current_page'],
-                'to' => $times['to'],
-            ],
-            'groupedByDay' => $groupedEntries,
-        ];
-    }
-
     public static function getSumByWeekday(array $times): Collection
     {
         $sumByWeekday = collect([

@@ -3,8 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ContactResource;
+use App\Models\AddressCategory;
 use App\Models\Contact;
+use App\Models\Country;
+use App\Models\EmailCategory;
+use App\Models\PaymentDeadline;
+use App\Models\PhoneCategory;
+use App\Models\Salutation;
+use App\Models\Tax;
+use App\Models\Title;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreContact;
+
 
 class ContactController extends Controller
 {
@@ -14,42 +24,71 @@ class ContactController extends Controller
             ->with('company')
             ->with('title')
             ->orderBy('name')
+            ->whereNull('is_archived')
+            ->orWhere('is_archived', false)
             ->paginate($this->recordsPerPage)
         );
     }
 
-    public function store(Request $request)
+    public function store(StoreContact $request)
     {
-        $validated = $request->validate([
-            'name' => 'required',
+        $contact = Contact::create($request->validated());
+        return new ContactResource($contact);
+    }
+
+    public function create()
+    {
+        $contact = new Contact();
+
+        return ContactResource::make($contact)->additional([
+            'salutations' => Salutation::all(),
+            'titles' => Title::all(),
+            'payment_deadlines' => PaymentDeadline::all(),
+            'address_categories' => AddressCategory::all(),
+            'email_categories' => EmailCategory::all(),
+            'phone_categories' => PhoneCategory::all(),
+            'taxes' => Tax::all(),
+            'country' => Country::all(),
         ]);
+    }
 
-        $contact = Contact::create($validated);
+    public function edit(Contact $contact)
+    {
+        $contact->load('addresses');
 
-        return response()->json([
-            'contact' => $contact,
+        return ContactResource::make($contact)->additional([
+            'salutations' => Salutation::all(),
+            'titles' => Title::all(),
+            'payment_deadlines' => PaymentDeadline::all(),
+            'address_categories' => AddressCategory::all(),
+            'email_categories' => EmailCategory::all(),
+            'phone_categories' => PhoneCategory::all(),
+            'taxes' => Tax::all(),
+            'country' => Country::all(),
         ]);
     }
 
     public function show(Contact $contact)
     {
 
-        $contact->load('company')->load('title');
+        $contact
+            ->load('company')
+            ->load('title')
+            ->load('salutation')
+            ->load('payment_deadline')
+            ->load('tax')
+            ->load('contacts')
+            ->load('addresses');
 
         return new ContactResource($contact);
     }
 
-    public function update(Request $request, Contact $contact)
+    public function update(StoreContact $request, Contact $contact)
     {
-        $validated = $request->validate([
-            'name' => 'required',
-        ]);
+        $contact->update($request->validated());
+        $contact->mails()->upsert($request->validated('mails'), 'email');
 
-        $contact->update($validated);
-
-        return response()->json([
-            'contact' => $contact,
-        ]);
+        return new ContactResource($contact);
     }
 
     public function destroy(Contact $contact)

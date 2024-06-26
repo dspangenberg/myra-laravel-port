@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { VuePDF } from '@tato30/vue-pdf'
 import { onMounted, ref, toRefs, watch } from 'vue'
-import { IconDownload, IconPrinter } from '@tabler/icons-vue'
+import { IconDownload, IconPrinter, IconChevronRight, IconChevronLeft } from '@tabler/icons-vue'
 import * as PDFJS from 'pdfjs-dist'
 import * as pdfjsWorker from 'pdfjs-dist/build/pdf.worker.mjs'
 import print from 'print-js'
-
+import { Modal } from 'jenesius-vue-modal'
 interface Props {
   isOpen?: boolean
   dataUrl?: string | null
@@ -32,10 +32,10 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { dataUrl, base64 } = toRefs(props)
 const pdf = ref()
+const numPages = ref(1)
+const page = ref(1)
 
 const title = ref('PDF-Anzeige')
-
-defineEmits(['close'])
 
 const onDownload = async () => {
   if (dataUrl.value) {
@@ -59,10 +59,14 @@ watch(dataUrl, async (dataUrl) => {
   if (dataUrl) {
     const loadingTask = PDFJS.getDocument(dataUrl)
     if (loadingTask) {
-      const pdfDoc = await loadingTask.promise
-      const metadata: PdfMetadata = await pdfDoc.getMetadata() as unknown as PdfMetadata
-      pdf.value = loadingTask
-      title.value = metadata.info.Title || 'PDF-Anzeige'
+      try {
+        page.value = 1
+        const pdfDoc = await loadingTask.promise
+        const metadata: PdfMetadata = await pdfDoc.getMetadata() as unknown as PdfMetadata
+        numPages.value = pdfDoc.numPages
+        pdf.value = loadingTask
+        title.value = metadata.info.Title || 'PDF-Anzeige'
+      } catch (error) {}
     }
   }
 }, { immediate: true })
@@ -73,17 +77,51 @@ onMounted(async () => {
   } catch (error) {}
 })
 
+const emit = defineEmits([Modal.EVENT_PROMPT])
+
+const onHide = () => {
+  emit(Modal.EVENT_PROMPT, false)
+}
+
+const onNextPage = () => {
+  if (page.value < numPages.value) {
+    page.value++
+  }
+}
+
+const onPrevPage = () => {
+  if (page.value > 1) {
+    page.value--
+  }
+}
+
 </script>
 <template>
   <div>
     <TwiceUiDialog
-      :show="isOpen"
+      :show="true"
       width="lg"
       :title="title"
-      @hide="$emit('close')"
+      @hide="onHide"
     >
       <template #toolbar>
         <div class="flex items-center">
+          <shdn-ui-button
+            :disabled="page === 1"
+            size="icon"
+            variant="ghost"
+            @click="onPrevPage"
+          >
+            <IconChevronLeft class="size-5" />
+          </shdn-ui-button>
+          <shdn-ui-button
+            :disabled="page === numPages || numPages === 1"
+            size="icon"
+            variant="ghost"
+            @click="onNextPage"
+          >
+            <IconChevronRight class="size-5" />
+          </shdn-ui-button>
           <shdn-ui-button
             size="icon"
             variant="ghost"
@@ -102,15 +140,22 @@ onMounted(async () => {
       </template>
       <template #content>
         <VuePDF
+          v-if="pdf"
           id="pdf"
-          class="border mx-auto max-w-[600px] my-6"
+          :page="page"
+          class="border mx-auto my-6"
           :pdf="pdf"
         />
       </template>
+      <template #secondary-actions>
+        <div class="text-sm">
+          {{ page }}/{{ numPages }} Seiten
+        </div>
+      </template>
       <template #footer>
-        <TwiceUiButton @click="$emit('close')">
+        <twice-ui-button @click="onHide">
           Schließen
-        </TwiceUiButton>
+        </twice-ui-button>
       </template>
     </TwiceUiDialog>
   </div>

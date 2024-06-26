@@ -1,15 +1,14 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import {
-  createTime,
+  createOrEditTime,
   createProofOfActivityPdf,
-  editTime,
   getAllTimes,
   findTimeById,
   storeTime,
   updateTime
 } from '@/api/Time'
 import { ref, type Ref } from 'vue'
-import type { Time, GroupedByProject, GroupedByDate, TimeStats, QueryParams } from '@/api/Time'
+import type { Time, GroupedByProject, GroupedByDate, TimeStats } from '@/api/Time'
 import type { Project } from '@/api/Project'
 import type { User } from '@/api/User'
 import type { TimeCategory } from '@/api/params/TimeCategory'
@@ -47,14 +46,13 @@ export const useTimeStore = defineStore('time-store', () => {
   const createPdf = async (qs: string) => {
     return await createProofOfActivityPdf(qs)
   }
-  const createOrEdit = async (id: number = 0) => {
-    const { data, projects: apiProjects, categories: apiCategories, users: apiUsers } = id === 0 ? await createTime() : await editTime(id)
-
+  const createOrEdit = async (id?: number) => {
+    const data = await createOrEditTime(id)
     store.$patch(state => {
-      state.categories = apiCategories
-      state.projects = apiProjects
-      state.users = apiUsers
-      state.timeEdit = data
+      state.categories = data.categories
+      state.projects = data.projects
+      state.users = data.users
+      state.timeEdit = data.data
     })
   }
 

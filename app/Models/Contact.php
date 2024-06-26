@@ -4,11 +4,15 @@ namespace App\Models;
 
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
+ *
+ *
  * @property int $id
  * @property int|null $company_id
  * @property int $is_org
@@ -45,7 +49,6 @@ use Illuminate\Support\Carbon;
  * @property-read string $initials
  * @property-read string $reverse_full_name
  * @property-read Title|null $title
- *
  * @method static Builder|Contact newModelQuery()
  * @method static Builder|Contact newQuery()
  * @method static Builder|Contact query()
@@ -80,7 +83,20 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Contact whereUpdatedAt($value)
  * @method static Builder|Contact whereVatId($value)
  * @method static Builder|Contact whereWebsite($value)
- *
+ * *
+ * @property-read Salutation|null $salutation
+ * @property-read PaymentDeadline|null $payment_deadline
+ * @property-read Tax|null $tax
+ * @property string|null $tax_number
+ * @property-read Collection<int, ContactAddress> $addresses
+ * @property-read int|null $addresses_count
+ * @property-read Collection<int, Contact> $contacts
+ * @property-read int|null $contacts_count
+ * @method static Builder|Contact whereTaxNumber($value)
+ * @property-read Collection<int, ContactMail> $mails
+ * @property-read int|null $mails_count
+ * @property-read Collection<int, ContactPhone> $phones
+ * @property-read int|null $phones_count
  * @mixin Eloquent
  */
 class Contact extends Model
@@ -144,6 +160,18 @@ class Contact extends Model
         'dob',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'is_org' => 'boolean',
+            'is_debtor' => 'boolean',
+            'is_creditor' => 'boolean',
+            'is_archived' => 'boolean',
+            'has_dunning_block' => 'boolean',
+            'dob' => 'datetime'
+        ];
+    }
+
     public function getFullNameAttribute(): string
     {
         if ($this->first_name) {
@@ -183,5 +211,41 @@ class Contact extends Model
     public function title(): HasOne
     {
         return $this->hasOne(Title::class, 'id', 'title_id');
+    }
+
+    public function salutation(): HasOne
+    {
+        return $this->hasOne(Salutation::class, 'id', 'salutation_id');
+    }
+
+    public function contacts(): HasMany
+    {
+        return $this->hasMany(Contact::class, 'company_id', 'id');
+    }
+
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(ContactAddress::class, 'contact_id', 'id');
+    }
+
+    public function phones(): HasMany
+    {
+        return $this->hasMany(ContactPhone::class, 'contact_id', 'id');
+    }
+
+    public function mails(): HasMany
+    {
+        return $this->hasMany(ContactMail::class, 'contact_id', 'id');
+    }
+
+
+    public function payment_deadline(): HasOne
+    {
+        return $this->hasOne(PaymentDeadline::class, 'id', 'payment_deadline_id');
+    }
+
+    public function tax(): HasOne
+    {
+        return $this->hasOne(Tax::class, 'id', 'tax_id');
     }
 }

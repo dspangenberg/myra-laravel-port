@@ -25,6 +25,7 @@ export interface Props {
   options: Option[]
   selectClass?: string
   optionName?: string
+  hidenEmpty?: boolean
   onlyOptionsWithName?: boolean
   placeholderValue?: number | string | null
 }
@@ -36,6 +37,7 @@ const props = withDefaults(defineProps<Props>(), {
   placeholder: '(auswählen)',
   selectClass: '',
   disabled: false,
+  hideEmpty: true,
   optionsValue: 'id',
   optionName: 'name',
   optionDisabled: 'disabled',
@@ -45,6 +47,8 @@ const props = withDefaults(defineProps<Props>(), {
   autofocus: false,
   required: false
 })
+
+const filteredOptions = computed(() => props.options.filter(option => option[props.optionName as keyof Option] !== ''))
 
 const name = toRef(props, 'name')
 const rules = toRef(props, 'rules')
@@ -82,7 +86,7 @@ const { value } = useField<string>(name, rules, { label })
       >
         <SelectGroup>
           <SelectItem
-            v-for="(item, index) in options"
+            v-for="(item, index) in filteredOptions"
             :key="index"
             :value="item['id']"
             class="text-sm"

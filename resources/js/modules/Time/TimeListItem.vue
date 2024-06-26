@@ -70,7 +70,7 @@ defineEmits(['select'])
         :initials="item.user?.initials"
       />
     </TableCell>
-    <TableCell class="text-sm font-medium w-12 text-stone-700">
+    <TableCell class="text-sm font-medium w-16 text-stone-700 text-right">
       <template v-if="item.end_at">
         {{ formatDuration(item.mins) }}
       </template>

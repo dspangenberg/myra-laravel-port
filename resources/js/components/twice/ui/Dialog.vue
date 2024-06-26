@@ -114,13 +114,16 @@ const heightClass = computed(() => {
                     <DialogTitle
                       as="h3"
                       class="flex-1 py-3 pl-4 text-lg font-bold leading-6 text-gray-900 flex items-center"
+                      :class="widthClass"
                     >
                       <slot name="title">
-                        <span v-if="Array.isArray(getTitle)">
-                          {{ getTitle[0] }} &mdash; {{ getTitle[1] }}
-                        </span>
-                        <span v-else>
-                          {{ getTitle }}
+                        <span class="truncate w-fit">
+                          <span v-if="Array.isArray(getTitle)">
+                            {{ getTitle[0] }} &mdash; {{ getTitle[1] }}
+                          </span>
+                          <span v-else>
+                            {{ getTitle }}
+                          </span>
                         </span>
                       </slot>
                       <div class="px-6">
@@ -159,19 +162,18 @@ const heightClass = computed(() => {
                     <slot name="content" />
                   </div>
                 </div>
-                <div class="flex flex-row-reverse items-start flex-none w-full px-4 py-3 bg-stone-50">
-                  <slot
-                    name="footer"
-                    :close="hide"
-                  >
-                    <button
-                      type="button"
-                      class="inline-flex justify-center w-full h-2 px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                      @click="hide"
+                <div class="flex items-center w-full px-4 py-3 bg-stone-50 flex-1">
+                  <div class="flex-1 space-x-2 items-center">
+                    <slot name="secondary-actions" />
+                  </div>
+                  <div class="flex-none space-x-2 items-center">
+                    <slot
+                      name="footer"
+                      :close="hide"
                     >
-                      Schließen
-                    </button>
-                  </slot>
+                      <twice-ui-button @click="hide" />
+                    </slot>
+                  </div>
                 </div>
               </DialogPanel>
             </div>

@@ -16,6 +16,7 @@ export interface Props {
   recordName?: string
   useLayout?: boolean
   loading?: boolean
+  overflow?: boolean
   border?: boolean
   meta?: Meta | null
 }
@@ -26,7 +27,8 @@ const props = withDefaults(defineProps<Props>(), {
   border: true,
   recordName: 'Datensätze',
   meta: null,
-  useLayout: false
+  useLayout: false,
+  overflow: true
 })
 
 const emit = defineEmits(['updatePage'])
@@ -75,7 +77,8 @@ const onAddFirstClicked = () => {
       </div>
       <div
         v-if="metaRecordCount"
-        class="flex-1 flex flex-col overflow-y-auto py-2"
+        class="flex-1 flex flex-col py-2 overflow-y-auto"
+        :class="[ overflow? 'overflow-y-auto' : 'overflow-y-hidden' ]"
       >
         <slot />
       </div>

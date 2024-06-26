@@ -5,6 +5,7 @@ import vue from '@vitejs/plugin-vue'
 import Components from 'unplugin-vue-components/vite'
 import svgLoader from 'vite-svg-loader'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import vueDevTools from 'vite-plugin-vue-devtools'
 
 export default defineConfig({
   plugins: [
@@ -19,6 +20,9 @@ export default defineConfig({
           includeAbsolute: false
         }
       }
+    }),
+    vueDevTools({
+      appendTo: 'app.ts'
     }),
     Components({
       dirs: ['resources/js/components'],
