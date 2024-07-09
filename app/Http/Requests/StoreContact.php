@@ -47,6 +47,7 @@ class StoreContact extends FormRequest
             'register_court' => 'nullable',
             'website' => 'nullable',
             'dob' => 'nullable',
+            'tax_number' => 'nullable',
             'mails' => 'nullable',
         ];
     }

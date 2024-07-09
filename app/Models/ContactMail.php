@@ -10,7 +10,7 @@ use DateTimeInterface;
 
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property int $contact_id

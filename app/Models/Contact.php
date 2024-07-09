@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property int|null $company_id
@@ -97,11 +97,15 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $mails_count
  * @property-read Collection<int, ContactPhone> $phones
  * @property-read int|null $phones_count
+ * @property string|null $receipts_ref
+ * @property string|null $iban
+ * @method static Builder|Contact whereIban($value)
+ * @method static Builder|Contact whereReceiptsRef($value)
  * @mixin Eloquent
  */
 class Contact extends Model
 {
-    protected $appends = [
+      protected $appends = [
         'full_name',
         'reverse_full_name',
         'initials',
@@ -140,6 +144,8 @@ class Contact extends Model
         'first_name',
         'position',
         'department',
+        'receipts_ref',
+        'iban',
         'short_name',
         'ref',
         'catgory_id',
@@ -156,6 +162,7 @@ class Contact extends Model
         'register_court',
         'register_number',
         'vat_id',
+        'tax_number',
         'website',
         'dob',
     ];

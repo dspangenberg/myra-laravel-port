@@ -96,7 +96,7 @@ class TimeController extends Controller
         $time = Time::create($request->validated());
 
         return response()->json([
-            'contact' => $time,
+            'time' => $time,
         ]);
     }
 

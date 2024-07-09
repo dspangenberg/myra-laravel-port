@@ -10,8 +10,20 @@ import {
   BreadcrumbList,
   BreadcrumbPage, BreadcrumbSeparator
 } from '@/components/shdn/ui/breadcrumb'
-import { IconPencil, IconUserPlus, IconDots } from '@tabler/icons-vue'
 
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/shdn/ui/card'
+import { Button } from '@/components/shdn/ui/button'
+
+import {
+  MoreVertical,
+} from 'lucide-vue-next'
+import { Separator } from '@/components/shdn/ui/separator'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/shdn/ui/dropdown-menu'
+
+import { IconPencil, IconUserPlus, IconDots } from '@tabler/icons-vue'
+import { useTemplateFilter } from '@/composables/useTemplateFilter'
+
+const { formatNumber } = useTemplateFilter()
 const contactStore = useContactStore()
 const { contact } = storeToRefs(contactStore)
 
@@ -105,72 +117,204 @@ const onAddContact = async () => {
         </div>
       </div>
     </template>
-    <template #header-toolbar>
-      <ShdnUiButton
-        size="icon"
-        variant="ghost"
-        @click="onEdit"
-      >
-        <IconPencil
-          class="size-6"
+    <template #header-pivot>
+      <twice-ui-pivot>
+        <twice-ui-pivot-item
+          label="Historie"
+          route-name="contacts-details"
+          active-route-path="/app/contacts"
         />
-      </ShdnUiButton>
-      <ShdnUiButton
-        size="icon"
-        variant="ghost"
-        @click="onAddContact"
-      >
-        <IconUserPlus
-          class="size-6"
+        <twice-ui-pivot-item
+          label="Kontakte"
+          route-name="times-list"
+          :route-params="{type: 'list'}"
+          :route-query="{view: 'all'}"
+          active-route-path="/app/times/list"
+          :active-route-query="{view: 'all'}"
         />
-      </ShdnUiButton>
-      <ShdnUiButton
-        size="icon"
-        variant="ghost"
-        @click="onEdit"
-      >
-        <IconDots
-          class="size-6"
+        <twice-ui-pivot-item
+          label="Projekte"
+          route-name="times-list"
+          :route-params="{type: 'list'}"
+          :route-query="{view: 'billable'}"
+          active-route-path="/app/times/list"
+          :active-route-query="{view: 'billable'}"
         />
-      </ShdnUiButton>
+        <twice-ui-pivot-item
+          label="Verträge"
+          route-name="times-list"
+          :route-params="{type: 'list'}"
+          :route-query="{view: 'billable'}"
+          active-route-path="/app/times/list"
+          :active-route-query="{view: 'billable'}"
+        />
+        <twice-ui-pivot-item
+          label="Dokumente"
+          route-name="times-list"
+          :route-params="{type: 'list'}"
+          :route-query="{view: 'billable'}"
+          active-route-path="/app/times/list"
+          :active-route-query="{view: 'billable'}"
+        />
+        <twice-ui-pivot-item
+          label="Fakturierung"
+          route-name="times-list"
+          :route-params="{type: 'list'}"
+          :route-query="{view: 'billable'}"
+          active-route-path="/app/times/list"
+          :active-route-query="{view: 'billable'}"
+        />
+      </twice-ui-pivot>
     </template>
     <template #content-full>
-      <div class="px-0.5 flex">
+      <div class="px-0.5 flex space-x-8 mt-6">
         <div class="flex-1">
           {{ contact }}
         </div>
-        <twice-ui-info-box>
-          <div class="grid grid-cols-3">
-            <twice-ui-dl
-              label="Debitor-Nr."
-              :value="contact?.debtor_number"
-            />
-            <twice-ui-dl
-              label="Zahlungsziel"
-              :value="contact?.payment_deadline?.name"
-            />
-            <twice-ui-dl
-              label="Steuer"
-              :value="contact?.tax?.name"
-            />
-          </div>
-          <div class="grid grid-cols-2">
-            <twice-ui-dl
-              label="Umsatzsteuer-ID"
-              :value="contact?.vat_id"
-            />
-          </div>
-          <div class="grid grid-cols-2">
-            <twice-ui-dl
-              label="Registergericht"
-              :value="contact?.register_court"
-            />
-            <twice-ui-dl
-              label="Nr."
-              :value="contact?.register_number"
-            />
-          </div>
-        </twice-ui-info-box>
+        <Card class="overflow-hidden w-96" v-if="contact">
+          <CardHeader class="flex flex-row items-start bg-muted/50">
+            <div class="grid gap-0.5">
+              <CardTitle class="group flex items-center gap-2 text-lg truncate">{{ contact?.company?.full_name || contact?.full_name }}
+              </CardTitle>
+              <CardDescription>
+                Account
+              </CardDescription>
+            </div>
+            <div class="ml-auto flex items-center gap-1">
+              <DropdownMenu>
+                <DropdownMenuTrigger as-child>
+                  <Button size="icon" variant="outline" class="h-8 w-8"><MoreVertical class="h-3.5 w-3.5" />
+                    <span class="sr-only">More</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>Edit</DropdownMenuItem>
+                  <DropdownMenuItem>Export</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Trash</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </CardHeader>
+          <CardContent class="p-6 text-sm">
+            <div class=" space-x-1 pb-3">
+              <ShdnUiBadge>
+                Debitor
+              </ShdnUiBadge>
+              <ShdnUiBadge variant="outline">
+                Weihnachtskarte
+              </ShdnUiBadge>
+              <ShdnUiBadge variant="destructive">
+                Auftragssperre
+              </ShdnUiBadge>
+            </div>
+            <Separator class="my-2" />
+            <div class="grid gap-3">
+              <div class="font-semibold">
+                Kontaktinformationen:
+              </div>
+              <dl class="grid gap-3">
+                <div class="flex items-center justify-between">
+                  <dt class="text-muted-foreground">
+                    E-Mail:
+                  </dt>
+                  <dd>
+                    <a href="mailto:">info@twiceware.de</a>
+                  </dd>
+                </div>
+                <div class="flex items-center justify-between">
+                  <dt class="text-muted-foreground">
+                    Telefon (Zentrale):
+                  </dt>
+                  <dd>
+                    <a href="tel:">+49 228 842637 64 </a>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+            <Separator class="my-4" />
+            <div class="grid gap-3">
+              <div class="font-semibold">
+                Debitordaten:
+              </div>
+              <ul class="grid gap-3 ">
+                <li class="flex items-center justify-between text-sm">
+                    <span class="text-muted-foreground">
+                      Debitor- und Kundennr.:
+                    </span>
+                  <span>
+                    {{ formatNumber(contact?.debtor_number, 0) }}
+                  </span>
+                </li>
+                <li class="flex items-center justify-between text-sm">
+                    <span class="text-muted-foreground">
+                      Zahlungsziel:
+                    </span>
+                  <span>
+                    {{ contact.payment_deadline.name }} <span v-if="contact.has_dunning_block">(M-Sperre)</span>
+                  </span>
+                </li>
+                <li class="flex items-center justify-between text-sm">
+                    <span class="text-muted-foreground">
+                      Umsatzsteuer:
+                    </span>
+                  <span>
+                    {{ contact.tax.name }}
+                  </span>
+                </li>
+                <li class="flex items-center justify-between">
+                  <span class="text-muted-foreground">Stundensatz:</span>
+                  <span>60,00 EUR</span>
+                </li>
+              </ul>
+              <Separator class="my-4" />
+              <div class="font-semibold">
+                Register- und Steuerdaten:
+              </div>
+              <ul class="grid gap-3">
+                <li class="flex items-center justify-between">
+                    <span class="text-muted-foreground">
+                      Register / Firmenbuch:
+                    </span>
+                  <span>
+                    {{ contact.register_court }} ({{ contact.register_number }})
+                  </span>
+                </li>
+                <li class="flex items-center justify-between">
+                    <span class="text-muted-foreground">
+                      Umsatzsteuer-ID:
+                    </span>
+
+                  <span>{{ contact.vat_id }}</span>
+                </li>
+                <li class="flex items-center justify-between">
+                    <span class="text-muted-foreground">
+                      Steuernr.:
+                    </span>
+                  <span>{{ contact?.tax_number }}</span>
+                </li>
+              </ul>
+            </div>
+            <Separator class="my-4" />
+            <div class="grid grid-cols-2 gap-4">
+              <div class="grid gap-3">
+                <div class="font-semibold">
+                  Rechnungsanschrift:
+                </div>
+                <address class="grid gap-0.5 not-italic text-muted-foreground">
+                  <span>twiceware solutions e. K.</span>
+                  <span>Belderberg 7</span>
+                  <span>53111 Bonn</span>
+                </address>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter class="flex flex-row items-center border-t bg-muted/50 px-6 py-3">
+            <div class="text-sm text-muted-foreground hyphens-auto">
+              Inhaber neigt zu Selbstgesprächen und knurrt, wenn er ungeduldig ist. Nicht vor Sonnnenaufgang anrufen!
+            </div>
+          </CardFooter>
+        </Card>
       </div>
       <router-view />
     </template>

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUser;
 use App\Http\Resources\UserResource;
+
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -35,21 +37,12 @@ class UserController extends Controller
         ]);
     }
 
-    public function store(Request $request, User $user)
+    public function store(StoreUser $request, User $user)
     {
-        $validated = $request->validate([
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => ['required', Rule::unique('users')->ignore($user)],
-            'avatar_url' => 'nullable|url',
-            'is_admin' => 'boolean',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
-        $user = User::create($validated);
+        $user->update($request->validated());
 
         return response()->json([
-            'location' => $user,
+            'user' => $user,
         ]);
     }
 

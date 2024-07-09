@@ -9,7 +9,7 @@
   },
   "framework": "vite",
   "aliases": {
-    "components": "@/components/shadn",
-    "utils": "@/utils/Shadn"
+    "components": "@/components/shdn",
+    "utils": "@/utils/Shdn"
   }
 }

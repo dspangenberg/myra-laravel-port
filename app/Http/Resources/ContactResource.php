@@ -49,6 +49,7 @@ class ContactResource extends JsonResource
             'title' => $this->title,
             'contacts' => $this->contacts,
             'addresses' => $this->addresses,
+            'tax_number' => $this->tax_number,
             'phones' => $this->phones,
             'mails' => $this->mails,
         ];
