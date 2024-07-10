@@ -150,7 +150,7 @@ return [
     'uppercase'            => ':Attribute muss in Großbuchstaben sein.',
     'url'                  => ':Attribute muss eine URL sein.',
     'uuid'                 => ':Attribute muss ein UUID sein.',
-    'attributes' => [
+    'attributes'           => [
         'first_name' => 'Vorname',
     ],
 ];
