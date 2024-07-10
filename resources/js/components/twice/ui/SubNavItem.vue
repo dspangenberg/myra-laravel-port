@@ -1,6 +1,6 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { computed } from 'vue'
-import { type RouteParams, type LocationQuery, useRouter, useRoute, type RouteLocationNormalized } from 'vue-router'
+import { type RouteParams, type LocationQuery, useRouter, useRoute } from 'vue-router'
 
 export interface Props {
   active?: boolean
@@ -11,7 +11,7 @@ export interface Props {
   label: string,
   open?: boolean
   parent?: boolean
-  seperator?: boolean
+  separator?: boolean
   routeName: string,
   routeParams?: RouteParams,
   routeQuery?: LocationQuery
@@ -28,7 +28,7 @@ const props = withDefaults(defineProps<Props>(), {
   parent: false,
   routeParams: undefined,
   routeQuery: undefined,
-  seperator: false
+  separator: false
 })
 
 const route = useRoute()
@@ -48,8 +48,8 @@ const href = computed<string>(() => {
   }
 })
 
-const go = (nRoute: RouteLocationNormalized) => {
-  if (!props.disabled && nRoute.fullPath !== route.fullPath) {
+const go = (nRoute: string) => {
+  if (!props.disabled && nRoute !== route.fullPath) {
     router.push(nRoute)
   }
 }
@@ -66,19 +66,17 @@ const isActive = computed(() => {
 <template>
   <div :class="parent ? 'text-base my-2 font-normal text-gray-400 space-y-2' : ''">
     <router-link
-      v-slot="{ route: lroute }"
-
       :to="href"
       custom
     >
       <li
         :class="[disabled ? '!text-gray-300 cursor-not-allowed' : 'text-gray-600', 'focus:border-blue-400 focus:ring-1 focus:ring-blue-200 select-none focus:outline-none cursor-pointer group flex items-center px-4 rounded-md']"
-        @click="go(lroute)"
+        @click="go(href)"
       >
         <span
           v-tooltip="label"
-          class="truncate hover:underline text-base"
           :class="isActive ? 'font-medium' : ''"
+          class="truncate hover:underline text-base"
         >
           {{ label }}
         </span>
@@ -91,6 +89,6 @@ const isActive = computed(() => {
       </li>
     </router-link>
     <slot />
-    <div :class="[seperator ? 'space-y-1 border-gray-100 pb-2 ml-3' : '']" />
+    <div :class="[separator ? 'space-y-1 border-gray-100 pb-2 ml-3' : '']" />
   </div>
 </template>

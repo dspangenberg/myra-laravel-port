@@ -3,7 +3,7 @@ import { getAllContacts, findContactById, createContact, updateContact, createOr
 import { ref, type Ref } from 'vue'
 
 import { type Meta } from '@/types/'
-import type { Contact, ContactMail } from '@/api/Contact'
+import type { Contact } from '@/api/Contact'
 
 import { type AddressCategory } from '@/api/params/AddressCategory'
 import { type Country } from '@/api/params/Country'
@@ -46,12 +46,14 @@ export const useContactStore = defineStore('contact-store', () => {
 
   const addMail = (contactId: number) => {
     store.$patch(state => {
-      state.contactEdit.mails.push({
-        e_email_category_id: 0,
-        contact_id: contactId,
-        pos: 0,
-        email: ''
-      })
+      if (state.contactEdit !== null) {
+        state.contactEdit.mails.push({
+          e_email_category_id: 0,
+          contact_id: contactId,
+          pos: 0,
+          email: ''
+        })
+      }
     })
   }
 

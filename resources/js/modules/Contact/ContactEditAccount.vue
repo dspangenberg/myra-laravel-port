@@ -1,7 +1,8 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref } from 'vue'
 import { useContactStore } from '@/stores/ContactStore'
 import { storeToRefs } from 'pinia'
+import { type Option } from '@/types'
 
 const contactStore = useContactStore()
 const { paymentDeadlines, taxes, contactEdit } = storeToRefs(contactStore)
@@ -23,13 +24,13 @@ const onCreditorChange = (value: boolean) => {
     <twice-ui-form-group>
       <div class="col-span-12 flex space-x-3 items-center">
         <twice-ui-check-box
-          name="is_debtor"
           label="Debitor"
+          name="is_debtor"
           @input="onDebtorChange"
         />
         <twice-ui-check-box
+          label="Kreditor"
           name="is_creditor"
-          label="Kreditior"
           @input="onCreditorChange"
         />
       </div>
@@ -40,27 +41,27 @@ const onCreditorChange = (value: boolean) => {
     >
       <div class="col-span-12">
         <twice-ui-input
+          label="Debitorennummer"
           name="debtor_number"
-          label="Debitornummer"
         />
       </div>
       <div class="col-span-12">
         <twice-ui-select
-          :options="taxes"
-          name="tax_id"
+          :options="taxes as unknown as Option[]"
           label="Steuersatz"
+          name="tax_id"
         />
       </div>
       <div class="col-span-12">
         <twice-ui-select
-          :options="paymentDeadlines"
-          name="payment_deadline_id"
+          :options="paymentDeadlines as unknown as Option[]"
           label="Zahlungsziel"
+          name="payment_deadline_id"
         />
         <div class="pt-1">
           <twice-ui-check-box
-            name="has_dunning_block"
             label="Mahnsperre"
+            name="has_dunning_block"
           />
         </div>
       </div>
@@ -70,14 +71,14 @@ const onCreditorChange = (value: boolean) => {
     >
       <div class="col-span-12">
         <twice-ui-input
-          name="register_court"
           label="Registergericht"
+          name="register_court"
         />
       </div>
       <div class="col-span-12">
         <twice-ui-input
-          name="register_number"
           label="Registernummer"
+          name="register_number"
         />
       </div>
     </twice-ui-form-group>
@@ -86,14 +87,14 @@ const onCreditorChange = (value: boolean) => {
     >
       <div class="col-span-12">
         <twice-ui-input
-          name="vat_id"
           label="Umsatzsteuer-ID"
+          name="vat_id"
         />
       </div>
       <div class="col-span-12">
         <twice-ui-input
-          name="tax_number"
           label="Steuernummer"
+          name="tax_number"
         />
       </div>
     </twice-ui-form-group>

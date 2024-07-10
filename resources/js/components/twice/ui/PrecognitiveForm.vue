@@ -1,8 +1,7 @@
-<script setup lang="ts" generic="Data extends Record<string, unknown>">
-import { ref, watch, computed, provide } from 'vue'
+<script generic="Data extends Record<string, unknown>" lang="ts" setup>
+import { computed } from 'vue'
 import { id as id2 } from 'random-html-id'
 import { useForm } from 'laravel-precognition-vue'
-import type { Form } from 'laravel-precognition-vue/dist/types'
 import { useRoute } from 'vue-router'
 import type { RequestMethod } from 'laravel-precognition'
 const route = useRoute()
@@ -32,7 +31,6 @@ const form = useForm(props.method, baseRoute.value, props.initialValues)
     class="flex-1 flex w-full items-stretch flex-col"
   >
     {{ baseRoute }}
-    <twice-ui-form-errors :errors="form.errors" />
     <slot :form="form" />
   </form>
 </template>

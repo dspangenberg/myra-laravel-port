@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreReceiptRequest;
 use App\Http\Requests\UpdateReceiptRequest;
+use App\Http\Resources\ReceiptResource;
 use App\Models\Receipt;
 
 class ReceiptController extends Controller
@@ -13,7 +14,12 @@ class ReceiptController extends Controller
      */
     public function index()
     {
-        //
+        return ReceiptResource::collection(Receipt::query()
+            ->with('contact')
+            ->with('category')
+            ->orderBy('issued_on', 'desc')
+            ->paginate(25)
+        );
     }
 
     /**
@@ -37,7 +43,11 @@ class ReceiptController extends Controller
      */
     public function show(Receipt $receipt)
     {
-        //
+
+        $receipt->load('contact');
+        $receipt->load('category');
+
+        return ReceiptResource::make($receipt);
     }
 
     /**

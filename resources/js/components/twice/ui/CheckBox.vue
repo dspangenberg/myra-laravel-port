@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { computed, toRef } from 'vue'
 import { id as id2 } from 'random-html-id'
 import { useField } from 'vee-validate'
@@ -35,10 +35,10 @@ defineEmits(['input'])
     <input
       :id="htmlId"
       v-model="value"
-      type="checkbox"
       :value="trueValue"
       class="h-4 w-4 flex-none rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 focus:ring-offset-0 cursor-pointer disabled:cursor-not-allowed disabled:text-gray-400"
-      @change="$emit('input', $event.target.checked)"
+      type="checkbox"
+      @change="$emit('input', ($event.target as HTMLInputElement).checked)"
     >
     <label
       :for="htmlId"

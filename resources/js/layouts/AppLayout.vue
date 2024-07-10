@@ -1,5 +1,5 @@
 <!--suppress ALL -->
-<script setup lang="ts">
+<script lang="ts" setup>
 import { Button } from '@/components/shdn/ui/button'
 import { IconReceiptEuro, IconSearch, IconLayoutKanban, IconBell, IconClockEdit, IconGauge, IconBuildingCommunity, IconContract, IconFolder } from '@tabler/icons-vue'
 import UserMenu from './UserMenu.vue'
@@ -13,15 +13,15 @@ import { container as WidgetContainerModal } from 'jenesius-vue-modal'
     >
       <div class="mx-auto my-6">
         <img
-          src="@/assets/tw.png"
-          class="size-12"
           alt="twiceware-Logo"
+          class="size-12"
+          src="@/assets/tw.png"
         >
       </div>
       <div class="p-2 mb-6">
         <button
-          type="button"
           class="hidden w-full max-w-64 ring-1 ring-gray-900/10 bg-white lg:flex items-center text-base leading-6 text-gray-400 rounded  py-1.5 pl-2 pr-3 focus:ring-blue-200 focus:outline-none "
+          type="button"
         >
           <IconSearch class="mr-2 size-4" />
           Suchen...
@@ -36,44 +36,44 @@ import { container as WidgetContainerModal } from 'jenesius-vue-modal'
           >
             <template #icon="{ iconProps }">
               <IconGauge
-                v-bind="iconProps"
                 exact
+                v-bind="iconProps"
               />
             </template>
           </TwiceUiNavItem>
         </div>
         <div class="grid gap-1 p-2 ">
           <TwiceUiNavItem
+            active-route-path="/app/contacts"
             label="Accounts + Kontakte"
             route-name="contacts-list"
-            active-route-path="/app/contacts"
           >
             <template #icon="{ iconProps }">
               <IconBuildingCommunity v-bind="iconProps" />
             </template>
           </TwiceUiNavItem>
           <TwiceUiNavItem
+            active-route-path="/app/agenda"
             label="Dokumente"
             route-name="agenda"
-            active-route-path="/app/agenda"
           >
             <template #icon="{ iconProps }">
               <IconFolder v-bind="iconProps" />
             </template>
           </TwiceUiNavItem>
           <TwiceUiNavItem
+            active-route-path="/app/projects"
             label="Projekte"
             route-name="projects-list"
-            active-route-path="/app/projects"
           >
             <template #icon="{ iconProps }">
               <IconLayoutKanban v-bind="iconProps" />
             </template>
           </TwiceUiNavItem>
           <TwiceUiNavItem
+            active-route-path="/app/agenda"
             label="Verträge"
             route-name="agenda"
-            active-route-path="/app/agenda"
           >
             <template #icon="{ iconProps }">
               <IconContract v-bind="iconProps" />
@@ -82,22 +82,32 @@ import { container as WidgetContainerModal } from 'jenesius-vue-modal'
         </div>
         <div class="grid gap-1 p-2 ">
           <TwiceUiNavItem
-            label="Zeiterfassung"
-            route-name="times-list"
             :route-params="{ type: 'week' }"
             active-route-path="/app/times"
+            label="Zeiterfassung"
+            route-name="times-list"
           >
             <template #icon="{ iconProps }">
               <IconClockEdit v-bind="iconProps" />
             </template>
           </TwiceUiNavItem>
           <TwiceUiNavItem
+            active-route-path="/app/agenda"
             label="Fakturierung + Fibu"
             route-name="agenda"
-            active-route-path="/app/agenda"
           >
             <template #icon="{ iconProps }">
               <IconReceiptEuro v-bind="iconProps" />
+            </template>
+            <template #default>
+              <twice-ui-sub-nav-item
+                label="Belege"
+                route-name="receipts-list"
+              />
+              <twice-ui-sub-nav-item
+                label="Transaktionen"
+                route-name="receipts-list"
+              />
             </template>
           </TwiceUiNavItem>
         </div>
@@ -111,10 +121,10 @@ import { container as WidgetContainerModal } from 'jenesius-vue-modal'
         <div class="p-2">
           <Button
             v-tooltip="'Benachrichtigungen'"
-            disabled
-            variant="ghost"
-            size="icon"
             class="text-gray-700 rounded-lg"
+            disabled
+            size="icon"
+            variant="ghost"
           >
             <IconBell class="size-6" />
           </Button>

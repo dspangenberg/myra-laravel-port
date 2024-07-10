@@ -21,6 +21,7 @@ import TimeWeekStats from './TimeWeekStats.vue'
 import TimeListGroup from './TimeListGroup.vue'
 
 dayjs.extend(isoWeek)
+
 const { formatDate, formatSumDuration } = useTemplateFilter()
 
 const router = useRouter()

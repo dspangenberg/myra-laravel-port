@@ -1,6 +1,6 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { computed, useSlots } from 'vue'
-import { type RouteParams, type LocationQuery, useRouter, useRoute, type RouteLocationNormalized } from 'vue-router'
+import { type RouteParams, type LocationQuery, useRouter, useRoute } from 'vue-router'
 
 export interface Props {
   active?: boolean
@@ -73,9 +73,9 @@ const href = computed(() => {
   }
 })
 
-const go = (nRoute: RouteLocationNormalized) => {
-  if (!props.disabled && nRoute.fullPath !== route.fullPath) {
-    router.push(nRoute)
+const go = (path: string) => {
+  if (!props.disabled && path !== route.fullPath) {
+    router.push({ path })
   }
 }
 const isActive = computed(() => {
@@ -94,13 +94,12 @@ const isActive = computed(() => {
 <template>
   <div>
     <router-link
-      v-slot="{ route: lroute }"
       :to="href"
       custom
     >
       <li
         :class="[hidden ? 'hidden' : '', disabled ? 'text-gray-300 cursor-not-allowed' : isActive ? 'bg-stone-200 text-black hover:bg-stone-200' : 'text-stone-800  hover:text-black', 'hover:bg-stone-200/75 select-none cursor-pointer group flex items-center px-2 py-1.5 text-sm font-medium rounded-md']"
-        @click="go(lroute)"
+        @click="go(href)"
       >
         <template v-if="loading">
           <span class="mr-1.5">
@@ -115,13 +114,13 @@ const isActive = computed(() => {
           class="flex-none"
         >
           <slot
-            name="icon"
             :icon-props="iconProps"
+            name="icon"
           />
         </div>
         <span
-          class="truncate flex-1 text-gray-800 hover:text-black"
           :class="[disabled ? '!text-gray-300 cursor-not-allowed' : '', isActive ? 'text-black' : '']"
+          class="truncate flex-1 text-gray-800 hover:text-black"
         >
           {{ label }}
         </span>

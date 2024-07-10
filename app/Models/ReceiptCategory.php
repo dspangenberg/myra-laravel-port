@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $receipts_ref
@@ -29,7 +29,6 @@ class ReceiptCategory extends Model
 
     protected $fillable = [
         'name',
-        'gender',
-        'is_hidden',
+        'receipts_ref',
     ];
 }

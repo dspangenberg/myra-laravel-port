@@ -3,8 +3,10 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\TimeController;
 use App\Http\Controllers\UserController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
@@ -24,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('/contacts', ContactController::class);
     Route::resource('/projects', ProjectController::class);
     Route::resource('/times', TimeController::class);
+    Route::resource('/receipts', ReceiptController::class);
 });
 
 Route::middleware([HandlePrecognitiveRequests::class])->group(function () {

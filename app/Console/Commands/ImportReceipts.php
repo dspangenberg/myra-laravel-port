@@ -2,15 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Contact;
+use App\Models\ConversionRate;
 use App\Models\Receipt;
 use App\Models\ReceiptCategory;
-use App\Models\ConversionRate;
-
-use App\Models\Contact;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Arr;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 
 class ImportReceipts extends Command
 {
@@ -67,72 +66,97 @@ class ImportReceipts extends Command
             }
         });
 
-        $recieptCollection->each(function ($item) {
+        $recieptCollection->reverse()->each(function ($item) {
             $item = collect($item)->dot();
+
+            $date = Carbon::parse($item->get('date'), 'UTC')->setTimezone('Europe/Berlin');
+
+
             $receipt = Receipt::query()->where('receipts_ref', $item['id'])->first();
             if (!$receipt) {
                 $receipt = new Receipt();
                 $receipt->receipts_ref = $item['id'];
+                $year = $date->year;
+                $lastDocumentNumber = Receipt::query()->where('type', 'I')->where('year',
+                    $year)->max('document_number');
+                $lastDocumentNumber++;
+                $receipt->year = $year;
+                $receipt->type = 'I';
+                $receipt->document_number = $lastDocumentNumber;
             }
 
 
+            $receipt->reference = $item->get('reference', '');
 
-                $receipt->reference = $item->get('reference', $item->get('title'));
+            $contactId = $item->get('contact.id', $item->get('provider.id'));
+            if ($contactId) {
+                $receipt->contact_id = Contact::query()->where('receipts_ref', $contactId)->first()->id;
+            } else {
+                $receipt->contact_id = 0;
+            }
 
-                $contactId = $item->get('contact.id', $item->get('provider.id'));
-                dump($contactId);
-                if ($contactId) {
-                    $receipt->contact_id = Contact::query()->where('receipts_ref', $contactId)->first()->id;
+            $receipt->issued_on = $date;
+            $receipt->receipt_category_id = ReceiptCategory::query()->where('receipts_ref',
+                $item->get('category.id'))->first()->id;
+            // $receipt->issuedAt = $item['issuedAt'];
+
+
+            $receipt->tax_rate = $item->get('amountsOriginal.taxDetails.0.percent', 0);
+            if ($receipt->contact_id != 71) {
+                if ($receipt->tax_rate == 19) {
+                    $receipt->tax_code_number = 85;
                 } else {
-                    $receipt->contact_id = 0;
+                    $receipt->tax_rate = 19;
+                    $receipt->tax_code_number = 67;
+                }
+            }
+
+
+            $receipt->amount = $item->get('amountsOriginal.gross');
+            if ($receipt->amount != 0) {
+                $receipt->currency_code = $item->get('amountsOriginal.currency');
+
+                $receipt->amount = $item->get('amountsOriginal.gross') * -1;
+
+                $receipt->title = $item->get('title');
+                $receipt->pdf_file = $item->get('asset.path');
+                $receipt->text = $item->get('text');
+
+                if ($receipt->currency_code === 'USD') {
+                    $receipt->exchange_rate = ConversionRate::query()
+                        ->where('currency_code', 'USD')
+                        ->where('year', $receipt->issued_on->year)
+                        ->where('month', $receipt->issued_on->month)
+                        ->first()->rate;
+
+                    $receipt->gross = round($receipt->amount / $receipt->exchange_rate, 2);
+                } else {
+                    $receipt->gross = $receipt->amount;
                 }
 
-                $receipt->issued_on = Carbon::parse($item->get('date'));
-                $receipt->receipt_category_id = ReceiptCategory::query()->where('receipts_ref', $item->get('category.id'))->first()->id;
-                // $receipt->issuedAt = $item['issuedAt'];
 
+                $receipt->tax = round(($receipt->gross / ($receipt->tax_rate + 100) * $receipt->tax_rate), 2);
+                $receipt->net = round($receipt->gross - $receipt->tax, 2);
 
-                $receipt->tax_rate = $item->get('amountsOriginal.taxDetails.0.percent', 0);
-                if ($receipt->contact_id != 71) {
-                    if ($receipt->tax_rate == 19) {
-                        $receipt->tax_code_number = 85;
-                    } else {
-                        $receipt->tax_rate = 19;
-                        $receipt->tax_code_number = 67;
-                    }
-                }
+                $duplicate = Receipt::query()
+                    ->whereNot('receipts_ref', $item->get('id'))
+                    ->where('issued_on', $receipt->issued_on)
+                    ->where('contact_id', $receipt->contact_id)
+                    ->where('amount', $receipt->amount)
+                    ->where('reference', $receipt->reference)
+                    ->first();
 
-
-
-                $receipt->amount = $item->get('amountsOriginal.gross');
-                if ($receipt->amount != 0) {
-                    $receipt->currency_code = $item->get('amountsOriginal.currency');
-
-                    $receipt->amount = $item->get('amountsOriginal.gross') * -1;
-
-                    $receipt->title = $item->get('title');
-                    $receipt->pdf_file = $item->get('asset.path');
-                    $receipt->text = $item->get('text');
-
-                    if ($receipt->currency_code === 'USD') {
-                        $receipt->exchange_rate = ConversionRate::query()
-                            ->where('currency_code', 'USD')
-                            ->where('year', $receipt->issued_on->year)
-                            ->where('month', $receipt->issued_on->month)
-                            ->first()->rate;
-
-                        $receipt->gross = round($receipt->amount * $receipt->exchange_rate, 2);
-                    } else {
-                        $receipt->gross = $receipt->amount;
-                    }
-
-                    $receipt->net = round($receipt->gross - ($receipt->gross * ($receipt->tax_rate / 100)), 2);
-                    $receipt->tax = round($receipt->gross * ($receipt->tax_rate / 100),2);
-
-
+                if ($duplicate) {
+                    dump('Duplicate Receipt: '. $duplicate);
+                } else {
                     $receipt->save();
                 }
-                // print_r($receipt->toJSON());
+
+
+
+
+            }
+            // print_r($receipt->toJSON());
 
         });
     }

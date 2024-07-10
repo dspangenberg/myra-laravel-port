@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property int|null $company_id
@@ -105,7 +105,7 @@ use Illuminate\Support\Carbon;
  */
 class Contact extends Model
 {
-      protected $appends = [
+    protected $appends = [
         'full_name',
         'reverse_full_name',
         'initials',
@@ -166,18 +166,6 @@ class Contact extends Model
         'website',
         'dob',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'is_org' => 'boolean',
-            'is_debtor' => 'boolean',
-            'is_creditor' => 'boolean',
-            'is_archived' => 'boolean',
-            'has_dunning_block' => 'boolean',
-            'dob' => 'datetime'
-        ];
-    }
 
     public function getFullNameAttribute(): string
     {
@@ -245,7 +233,6 @@ class Contact extends Model
         return $this->hasMany(ContactMail::class, 'contact_id', 'id');
     }
 
-
     public function payment_deadline(): HasOne
     {
         return $this->hasOne(PaymentDeadline::class, 'id', 'payment_deadline_id');
@@ -254,5 +241,17 @@ class Contact extends Model
     public function tax(): HasOne
     {
         return $this->hasOne(Tax::class, 'id', 'tax_id');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'is_org' => 'boolean',
+            'is_debtor' => 'boolean',
+            'is_creditor' => 'boolean',
+            'is_archived' => 'boolean',
+            'has_dunning_block' => 'boolean',
+            'dob' => 'datetime'
+        ];
     }
 }

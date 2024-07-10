@@ -4,6 +4,7 @@ import userRoutes from '@/modules/User/routes'
 import contactRoutes from '@/modules/Contact/routes'
 import projectRoutes from '@/modules/Project/routes'
 import timeRoutes from '@/modules/Time/routes'
+import receiptRoutes from '@/modules/Receipt/routes'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -60,6 +61,7 @@ const router = createRouter({
         },
         contactRoutes,
         projectRoutes,
+        receiptRoutes,
         timeRoutes,
         userRoutes
       ]
