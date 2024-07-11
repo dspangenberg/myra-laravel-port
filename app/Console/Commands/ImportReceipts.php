@@ -57,7 +57,7 @@ class ImportReceipts extends Command
                     $contact = new Contact();
                     $contact->receipts_ref = $orgContact['id'];
                     $contact->name = $orgContact['title'];
-                    $contact->is_debtor = true;
+                    $contact->is_creditor = true;
                 }
                 if (Arr::exists($item, 'iban')) {
                     $contact->iban = $item['iban'];
@@ -102,10 +102,10 @@ class ImportReceipts extends Command
 
 
             $receipt->tax_rate = $item->get('amountsOriginal.taxDetails.0.percent', 0);
-            if ($receipt->contact_id != 71) {
-                if ($receipt->tax_rate == 19) {
-                    $receipt->tax_code_number = 85;
-                } else {
+            $receipt->tax_code_number = $receipt->tax_rate !== 0 ? 85 : '';
+
+            if ($receipt->tax_rate === 0) {
+                if ($receipt->currency_code !== 'EUR') {
                     $receipt->tax_rate = 19;
                     $receipt->tax_code_number = 67;
                 }

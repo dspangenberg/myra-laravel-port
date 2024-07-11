@@ -3,10 +3,11 @@ import { getAllReceipt, findReceiptById, createReceipt, updateReceipt } from '@/
 import { ref, type Ref } from 'vue'
 
 import { type Meta } from '@/types/'
-import type { Receipt } from '@/api/Receipt'
+import type { Receipt, GroupedList } from '@/api/Receipt'
 
 export const useReceiptStore = defineStore('receipt-store', () => {
   const receipts: Ref<Receipt[] | null> = ref([])
+  const groupedReceipts: Ref<GroupedList | null> = ref([])
   const receipt: Ref<Receipt | null> = ref(null)
   const receiptEdit: Ref<Receipt | null> = ref(null)
 
@@ -17,10 +18,11 @@ export const useReceiptStore = defineStore('receipt-store', () => {
 
   const getAll = async (qs: string) => {
     isLoading.value = true
-    const { data, meta } = await getAllReceipt(qs)
+    const { data, meta, grouped } = await getAllReceipt(qs)
     store.$patch(state => {
       state.receipts = data
       state.meta = meta
+      state.groupedReceipts = grouped
     })
     isLoading.value = false
   }
@@ -49,6 +51,7 @@ export const useReceiptStore = defineStore('receipt-store', () => {
 
   return {
     isLoading,
+    groupedReceipts,
     receipt,
     receiptEdit,
     receipts,

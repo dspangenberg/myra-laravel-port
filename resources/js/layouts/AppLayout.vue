@@ -92,20 +92,17 @@ import { container as WidgetContainerModal } from 'jenesius-vue-modal'
             </template>
           </TwiceUiNavItem>
           <TwiceUiNavItem
-            active-route-path="/app/agenda"
+            active-route-path="/app/invoicing"
             label="Fakturierung + Fibu"
-            route-name="agenda"
+            route-name="receipts-list"
           >
             <template #icon="{ iconProps }">
               <IconReceiptEuro v-bind="iconProps" />
             </template>
             <template #default>
               <twice-ui-sub-nav-item
+                active-route-path="/app/invoicing/receipts"
                 label="Belege"
-                route-name="receipts-list"
-              />
-              <twice-ui-sub-nav-item
-                label="Transaktionen"
                 route-name="receipts-list"
               />
             </template>

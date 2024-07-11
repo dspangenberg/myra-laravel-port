@@ -29,7 +29,7 @@ const receiptStore = useReceiptStore()
 const { receipt, receipts, meta, isLoading } = storeToRefs(receiptStore)
 
 const qs = computed(() => route.query)
-const { queryString } = useLaravelQuery(['page'])
+const { queryString } = useLaravelQuery(['page'], { type: 'list' })
 
 const onSelect = async (id: number) => {
   await receiptStore.findById(id)
@@ -73,6 +73,39 @@ onMounted(() => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
+    </template>
+    <template #header-pivot>
+      <twice-ui-pivot>
+        <twice-ui-pivot-item
+          :route-params="{type: 'list'}"
+          active-route-path="/app/invoicing/receipts/list"
+          label="Belegliste"
+          route-name="receipts-list"
+        />
+        <twice-ui-pivot-item
+          :active-route-query="{view: 'debitors'}"
+          :route-query="{view: 'debitors'}"
+          active-route-path="/app/invoicing/receipts/grouped"
+          disabled
+          label="Debitoren"
+          route-name="receipts-grouped-list"
+        />
+        <twice-ui-pivot-item
+          :active-route-query="{view: 'creditors'}"
+          :route-query="{view: 'creditors', type: 'grouped'}"
+          active-route-path="/app/invoicing/receipts/grouped"
+          label="Kreditoren"
+          route-name="receipts-grouped-list"
+        />
+        <twice-ui-pivot-item
+          :active-route-query="{view: 'categories'}"
+          :route-query="{view: 'categories'}"
+          active-route-path="/app/invoicing/receipts/grouped"
+          disabled
+          label="Kategorien"
+          route-name="receipts-grouped-list"
+        />
+      </twice-ui-pivot>
     </template>
     <template #content-full>
       <div class="px-0.5 flex space-x-8 mt-6 overflow-hidden">

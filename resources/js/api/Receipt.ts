@@ -28,12 +28,7 @@ export interface Receipt {
   pdf_file: string
   export_file_name: string
   text: string
-  tax_code_number: number
-}
-
-export interface ResponseWithMeta {
-  data: Receipt[],
-  meta: Meta
+  tax_code_number: string
 }
 
 export interface Response {
@@ -43,9 +38,29 @@ export interface EditOrCreateResponse extends Response {
   data: Receipt
 }
 
+export interface GroupedEntry {
+  entries: Receipt[],
+  name: string,
+  sum_gross: number,
+  sum_net: number,
+  sum_tax: number,
+  sum_tax_67: number,
+  sum_tax_85: number
+}
+
+export interface GroupedList {
+  [key: number]: GroupedEntry
+}
+
+export interface ResponseWithMeta {
+  data: Receipt[],
+  meta: Meta
+  grouped: GroupedList
+}
+
 export const getAllReceipt = async (qs: string): Promise<ResponseWithMeta> => {
-  const { meta, data } = await axios.$get(`${baseUrl}/${qs}`) as ResponseWithMeta
-  return { meta, data }
+  const { meta, data, grouped } = await axios.$get(`${baseUrl}/${qs}`) as ResponseWithMeta
+  return { meta, data, grouped }
 }
 
 export const createOrEditReceipt = async (id?: number): Promise<EditOrCreateResponse> => {

@@ -4,8 +4,7 @@ import userRoutes from '@/modules/User/routes'
 import contactRoutes from '@/modules/Contact/routes'
 import projectRoutes from '@/modules/Project/routes'
 import timeRoutes from '@/modules/Time/routes'
-import receiptRoutes from '@/modules/Receipt/routes'
-
+import invoicingRoutes from '@/modules/Invoicing/routes'
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -60,8 +59,8 @@ const router = createRouter({
           component: () => import('@/views/Soon.vue')
         },
         contactRoutes,
+        invoicingRoutes,
         projectRoutes,
-        receiptRoutes,
         timeRoutes,
         userRoutes
       ]

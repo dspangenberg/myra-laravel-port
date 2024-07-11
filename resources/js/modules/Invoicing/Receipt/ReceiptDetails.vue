@@ -112,18 +112,6 @@ const { receipt } = storeToRefs(receiptStore)
               </span>
             </li>
           </ul>
-          <Separator class="my-4" />
-          <div class="font-semibold">
-            Belegerkennung:
-          </div>
-          <li class="flex flex-col">
-            <span class="text-muted-foreground">
-              Titel:
-            </span>
-            <span>
-              {{ receipt.title }}
-            </span>
-          </li>
         </template>
       </div>
     </CardContent>
