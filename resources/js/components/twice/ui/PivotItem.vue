@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { computed, inject, type Ref } from 'vue'
 import { type LocationQuery, type RouteParams, useRoute, useRouter } from 'vue-router'
 import { IKeyValueMulitTypeStore } from '@/types'
@@ -75,6 +75,11 @@ const isActive = computed(() => {
   if (props.activeRouteQuery) {
     const key = Object.keys(props.activeRouteQuery)[0]
     const value = Object.values(props.activeRouteQuery)[0]
+
+    if (props.activeRouteQuery[key] === null && !route.query[key]) {
+      return true
+    }
+
     return currentRoute.startsWith(props.activeRoutePath) && route.query[key] === value
   }
 

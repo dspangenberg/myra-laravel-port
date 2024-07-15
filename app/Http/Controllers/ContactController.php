@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreContact;
 use App\Http\Resources\ContactResource;
 use App\Models\AddressCategory;
 use App\Models\Contact;
@@ -13,26 +14,30 @@ use App\Models\Salutation;
 use App\Models\Tax;
 use App\Models\Title;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreContact;
-
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class ContactController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return ContactResource::collection(Contact::query()
+        $contacts = QueryBuilder::for(Contact::class, $request)
+            ->allowedFilters([
+                AllowedFilter::scope('view'),
+            ])
+            ->select('*')
             ->with('company')
             ->with('title')
             ->orderBy('name')
-            ->whereNull('is_archived')
-            ->orWhere('is_archived', false)
-            ->paginate($this->recordsPerPage)
-        );
+            ->paginate($this->recordsPerPage, $request->get('page', 1));
+
+        return ContactResource::collection($contacts);
     }
 
     public function store(StoreContact $request)
     {
         $contact = Contact::create($request->validated());
+
         return new ContactResource($contact);
     }
 

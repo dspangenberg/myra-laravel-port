@@ -130,13 +130,13 @@ onMounted(() => {
                     Kreditor
                   </TableHead>
                   <TableHead class="w-28 text-right">
-                    Brutto
+                    Netto
                   </TableHead>
                   <TableHead class="w-28 text-right">
                     Steuer
                   </TableHead>
                   <TableHead class="w-28 text-right">
-                    Netto
+                    Brutto
                   </TableHead>
                   <TableHead class="w-auto" />
                 </TableRow>

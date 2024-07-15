@@ -81,6 +81,13 @@ class Receipt extends Model
         'pdf_file',
         'export_file_name',
         'text',
+        'amount_to_pay',
+        'document_number',
+        'type',
+        'year',
+        'text',
+        'amount_to_pay',
+        'text_md5'
     ];
 
     protected $appends = [

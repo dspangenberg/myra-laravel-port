@@ -34,7 +34,7 @@ defineEmits(['select'])
       </div>
     </TableCell>
     <TableCell class="text-right">
-      {{ formatNumber(item.gross) }}
+      {{ formatNumber(item.net) }}
       <div class="text-xs text-gray-400">
         <span v-if="item.currency_code !== 'EUR'">
           ({{ formatNumber(item.amount) }} {{ item.currency_code }})
@@ -48,7 +48,10 @@ defineEmits(['select'])
       </div>
     </TableCell>
     <TableCell class="text-right">
-      {{ formatNumber(item.net) }}
+      {{ formatNumber(item.gross) }}
+    </TableCell>
+    <TableCell class="text-right">
+      {{ formatNumber(item.amount_to_pay) }}
     </TableCell>
   </TableRow>
 </template>

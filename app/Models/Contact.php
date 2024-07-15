@@ -6,13 +6,11 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
- *
- *
  * @property int $id
  * @property int|null $company_id
  * @property int $is_org
@@ -49,6 +47,7 @@ use Illuminate\Support\Carbon;
  * @property-read string $initials
  * @property-read string $reverse_full_name
  * @property-read Title|null $title
+ *
  * @method static Builder|Contact newModelQuery()
  * @method static Builder|Contact newQuery()
  * @method static Builder|Contact query()
@@ -83,7 +82,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Contact whereUpdatedAt($value)
  * @method static Builder|Contact whereVatId($value)
  * @method static Builder|Contact whereWebsite($value)
- * *
+ *                                                     *
  * @property-read Salutation|null $salutation
  * @property-read PaymentDeadline|null $payment_deadline
  * @property-read Tax|null $tax
@@ -92,15 +91,19 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $addresses_count
  * @property-read Collection<int, Contact> $contacts
  * @property-read int|null $contacts_count
+ *
  * @method static Builder|Contact whereTaxNumber($value)
+ *
  * @property-read Collection<int, ContactMail> $mails
  * @property-read int|null $mails_count
  * @property-read Collection<int, ContactPhone> $phones
  * @property-read int|null $phones_count
  * @property string|null $receipts_ref
  * @property string|null $iban
+ *
  * @method static Builder|Contact whereIban($value)
  * @method static Builder|Contact whereReceiptsRef($value)
+ *
  * @mixin Eloquent
  */
 class Contact extends Model
@@ -243,6 +246,18 @@ class Contact extends Model
         return $this->hasOne(Tax::class, 'id', 'tax_id');
     }
 
+    public function scopeView(Builder $query, $view): Builder
+    {
+        return match ($view) {
+            'debtors' => $query->where('is_debtor', true),
+            'orgs' => $query->where('is_org', true),
+            'creditors' => $query->where('is_creditor', true),
+            'archived' => $query->where('is_archived', true),
+            default => $query,
+        };
+
+    }
+
     protected function casts(): array
     {
         return [
@@ -251,7 +266,7 @@ class Contact extends Model
             'is_creditor' => 'boolean',
             'is_archived' => 'boolean',
             'has_dunning_block' => 'boolean',
-            'dob' => 'datetime'
+            'dob' => 'datetime',
         ];
     }
 }

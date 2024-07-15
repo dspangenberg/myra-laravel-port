@@ -35,3 +35,23 @@ function md($markdown): string
 
     return $converter->convert($markdown);
 }
+
+function formated_invoice_id(int $invoice_id): string
+{
+    if (!$invoice_id) {
+        return '(Entwurf)';
+    }
+
+    $formated_id = substr($invoice_id, 0, 4).'.';
+    $formated_id .= substr($invoice_id, 4, 1).'.';
+    if (strlen($invoice_id) == 8) {
+        $formated_id .= substr($invoice_id, 5);
+    } else {
+        $formated_id .= substr($invoice_id, 5, 1).'.';
+        $formated_id .= substr($invoice_id, 6);
+
+    }
+
+    return $formated_id;
+
+}

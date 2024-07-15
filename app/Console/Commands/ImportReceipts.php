@@ -11,6 +11,9 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 
+use function Laravel\Prompts\Confirm;
+use function Laravel\Prompts\Table;
+
 class ImportReceipts extends Command
 {
     /**
@@ -71,9 +74,10 @@ class ImportReceipts extends Command
 
             $date = Carbon::parse($item->get('date'), 'UTC')->setTimezone('Europe/Berlin');
 
-
             $receipt = Receipt::query()->where('receipts_ref', $item['id'])->first();
+            $is_new = false;
             if (!$receipt) {
+                $is_new = true;
                 $receipt = new Receipt();
                 $receipt->receipts_ref = $item['id'];
                 $year = $date->year;
@@ -84,7 +88,6 @@ class ImportReceipts extends Command
                 $receipt->type = 'I';
                 $receipt->document_number = $lastDocumentNumber;
             }
-
 
             $receipt->reference = $item->get('reference', '');
 
@@ -100,20 +103,35 @@ class ImportReceipts extends Command
                 $item->get('category.id'))->first()->id;
             // $receipt->issuedAt = $item['issuedAt'];
 
-
             $receipt->tax_rate = $item->get('amountsOriginal.taxDetails.0.percent', 0);
             $receipt->tax_code_number = $receipt->tax_rate !== 0 ? 85 : '';
+            $receipt->amount = $item->get('amountsOriginal.gross');
 
-            if ($receipt->tax_rate === 0) {
+            if ($receipt->amount != 0) {
+
                 if ($receipt->currency_code !== 'EUR') {
                     $receipt->tax_rate = 19;
-                    $receipt->tax_code_number = 67;
+                    $receipt->tax_code_number = 85;
+
+                    $receipt->exchange_rate = ConversionRate::query()
+                        ->where('currency_code', 'USD')
+                        ->where('year', $receipt->issued_on->year)
+                        ->where('month', $receipt->issued_on->month)
+                        ->first()->rate;
+
+                    $receipt->net = round($receipt->amount / $receipt->exchange_rate, 2) * -1;
+                    $receipt->tax = round(($receipt->net / 100 * $receipt->tax_rate), 2);
+                    $receipt->gross = round($receipt->net + $receipt->tax, 2);
+                    $receipt->amount_to_pay = round($receipt->net, 2);
+
+                } else {
+                    $receipt->gross = $item->get('amountsOriginal.gross') * -1;
+                    $receipt->amount_to_pay = round($receipt->gross, 2);
+                    $receipt->tax = round(($receipt->gross / ($receipt->tax_rate + 100) * $receipt->tax_rate), 2);
+                    $receipt->net = round($receipt->gross - $receipt->tax, 2);
                 }
-            }
 
 
-            $receipt->amount = $item->get('amountsOriginal.gross');
-            if ($receipt->amount != 0) {
                 $receipt->currency_code = $item->get('amountsOriginal.currency');
 
                 $receipt->amount = $item->get('amountsOriginal.gross') * -1;
@@ -121,39 +139,46 @@ class ImportReceipts extends Command
                 $receipt->title = $item->get('title');
                 $receipt->pdf_file = $item->get('asset.path');
                 $receipt->text = $item->get('text');
+                $receipt->text_md5 = hash('md5', $item->get('text'));
 
-                if ($receipt->currency_code === 'USD') {
-                    $receipt->exchange_rate = ConversionRate::query()
-                        ->where('currency_code', 'USD')
-                        ->where('year', $receipt->issued_on->year)
-                        ->where('month', $receipt->issued_on->month)
-                        ->first()->rate;
-
-                    $receipt->gross = round($receipt->amount / $receipt->exchange_rate, 2);
-                } else {
-                    $receipt->gross = $receipt->amount;
-                }
-
-
-                $receipt->tax = round(($receipt->gross / ($receipt->tax_rate + 100) * $receipt->tax_rate), 2);
-                $receipt->net = round($receipt->gross - $receipt->tax, 2);
+                $save = true;
 
                 $duplicate = Receipt::query()
-                    ->whereNot('receipts_ref', $item->get('id'))
                     ->where('issued_on', $receipt->issued_on)
-                    ->where('contact_id', $receipt->contact_id)
                     ->where('amount', $receipt->amount)
-                    ->where('reference', $receipt->reference)
+                    ->whereNot('receipts_ref', $receipt->receipts_ref)
                     ->first();
 
                 if ($duplicate) {
-                    dump('Duplicate Receipt: '. $duplicate);
-                } else {
-                    $receipt->save();
+                    table(
+                        ['Datum', 'Kontakt', 'Betrag', 'Reference', 'MD5', 'RR'],
+                        [
+                            [
+                                $duplicate->issued_on->format('d.m.Y'),
+                                $duplicate->contact->name,
+                                $duplicate->amount.''.$receipt->currency_code,
+                                $duplicate->reference,
+                                $duplicate->text_md5,
+                                $duplicate->receipts_ref,
+                            ],
+                            [
+                                $receipt->issued_on->format('d.m.Y'),
+                                $receipt->contact->name,
+                                $receipt->amount.''.$receipt->currency_code,
+                                $receipt->reference,
+                                $receipt->text_md5,
+                                $receipt->receipts_ref,
+                            ],
+                        ]
+                    );
+
+                    $save = confirm('Mögliches Duplikate importieren?');
                 }
 
-
-
+                if ($save) {
+                    dump('safed');
+                    $receipt->save();
+                }
 
             }
             // print_r($receipt->toJSON());

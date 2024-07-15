@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -77,12 +77,51 @@ const onUpdatePage = (page: number) => {
         />
       </ShdnUiButton>
     </template>
+    <template #header-pivot>
+      <twice-ui-pivot>
+        <twice-ui-pivot-item
+          :active-route-query="{view: null}"
+          active-route-path="/app/contacts"
+          exact
+          label="Alle Kontakte"
+          route-name="contacts-list"
+        />
+        <twice-ui-pivot-item
+          :active-route-query="{view: 'orgs'}"
+          :route-query="{view: 'orgs'}"
+          active-route-path="/app/contacts"
+          label="nur Organisationen"
+          route-name="contacts-list"
+        />
+        <twice-ui-pivot-item
+          :active-route-query="{view: 'debtors'}"
+          :route-query="{view: 'debtors'}"
+          active-route-path="/app/contacts"
+          label="Debitoren"
+          route-name="contacts-list"
+        />
+        <twice-ui-pivot-item
+          :active-route-query="{view: 'creditors'}"
+          :route-query="{view: 'creditors'}"
+          active-route-path="/app/contacts"
+          label="Kreditoren"
+          route-name="contacts-list"
+        />
+        <twice-ui-pivot-item
+          :active-route-query="{view: 'archived'}"
+          :route-query="{view: 'archived'}"
+          active-route-path="/app/contacts"
+          label="Archivierte Kontakte"
+          route-name="contacts-list"
+        />
+      </twice-ui-pivot>
+    </template>
     <template #content-full>
       <twice-ui-table-box
-        record-name="Kontakte"
-        :record-count="contacts?.length"
         :loading="isLoading"
         :meta="meta"
+        :record-count="contacts?.length"
+        record-name="Kontakte"
         @update-page="onUpdatePage"
       >
         <template #header>

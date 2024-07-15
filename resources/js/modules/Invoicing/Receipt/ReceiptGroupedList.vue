@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
   TableHead,
-  TableBody
+  TableBody, TableCell
 } from '@/components/shdn/ui/table'
 import { useTemplateFilter } from '@/composables/useTemplateFilter'
 const { formatDate, formatNumber } = useTemplateFilter()
@@ -113,7 +113,7 @@ onMounted(() => {
           <twice-ui-table-box
             :loading="isLoading"
             :meta="meta"
-            :record-count="5"
+            :record-count="meta?.total"
             record-name="Belege"
             @update-page="onUpdatePage"
           >
@@ -134,16 +134,22 @@ onMounted(() => {
                       Kategorie / Referenz
                     </TableHead>
                     <TableHead class="w-28 text-center">
-                      Brutto
-                    </TableHead>
-                    <TableHead class="w-28 text-center">
-                      USt. (85)
+                      Netto
                     </TableHead>
                     <TableHead class="w-28 text-center">
                       USt. (67)
                     </TableHead>
                     <TableHead class="w-28 text-center">
-                      Netto
+                      USt. (81)
+                    </TableHead>
+                    <TableHead class="w-28 text-center">
+                      USt. (85)
+                    </TableHead>
+                    <TableHead class="w-28 text-center">
+                      Brutto
+                    </TableHead>
+                    <TableHead class="w-28 text-center">
+                      Zahlbetrag
                     </TableHead>
                     <TableHead class="w-auto" />
                   </TableRow>
@@ -161,12 +167,7 @@ onMounted(() => {
                     <TableHead />
                     <TableHead />
                     <TableHead class="text-right">
-                      {{ formatNumber(value.sum_gross) }}
-                    </TableHead>
-                    <TableHead class="text-right">
-                      <div v-if="value.sum_tax_85">
-                        {{ formatNumber(value.sum_tax_85) }}
-                      </div>
+                      {{ formatNumber(value.sum_net) }}
                     </TableHead>
                     <TableHead class="text-right">
                       <div v-if="value.sum_tax_67">
@@ -174,8 +175,21 @@ onMounted(() => {
                       </div>
                     </TableHead>
                     <TableHead class="text-right">
-                      {{ formatNumber(value.sum_net) }}
+                      <div v-if="value.sum_tax_81">
+                        {{ formatNumber(value.sum_tax_81) }}
+                      </div>
                     </TableHead>
+                    <TableHead class="text-right">
+                      <div v-if="value.sum_tax_85">
+                        {{ formatNumber(value.sum_tax_85) }}
+                      </div>
+                    </TableHead>
+                    <TableHead class="text-right">
+                      {{ formatNumber(value.sum_gross) }}
+                    </TableHead>
+                    <TableCell class="text-right">
+                      {{ formatNumber(value.sum_amount_to_pay) }}
+                    </TableCell>
                     <TableHead class="w-auto" />
                   </TableRow>
                 </TableBody>

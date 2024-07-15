@@ -11,8 +11,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
- * 
- *
  * @property int $id
  * @property int $project_id
  * @property int $time_category_id
@@ -32,6 +30,7 @@ use Illuminate\Support\Facades\DB;
  * @property string|null $ping_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static Builder|Time newModelQuery()
  * @method static Builder|Time newQuery()
  * @method static Builder|Time query()
@@ -54,13 +53,16 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|Time whereTimeCategoryId($value)
  * @method static Builder|Time whereUpdatedAt($value)
  * @method static Builder|Time whereUserId($value)
+ *
  * @property-read TimeCategory|null $category
  * @property-read Project|null $project
  * @property-read User|null $user
+ *
  * @method static Builder|Time withMinutes()
  * @method static Builder|Time byWeekOfYear(int $week, int $year)
  * @method static Builder|Time maxDuration($date)
  * @method static Builder|Time view($view)
+ *
  * @mixin Eloquent
  */
 class Time extends Model
@@ -104,8 +106,6 @@ class Time extends Model
     {
         return $date->format('d.m.Y H:i');
     }
-
-
 
     public function scopeMaxDuration(Builder $query, $date): Builder
     {
@@ -152,6 +152,7 @@ class Time extends Model
             'end_at' => 'datetime',
         ];
     }
+
     public function category(): HasOne
     {
         return $this->hasOne(TimeCategory::class, 'id', 'time_category_id');

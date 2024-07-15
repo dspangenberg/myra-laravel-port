@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "2024.0530.0",
+  "version": "2024.0715.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

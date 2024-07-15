@@ -27,6 +27,7 @@ export interface Receipt {
   title: string
   pdf_file: string
   export_file_name: string
+  amount_to_pay: number
   text: string
   tax_code_number: string
 }
@@ -45,7 +46,9 @@ export interface GroupedEntry {
   sum_net: number,
   sum_tax: number,
   sum_tax_67: number,
+  sum_amount_to_pay: number,
   sum_tax_85: number
+  sum_tax_81: number
 }
 
 export interface GroupedList {
