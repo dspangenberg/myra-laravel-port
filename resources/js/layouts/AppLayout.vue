@@ -1,7 +1,7 @@
 <!--suppress ALL -->
 <script lang="ts" setup>
 import { Button } from '@/components/shdn/ui/button'
-import { IconReceiptEuro, IconSearch, IconLayoutKanban, IconBell, IconClockEdit, IconGauge, IconBuildingCommunity, IconContract, IconFolder } from '@tabler/icons-vue'
+import { IconReceiptEuro, IconSearch, IconAbacus, IconLayoutKanban, IconBell, IconClockEdit, IconGauge, IconBuildingCommunity, IconContract, IconFolder } from '@tabler/icons-vue'
 import UserMenu from './UserMenu.vue'
 import { container as WidgetContainerModal } from 'jenesius-vue-modal'
 </script>
@@ -93,17 +93,42 @@ import { container as WidgetContainerModal } from 'jenesius-vue-modal'
           </TwiceUiNavItem>
           <TwiceUiNavItem
             active-route-path="/app/invoicing"
-            label="Fakturierung + Fibu"
-            route-name="receipts-list"
+            label="Fakturierung"
+            route-name="soon"
           >
             <template #icon="{ iconProps }">
               <IconReceiptEuro v-bind="iconProps" />
             </template>
             <template #default>
               <twice-ui-sub-nav-item
-                active-route-path="/app/invoicing/receipts"
                 label="Belege"
-                route-name="receipts-list"
+                route-name="soon"
+              />
+            </template>
+          </TwiceUiNavItem>
+        </div>
+        <div class="grid gap-1 p-2 ">
+          <TwiceUiNavItem
+            active-route-path="/app/bookkeeping"
+            label="Buchaltung"
+            route-name="receipts-list"
+          >
+            <template #icon="{ iconProps }">
+              <IconAbacus v-bind="iconProps" />
+            </template>
+            <template #default>
+              <twice-ui-sub-nav-item
+                label="Belege"
+                route-name="soon"
+              />
+              <twice-ui-sub-nav-item
+                label="Transaktionen"
+                route-name="soon"
+              />
+              <twice-ui-sub-nav-item
+                active-route-path="/app/bookkeeping/bookings"
+                label="Buchungen (Fibu)"
+                route-name="bookings-list"
               />
             </template>
           </TwiceUiNavItem>

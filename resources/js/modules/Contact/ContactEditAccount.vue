@@ -8,7 +8,7 @@ const contactStore = useContactStore()
 const { paymentDeadlines, taxes, contactEdit } = storeToRefs(contactStore)
 
 const isDebtor = ref(contactEdit.value?.is_debtor)
-const isCreditor = ref(false)
+const isCreditor = ref(contactEdit.value?.is_creditor)
 
 const onDebtorChange = (value: boolean) => {
   isDebtor.value = value
@@ -35,6 +35,7 @@ const onCreditorChange = (value: boolean) => {
         />
       </div>
     </twice-ui-form-group>
+
     <twice-ui-form-group
       v-if="isDebtor"
       title="Debitorendaten"
@@ -67,6 +68,17 @@ const onCreditorChange = (value: boolean) => {
       </div>
     </twice-ui-form-group>
     <twice-ui-form-group
+      v-if="isCreditor"
+      title="Kreditordaten"
+    >
+      <div class="col-span-12">
+        <twice-ui-input
+          label="Kreditorennummer"
+          name="creditor_number"
+        />
+      </div>
+    </twice-ui-form-group>
+    <twice-ui-form-group
       title="Registerdaten"
     >
       <div class="col-span-12">
@@ -96,6 +108,18 @@ const onCreditorChange = (value: boolean) => {
           label="Steuernummer"
           name="tax_number"
         />
+      </div>
+      <div class="col-span-12">
+        <twice-ui-input
+          label="Erfolgskonto"
+          name="outturn_account_id"
+        />
+        <div class="pt-1">
+          <twice-ui-check-box
+            label="primär verwenden"
+            name="is_primary"
+          />
+        </div>
       </div>
     </twice-ui-form-group>
   </div>

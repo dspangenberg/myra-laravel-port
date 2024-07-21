@@ -34,6 +34,8 @@ class StoreContact extends FormRequest
             'is_creditor' => 'nullable|boolean',
             'department' => 'nullable',
             'position' => 'nullable',
+            'outturn_account_id' => 'integer',
+            'is_primary' => 'nullable|boolean',
             'ref' => 'nullable',
             'debtor_number' => 'nullable',
             'has_dunning_block' => 'nullable|boolean',

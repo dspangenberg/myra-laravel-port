@@ -29,6 +29,12 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Tax whereNeedsVatId($value)
  * @method static Builder|Tax whereUpdatedAt($value)
  * @method static Builder|Tax whereValue($value)
+ * @property int $account_input_tax
+ * @property int $account_vat
+ * @property int $tax_code_number
+ * @method static Builder|Tax whereAccountInputTax($value)
+ * @method static Builder|Tax whereAccountVat($value)
+ * @method static Builder|Tax whereTaxCodeNumber($value)
  * @mixin Eloquent
  */
 class Tax extends Model

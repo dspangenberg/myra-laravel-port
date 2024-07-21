@@ -23,6 +23,8 @@ class ContactResource extends JsonResource
             'is_org' => $this->is_org,
             'is_debtor' => $this->is_debtor,
             'is_creditor' => $this->is_creditor,
+            'outturn_account_id' => $this->outturn_account_id,
+            'is_primary' => $this->is_primary,
             'is_archived' => $this->is_archived,
             'has_dunning_block' => $this->has_dunning_block,
             'payment_deadline_id' => $this->payment_deadline_id,

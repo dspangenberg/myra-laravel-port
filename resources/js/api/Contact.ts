@@ -36,6 +36,8 @@ export interface ContactInterface {
   ref: string
   debtor_number: number
   creditor_number: number
+  outturn_account_id: number
+  is_primary: boolean
   is_debtor: boolean
   is_creditor: boolean
   is_archived: boolean

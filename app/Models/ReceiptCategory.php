@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property string $receipts_ref
@@ -21,6 +21,12 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|ReceiptCategory whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ReceiptCategory whereReceiptsRef($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ReceiptCategory whereUpdatedAt($value)
+ * @property string $type
+ * @property int $is_private
+ * @property int $outturn_account_id
+ * @method static \Illuminate\Database\Eloquent\Builder|ReceiptCategory whereIsPrivate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ReceiptCategory whereOutturnAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ReceiptCategory whereType($value)
  * @mixin \Eloquent
  */
 class ReceiptCategory extends Model

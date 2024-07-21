@@ -4,5 +4,9 @@ export interface Tax {
   invoice_text: string
   value: number
   needs_vat_id: boolean
-  is_default: boolean
+  account_input_tax: number,
+  account_vat: number,
+  is_default: boolean,
+  tax_code_number: number,
+  is_bidirectional: boolean,
 }

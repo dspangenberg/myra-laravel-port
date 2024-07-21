@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property string $receipts_ref
@@ -58,6 +58,23 @@ use Illuminate\Support\Carbon;
  * @property string|null $tax_code_number
  * @method static Builder|Receipt whereIssuedOn($value)
  * @method static Builder|Receipt whereTaxCodeNumber($value)
+ * @property string $type
+ * @property int|null $document_number
+ * @property int $year
+ * @property float $amount_to_pay
+ * @property string|null $text_md5
+ * @property int $is_locked
+ * @property string|null $note
+ * @property-read \App\Models\ReceiptCategory|null $category
+ * @property-read \App\Models\Contact|null $contact
+ * @property-read string $real_document_number
+ * @method static Builder|Receipt whereAmountToPay($value)
+ * @method static Builder|Receipt whereDocumentNumber($value)
+ * @method static Builder|Receipt whereIsLocked($value)
+ * @method static Builder|Receipt whereNote($value)
+ * @method static Builder|Receipt whereTextMd5($value)
+ * @method static Builder|Receipt whereType($value)
+ * @method static Builder|Receipt whereYear($value)
  * @mixin Eloquent
  */
 class Receipt extends Model

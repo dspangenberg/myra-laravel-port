@@ -4,7 +4,7 @@ import userRoutes from '@/modules/User/routes'
 import contactRoutes from '@/modules/Contact/routes'
 import projectRoutes from '@/modules/Project/routes'
 import timeRoutes from '@/modules/Time/routes'
-import invoicingRoutes from '@/modules/Invoicing/routes'
+import bookKeepingRoutes from '@/modules/Bookkeeping/routes'
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -14,7 +14,6 @@ const router = createRouter({
         return { name: 'dashboard' }
       }
     },
-
     {
       path: '/forbidden',
       name: 'forbidden',
@@ -58,8 +57,8 @@ const router = createRouter({
           path: 'documents',
           component: () => import('@/views/Soon.vue')
         },
+        bookKeepingRoutes,
         contactRoutes,
-        invoicingRoutes,
         projectRoutes,
         timeRoutes,
         userRoutes
