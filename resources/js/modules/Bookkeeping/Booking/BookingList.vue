@@ -82,14 +82,14 @@ const onUpdatePage = (page: number) => {
             </template>
             <Table class="text-sm">
               <TableHeader>
-                <TableRow class="items-start">
-                  <TableHead class="w-24">
+                <TableRow class="items-start sticky top-0 z-50 pb-12 bg-gray-50">
+                  <TableHead class="w-24 ">
                     Datum
                   </TableHead>
                   <TableHead class="w-36">
                     Beleg
                   </TableHead>
-                  <TableHead class="w-96 truncate">
+                  <TableHead class="w-full truncate">
                     Buchungstext
                   </TableHead>
                   <TableHead class="w-28 text-right">
@@ -98,10 +98,12 @@ const onUpdatePage = (page: number) => {
                   <TableHead class="w-20 text-right truncate">
                     USt.%
                   </TableHead>
-                  <TableHead class="w-28">
+                  <TableHead
+                    class="w-44"
+                  >
                     Soll-Konto
                   </TableHead>
-                  <TableHead class="w-28">
+                  <TableHead class="w-44">
                     Haben-Konto
                   </TableHead>
                   <TableHead class="w-20 text-right">

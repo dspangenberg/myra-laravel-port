@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\BankAccount;
 use App\Models\BookkeepingBooking;
+use App\Models\Contact;
 use App\Models\Transaction;
 
 class TransactionsBookkeepingService
@@ -30,6 +31,7 @@ class TransactionsBookkeepingService
         $accounts = [
             'creditId' => 0,
             'debitId' => 0,
+            'bookingText' => '',
         ];
 
         $bankAccounts = BankAccount::pluck('iban')->toArray();
@@ -38,6 +40,12 @@ class TransactionsBookkeepingService
             $bankAccount = BankAccount::where('iban', $transaction->account_number)->first();
             $accounts['debitId'] = 1360;
             $accounts['creditId'] = $bankAccount->bookkeeping_account_id;
+            $accounts['bookingText'] = '';
+        }
+
+        $debtorIbans = Contact::where('is_debtor', true)->whereNotNull('iban')->pluck('iban')->toArray();
+        if (in_array($transaction->account_number, $debtorIbans)) {
+            $accounts = $instance->bookDebtorPayments($transaction);
         }
 
         if ($transaction->is_private) {
@@ -45,9 +53,23 @@ class TransactionsBookkeepingService
         }
 
         if ($accounts['creditId'] && $accounts['debitId']) {
-            $booking->initBooking('transaction', $transaction->id, $transaction->booked_on, $transaction->amount, $accounts['creditId'], $accounts['debitId'], '', $transaction->real_document_number);
+            $booking->initBooking('transaction', $transaction->id, $transaction->booked_on, $transaction->amount, $accounts['creditId'], $accounts['debitId'], $accounts['bookingText'], $transaction->real_document_number, $transaction->comment);
             $booking->save();
         }
+    }
+
+    public function bookDebtorPayments(Transaction $transaction): array
+    {
+        $contact = Contact::where('id', $transaction->contact_id)->first();
+        if (! $contact) {
+            dd('Contact not found', $transaction->contact_id, $transaction->id);
+        }
+
+        return [
+            'creditId' => $contact->debtor_number,
+            'debitId' => $transaction->bank_account->bookkeeping_account_id,
+            'bookingText' => $contact->full_name.'|Zahlungseingang '.$transaction->purpose,
+        ];
     }
 
     public function bookPrivate(Transaction $transaction): array
@@ -55,6 +77,7 @@ class TransactionsBookkeepingService
         return [
             'creditId' => $transaction->amount < 0 ? 1800 : 1890,
             'debitId' => $transaction->bank_account->bookkeeping_account_id,
+            'bookingText' => '',
         ];
     }
 }

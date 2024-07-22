@@ -7,7 +7,7 @@ import {
 } from '@/components/shdn/ui/table'
 
 import { useTemplateFilter } from '@/composables/useTemplateFilter'
-const { formatDate, formatNumber } = useTemplateFilter()
+const { formatDate, formatNumber, splitBookingText } = useTemplateFilter()
 
 export interface Props {
   item: Booking
@@ -27,9 +27,15 @@ defineEmits(['select'])
     </TableCell>
     <TableCell
       v-tooltip="item.booking_text"
-      class="align-top"
+      class="align-top truncate"
     >
-      {{ item.booking_text }}
+      <span v-html="splitBookingText(item.booking_text)" />
+      <span
+        v-if="item.note"
+        class="text-red-500"
+      >
+        {{ item.note }}
+      </span>
     </TableCell>
     <TableCell class="text-right align-top">
       {{ formatNumber(item.amount) }}
@@ -39,15 +45,29 @@ defineEmits(['select'])
     </TableCell>
     <TableCell
       v-tooltip="item.account_debit?.label"
-      class="truncate align-top"
+      class="align-top"
     >
-      {{ item.account_debit?.label }}
+      <div class="flex gap-x-2">
+        <div class="w-12 text-right flex-none">
+          {{ item.account_debit?.account_number }}
+        </div>
+        <div class="flex-1 truncate">
+          {{ item.account_debit?.name }}
+        </div>
+      </div>
     </TableCell>
     <TableCell
       v-tooltip="item.account_credit?.label"
-      class="truncate align-top"
+      class="align-top"
     >
-      {{ item.account_credit?.label }}
+      <div class="flex gap-x-2">
+        <div class="w-12 text-right flex-none">
+          {{ item.account_credit?.account_number }}
+        </div>
+        <div class="flex-1 truncate">
+          {{ item.account_credit?.name }}
+        </div>
+      </div>
     </TableCell>
     <TableCell class="text-right align-top">
       {{ formatNumber(item.tax_debit || 0) }}

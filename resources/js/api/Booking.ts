@@ -32,12 +32,6 @@ export interface Booking {
   is_locked: boolean
 }
 
-export interface QueryParams {
-  type: 'week' | 'list'
-  year?: number
-  week?: number
-}
-
 export interface ResponseWithMeta {
   data: Booking[],
   meta: Meta
@@ -54,27 +48,4 @@ export const getAllBookings = async (qs: string = ''): Promise<ResponseWithMeta>
 export const findTimeById = async (id: number): Promise<Response> => {
   const { data } = await axios.$get(`${baseUrl}/${id}`) as Response
   return { data }
-}
-
-export const createProofOfActivityPdf = async (qs: string = ''): Promise<PdfResponse> => {
-  const { dataUrl, base64 } = await axios.$getPdf(`${baseUrl}/${qs}`) as PdfResponse
-  return { dataUrl, base64 }
-}
-
-export const createOrEditTime = async (id?: number): Promise<CreateResponse> => {
-  const url = id ? `${baseUrl}/${id}/edit` : `${baseUrl}/create`
-  return await axios.$get(url)
-}
-export const editTime = async (id: number): Promise<CreateResponse> => {
-  const { data, projects, users, categories } = await axios.$get(`${baseUrl}/${id}/edit`) as CreateResponse
-  console.log({ data, projects, users, categories })
-  return { data, projects, users, categories }
-}
-
-export const storeTime = async (payload: Time) => {
-  await axios.$post(baseUrl, payload)
-}
-
-export const updateTime = async (payload: Time) => {
-  await axios.$put(`${baseUrl}/${payload.id}`, payload)
 }

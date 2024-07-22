@@ -75,7 +75,7 @@ class BookkeepingBooking extends Model
         'is_locked',
     ];
 
-    public function initBooking($type, $id, $date, $amount, $credit_account_id, $debit_account_id, $text, $document_number)
+    public function initBooking($type, $id, $date, $amount, $credit_account_id, $debit_account_id, $text, $document_number, $note)
     {
 
         $this->booking_text = $text;
@@ -104,6 +104,7 @@ class BookkeepingBooking extends Model
         $this->tax_credit = $tax['tax_credit'];
         $this->tax_debit = $tax['tax_debit'];
         $this->tax_id = $tax['tax_id'];
+        $this->note = $note;
 
     }
 

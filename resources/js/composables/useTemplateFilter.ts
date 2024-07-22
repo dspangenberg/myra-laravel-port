@@ -24,6 +24,11 @@ export function useTemplateFilter () {
     return formatDuration(duration)
   }
 
+  const splitBookingText = (text: string): string => {
+    const lines = text.split('|')
+    return lines.map(line => line.trim()).join('<br>')
+  }
+
   const formatDate = (date: string | undefined, format: string = 'DD.MM.YYYY', locale: string = 'de') => {
     if (date === undefined) return ''
     if (date?.length > 16) {
@@ -50,5 +55,5 @@ export function useTemplateFilter () {
     return dayjs.duration(duration, 'minutes').format('H:mm')
   }
 
-  return { collectField, formatDate, durationUntilNow, formatDuration, formatNumber, formatSumDuration }
+  return { collectField, formatDate, durationUntilNow, formatDuration, formatNumber, formatSumDuration, splitBookingText }
 }

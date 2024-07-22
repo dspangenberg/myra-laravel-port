@@ -10,7 +10,13 @@ class BookkeepingBookingController extends Controller
 {
     public function index()
     {
-        $bookings = BookkeepingBooking::with('tax')->with('account_credit')->with('account_debit')->orderBy('date')->orderBy('id')->paginate(50);
+        $bookings = BookkeepingBooking::with('tax')
+            ->with('account_credit')
+            ->with('account_debit')
+            // ->where('account_id_credit', 8400)
+            // ->orWhere('account_id_debit', 8400)
+            ->orderBy('date')
+            ->orderBy('id')->paginate(50);
 
         return BookkeepingBookingResource::collection($bookings);
     }

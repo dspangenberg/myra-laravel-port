@@ -35,14 +35,16 @@ class ImportReceipts extends Command
      */
     public function handle(): void
     {
-        $jsonContent = Storage::disk('private')->json('receipts-2021.json');
+
+        $path = 'receipts/2021/';
+        $jsonContent = Storage::disk('system')->json($path.'Receipts.json');
         $recieptCollection = collect($jsonContent);
         $category = $recieptCollection->values()->select('category')->values();
         $contacts = $recieptCollection->values()->select('iban', 'contact')->values();
 
         $category->each(function ($item) {
             $category = ReceiptCategory::query()->where('receipts_ref', $item['category']['id'])->first();
-            if (!$category) {
+            if (! $category) {
                 $category = new ReceiptCategory();
                 $category->receipts_ref = $item['category']['id'];
                 $category->name = $item['category']['title'];
@@ -56,7 +58,7 @@ class ImportReceipts extends Command
                 $orgContact = $item->get('contact', $item->get('provider'));
 
                 $contact = Contact::query()->where('receipts_ref', $orgContact)->first();
-                if (!$contact) {
+                if (! $contact) {
                     $contact = new Contact();
                     $contact->receipts_ref = $orgContact['id'];
                     $contact->name = $orgContact['title'];
@@ -69,14 +71,13 @@ class ImportReceipts extends Command
             }
         });
 
-        $recieptCollection->reverse()->each(function ($item) {
+        $recieptCollection->reverse()->each(function ($item) use ($path) {
             $item = collect($item)->dot();
-
             $date = Carbon::parse($item->get('date'), 'UTC')->setTimezone('Europe/Berlin');
 
             $receipt = Receipt::query()->where('receipts_ref', $item['id'])->first();
             $is_new = false;
-            if (!$receipt) {
+            if (! $receipt) {
                 $is_new = true;
                 $receipt = new Receipt();
                 $receipt->receipts_ref = $item['id'];
@@ -87,6 +88,10 @@ class ImportReceipts extends Command
                 $receipt->year = $year;
                 $receipt->type = 'I';
                 $receipt->document_number = $lastDocumentNumber;
+
+                $contents = Storage::disk('system')->get($path.'/Receipts/'.$item['exportFileName']);
+                dd($contents);
+
             }
 
             $receipt->reference = $item->get('reference', '');
@@ -130,7 +135,6 @@ class ImportReceipts extends Command
                     $receipt->tax = round(($receipt->gross / ($receipt->tax_rate + 100) * $receipt->tax_rate), 2);
                     $receipt->net = round($receipt->gross - $receipt->tax, 2);
                 }
-
 
                 $receipt->currency_code = $item->get('amountsOriginal.currency');
 

@@ -29,7 +29,8 @@ export const useBookingStore = defineStore('time-store', () => {
   return {
     bookings,
     meta,
-    getAll
+    getAll,
+    isLoading
   }
 })
 
