@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="Data extends Record<string, unknown>">
+<script lang="ts" setup>
 
 import { computed, useSlots, toRef, inject } from 'vue'
 import { id as id2 } from 'random-html-id'
@@ -83,12 +83,12 @@ const hasSuffix = computed(() => !!$slots.suffix || props.suffix)
         :id="htmlId"
         ref="textarea"
         v-model="data"
-        :disabled="disabled"
-        class="w-full rounded-md py-1.5 border-gray-300 text-base font-normal text-gray-800 focus:ring-2 form-textarea resize-none border px-1.5 focus:border-blue-400 focus:outline-none focus:ring-blue-200 placeholder-gray-400"
         :class="[disabled ? 'bg-gray-50' : '', inputClass]"
-        :rows="rows"
+        :disabled="disabled"
         :maxlength="maxlength"
         :readonly="readonly"
+        :rows="rows"
+        class="w-full rounded-md py-1.5 border-gray-300 text-base font-normal text-gray-800 focus:ring-2 form-textarea resize-none border px-1.5 focus:border-blue-400 focus:outline-none focus:ring-blue-200 placeholder-gray-400"
       />
     </template>
     <template v-else>
@@ -108,7 +108,8 @@ const hasSuffix = computed(() => !!$slots.suffix || props.suffix)
         <input
           :id="htmlId"
           v-model="data"
-          class="w-full h-9 px-2 border-input text-base text-black block rounded font-sans disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 focus:ring focus:ring-opacity-50 placeholder:text-gray-400"
+          :autocomplete="autocomplete"
+          :autofocus="autofocus"
           :class="
             [
               'font-sans',
@@ -120,12 +121,11 @@ const hasSuffix = computed(() => !!$slots.suffix || props.suffix)
             ]
           "
           :disabled="disabled"
-          :autocomplete="autocomplete"
-          :autofocus="autofocus"
-          :placeholder="placeholder"
-          :type="type"
           :maxlength="maxlength"
+          :placeholder="placeholder"
           :readonly="readonly"
+          :type="type"
+          class="w-full h-9 px-2 border-input text-base text-black block rounded font-sans disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 focus:ring focus:ring-opacity-50 placeholder:text-gray-400"
           @change="emit('change')"
         >
         <div

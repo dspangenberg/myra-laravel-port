@@ -24,6 +24,8 @@ class ContactResource extends JsonResource
             'is_debtor' => $this->is_debtor,
             'is_creditor' => $this->is_creditor,
             'outturn_account_id' => $this->outturn_account_id,
+            'iban' => $this->iban,
+            'cc_name' => $this->cc_name,
             'is_primary' => $this->is_primary,
             'is_archived' => $this->is_archived,
             'has_dunning_block' => $this->has_dunning_block,

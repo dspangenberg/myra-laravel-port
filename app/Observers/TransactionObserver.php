@@ -12,7 +12,7 @@ class TransactionObserver
      */
     public function created(Transaction $transaction): void
     {
-        TransactionsBookkeepingService::run($transaction);
+        // TransactionsBookkeepingService::run($transaction);
     }
 
     /**
@@ -20,7 +20,7 @@ class TransactionObserver
      */
     public function updated(Transaction $transaction): void
     {
-        TransactionsBookkeepingService::run($transaction);
+        // TransactionsBookkeepingService::run($transaction);
     }
 
     /**

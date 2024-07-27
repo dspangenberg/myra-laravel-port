@@ -6,6 +6,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -52,14 +53,23 @@ use Illuminate\Support\Carbon;
  * @method static Builder|BookkeepingBooking whereTransactionId($value)
  * @method static Builder|BookkeepingBooking whereUpdatedAt($value)
  *
+ * @property-read BookkeepingAccount|null $account_credit
+ * @property-read BookkeepingAccount|null $account_debit
+ * @property-read Tax|null $tax
+ * @property string $bookable_type
+ * @property int $bookable_id
+ * @property int $is_marked
+ * @property-read Model|\Eloquent $bookable
+ *
+ * @method static Builder|BookkeepingBooking whereBookableId($value)
+ * @method static Builder|BookkeepingBooking whereBookableType($value)
+ * @method static Builder|BookkeepingBooking whereIsMarked($value)
+ *
  * @mixin Eloquent
  */
 class BookkeepingBooking extends Model
 {
     protected $fillable = [
-        'transaction_id',
-        'receipt_id',
-        'payment_id',
         'account_id_credit',
         'account_id_debit',
         'amount',
@@ -68,22 +78,89 @@ class BookkeepingBooking extends Model
         'is_split',
         'split_id',
         'booking_text',
+        'document_number_prefix',
+        'document_number_year',
         'document_number',
+        'is_split',
+        'split_id',
         'note',
         'tax_credit',
         'tax_debit',
         'is_locked',
+        'is_marked',
+        'bookable_type',
+        'bookable_id',
     ];
 
-    public function initBooking($type, $id, $date, $amount, $credit_account_id, $debit_account_id, $text, $document_number, $note)
+    protected $appends = [
+        'document_number',
+    ];
+
+    public static function createBooking($parent, $dateField, $amountField, $debit_account, $credit_account, $documentNumberPrefix = ''): BookkeepingBooking
     {
+        $booking = new BookkeepingBooking();
+        $booking->bookable()->associate($parent);
+        $booking->date = $parent[$dateField];
+
+        $amount = $parent[$amountField];
+        $booking->amount = $amount < 0 ? $amount * -1 : $amount;
+
+        if ($parent->amount < 0) {
+            $booking->account_id_credit = $debit_account->account_number;
+            $booking->account_id_debit = $credit_account->account_number;
+        } else {
+            $booking->account_id_debit = $debit_account->account_number;
+            $booking->account_id_credit = $credit_account->account_number;
+        }
+
+        $prefix = $documentNumberPrefix !== '' ? $documentNumberPrefix : $parent->prefix;
+        $booking->document_number_prefix = $prefix;
+        $booking->document_number_year = $booking->date->year;
+
+        $booking->setDocumentNumber($booking->date->year, $prefix);
+
+        $taxes = BookkeepingAccount::getTax($booking->account_id_credit, $booking->account_id_debit, $booking->amount);
+        $booking->tax_credit = $taxes['tax_credit'];
+        $booking->tax_debit = $taxes['tax_debit'];
+        $booking->tax_id = $taxes['tax_id'];
+
+        return $booking;
+    }
+
+    public function bookable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    public function setDocumentNumber($year, $prefix): void
+    {
+        $lastDocumentNumber = BookkeepingBooking::query()->where('document_number_prefix', $prefix)->where('document_number_year',
+            $year)->max('document_number_counter');
+        $lastDocumentNumber++;
+
+        $this->document_number_prefix = $prefix;
+        $this->document_number_year = $year;
+        $this->document_number_counter = $lastDocumentNumber;
+
+    }
+
+    public function initBooking(MorphTo $parent, $date, $amount, $credit_account, $debit_account, $text, $document_number, $note): void
+    {
+        $booking = new BookkeepingBooking();
+
+        $booking->bookable()->associate($parent);
+        $booking->date = $date;
+        $booking->ammount = $amount;
+
+        $booking->account_id_credit = $amount < 0 ? $credit_account->account_number : $debit_account->account_number;
+        $booking->account_id_debit = $amount < 0 ? $credit_account->account_number : $debit_account->account_number;
 
         $this->booking_text = $text;
         switch ($type) {
             case 'transaction':
                 $this->transaction_id = $id;
                 $transaction = Transaction::find($id);
-                $this->booking_text = $text ? $text : $transaction->name.'|'.$transaction->purpose;
+                $this->booking_text = $text ?: $transaction->name.'|'.$transaction->purpose;
                 break;
             case 'receipt':
                 $this->receipt_id = $id;
@@ -99,7 +176,6 @@ class BookkeepingBooking extends Model
         $this->amount = $amount < 0 ? $amount * -1 : $amount;
 
         $this->date = $date;
-        $tax = BookkeepingAccount::getTax($this->account_id_credit, $this->account_id_debit, $this->amount);
 
         $this->tax_credit = $tax['tax_credit'];
         $this->tax_debit = $tax['tax_debit'];
@@ -123,7 +199,12 @@ class BookkeepingBooking extends Model
         return $this->hasOne(Tax::class, 'id', 'tax_id');
     }
 
-    protected function casts()
+    public function getDocumentNumberAttribute(): string
+    {
+        return $this->document_number_prefix.'-'.$this->document_number_year.'/'.$this->document_number_counter;
+    }
+
+    protected function casts(): array
     {
         return [
             'date' => 'date',

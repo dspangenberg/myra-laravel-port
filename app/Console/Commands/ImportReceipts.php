@@ -36,8 +36,7 @@ class ImportReceipts extends Command
     public function handle(): void
     {
 
-        $path = 'receipts/2021/';
-        $jsonContent = Storage::disk('system')->json($path.'Receipts.json');
+        $jsonContent = Storage::disk('private')->json('receipts-2021.json');
         $recieptCollection = collect($jsonContent);
         $category = $recieptCollection->values()->select('category')->values();
         $contacts = $recieptCollection->values()->select('iban', 'contact')->values();
@@ -71,7 +70,7 @@ class ImportReceipts extends Command
             }
         });
 
-        $recieptCollection->reverse()->each(function ($item) use ($path) {
+        $recieptCollection->reverse()->each(function ($item) {
             $item = collect($item)->dot();
             $date = Carbon::parse($item->get('date'), 'UTC')->setTimezone('Europe/Berlin');
 
@@ -82,16 +81,7 @@ class ImportReceipts extends Command
                 $receipt = new Receipt();
                 $receipt->receipts_ref = $item['id'];
                 $year = $date->year;
-                $lastDocumentNumber = Receipt::query()->where('type', 'I')->where('year',
-                    $year)->max('document_number');
-                $lastDocumentNumber++;
                 $receipt->year = $year;
-                $receipt->type = 'I';
-                $receipt->document_number = $lastDocumentNumber;
-
-                $contents = Storage::disk('system')->get($path.'/Receipts/'.$item['exportFileName']);
-                dd($contents);
-
             }
 
             $receipt->reference = $item->get('reference', '');
@@ -108,6 +98,7 @@ class ImportReceipts extends Command
                 $item->get('category.id'))->first()->id;
             // $receipt->issuedAt = $item['issuedAt'];
 
+            $receipt->currency_code = $item->get('amountsOriginal.currency');
             $receipt->tax_rate = $item->get('amountsOriginal.taxDetails.0.percent', 0);
             $receipt->tax_code_number = $receipt->tax_rate !== 0 ? 85 : '';
             $receipt->amount = $item->get('amountsOriginal.gross');
@@ -116,7 +107,6 @@ class ImportReceipts extends Command
 
                 if ($receipt->currency_code !== 'EUR') {
                     $receipt->tax_rate = 19;
-                    $receipt->tax_code_number = 85;
 
                     $receipt->exchange_rate = ConversionRate::query()
                         ->where('currency_code', 'USD')
@@ -124,26 +114,28 @@ class ImportReceipts extends Command
                         ->where('month', $receipt->issued_on->month)
                         ->first()->rate;
 
-                    $receipt->net = round($receipt->amount / $receipt->exchange_rate, 2) * -1;
+                    $receipt->net = round($receipt->amount / $receipt->exchange_rate, 2);
                     $receipt->tax = round(($receipt->net / 100 * $receipt->tax_rate), 2);
                     $receipt->gross = round($receipt->net + $receipt->tax, 2);
-                    $receipt->amount_to_pay = round($receipt->net, 2);
 
                 } else {
-                    $receipt->gross = $item->get('amountsOriginal.gross') * -1;
-                    $receipt->amount_to_pay = round($receipt->gross, 2);
+                    $receipt->gross = $receipt->amount;
                     $receipt->tax = round(($receipt->gross / ($receipt->tax_rate + 100) * $receipt->tax_rate), 2);
                     $receipt->net = round($receipt->gross - $receipt->tax, 2);
                 }
 
-                $receipt->currency_code = $item->get('amountsOriginal.currency');
-
-                $receipt->amount = $item->get('amountsOriginal.gross') * -1;
+                $receipt->amount = $receipt->amount * -1;
+                $receipt->gross = $receipt->gross * -1;
+                $receipt->net = $receipt->net * -1;
+                $receipt->tax = $receipt->tax * -1;
 
                 $receipt->title = $item->get('title');
-                $receipt->pdf_file = $item->get('asset.path');
+                $receipt->pdf_file = basename($item->get('asset.path'));
                 $receipt->text = $item->get('text');
-                $receipt->text_md5 = hash('md5', $item->get('text'));
+
+                $pdfContents = Storage::disk('system')->get("receipts/$receipt->pdf_file");
+                $year = $receipt->issued_on->year;
+                Storage::disk('s3')->put("documents/org-receipts/$year/$receipt->pdf_file", $pdfContents, 'private');
 
                 $save = true;
 
@@ -180,8 +172,8 @@ class ImportReceipts extends Command
                 }
 
                 if ($save) {
-                    dump('safed');
                     $receipt->save();
+                    Receipt::createBooking($receipt);
                 }
 
             }

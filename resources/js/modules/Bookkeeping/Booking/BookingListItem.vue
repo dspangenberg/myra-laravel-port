@@ -27,7 +27,7 @@ defineEmits(['select'])
     </TableCell>
     <TableCell
       v-tooltip="item.booking_text"
-      class="align-top truncate"
+      class="align-top"
     >
       <span v-html="splitBookingText(item.booking_text)" />
       <span
@@ -35,6 +35,7 @@ defineEmits(['select'])
         class="text-red-500"
       >
         {{ item.note }}
+
       </span>
     </TableCell>
     <TableCell class="text-right align-top">

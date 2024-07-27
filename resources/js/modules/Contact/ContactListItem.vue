@@ -21,9 +21,9 @@ defineEmits(['select'])
   <TableRow @click="$emit('select', item.id)">
     <TableCell class="w-14">
       <TwiceUiAvatar
-        avatar="null"
         :fullname="item?.full_name"
         :initials="item?.initials"
+        avatar="null"
       />
     </TableCell>
     <TableCell class="w-[30rem] max-w-[30rem]">
@@ -39,10 +39,16 @@ defineEmits(['select'])
     </TableCell>
     <TableCell>
       <p
-        v-if="item.debtor_number"
+        v-if="item.is_debtor && item.debtor_number"
         class="text-gray-600 pt-1 text-sm text-right items-center"
       >
         {{ formatNumber(item.debtor_number, 0) }}
+      </p>
+      <p
+        v-if="item.is_creditor && item.creditor_number"
+        class="text-gray-600 pt-1 text-sm text-right items-center"
+      >
+        {{ formatNumber(item.creditor_number, 0) }}
       </p>
     </TableCell>
     <TableCell class="w-12">

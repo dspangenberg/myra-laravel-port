@@ -128,22 +128,22 @@ onMounted(() => {
             <template #header>
               <router-view />
             </template>
-            <Table>
+            <Table class="text-sm">
               <TableHeader>
-                <TableRow>
+                <TableRow class="align-top">
                   <TableHead class="w-24">
                     Datum
                   </TableHead>
                   <TableHead class="w-48">
-                    Kreditor
+                    Debitor/Kreditor
                   </TableHead>
-                  <TableHead class="w-28 text-right">
-                    Netto
+                  <TableHead class="w-80">
+                    Referenz
                   </TableHead>
-                  <TableHead class="w-28 text-right">
-                    Steuer
+                  <TableHead class="w-28">
+                    Kategorie
                   </TableHead>
-                  <TableHead class="w-28 text-right">
+                  <TableHead class="w-28">
                     Brutto
                   </TableHead>
                   <TableHead class="w-auto" />
@@ -159,11 +159,6 @@ onMounted(() => {
               </TableBody>
             </Table>
           </twice-ui-table-box>
-        </div>
-        <div class="flex-none overflow-hidden w-96">
-          <template v-if="receipt">
-            <ReceiptDetails />
-          </template>
         </div>
       </div>
     </template>

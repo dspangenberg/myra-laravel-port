@@ -109,6 +109,19 @@ const onCreditorChange = (value: boolean) => {
           name="tax_number"
         />
       </div>
+
+      <div class="col-span-12">
+        <twice-ui-input
+          label="IBAN"
+          name="iban"
+        />
+      </div>
+      <div class="col-span-12">
+        <twice-ui-input
+          label="Name auf Kreditkartenabrechnung:"
+          name="cc_name"
+        />
+      </div>
       <div class="col-span-12">
         <twice-ui-input
           label="Erfolgskonto"

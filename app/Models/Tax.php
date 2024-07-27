@@ -35,6 +35,10 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Tax whereAccountInputTax($value)
  * @method static Builder|Tax whereAccountVat($value)
  * @method static Builder|Tax whereTaxCodeNumber($value)
+ * @property int $is_bidirectional
+ * @method static Builder|Tax whereIsBidirectional($value)
+ * @property int $legacy_id
+ * @method static Builder|Tax whereLegacyId($value)
  * @mixin Eloquent
  */
 class Tax extends Model
@@ -46,4 +50,11 @@ class Tax extends Model
         'needs_vat_id',
         'is_default',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'value' => 'float',
+        ];
+    }
 }

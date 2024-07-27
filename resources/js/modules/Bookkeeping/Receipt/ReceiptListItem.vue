@@ -17,24 +17,22 @@ defineEmits(['select'])
 
 </script>
 <template>
-  <TableRow @click="$emit('select', item.id)">
+  <TableRow>
     <TableCell>
       {{ formatDate(item.issued_on) }}
-      <div class="text-xs text-gray-400">
-        {{ item.real_document_number }}
-      </div>
     </TableCell>
+    <TableCell class="truncate">
+      {{ item.contact.full_name }}
+    </TableCell>
+    <TableCell class="truncate">
+      {{ item.reference }}
+    </TableCell>
+
     <TableCell
-      v-tooltip="item.contact.full_name"
+      v-tooltip="item.category.name"
       class="truncate"
     >
-      {{ item.contact.full_name }}
-      <div class="text-xs text-gray-400">
-        {{ item.reference }}
-      </div>
-      <div class="text-sm text-gray-400">
-        {{ item.category.name }}
-      </div>
+      {{ item.category.name }}
     </TableCell>
     <TableCell
       :class="item.amount < 0 ? 'text-red-600' : 'text-green-600'"
@@ -67,12 +65,6 @@ defineEmits(['select'])
       class="text-right"
     >
       {{ formatNumber(item.gross) }}
-    </TableCell>
-    <TableCell
-      :class="item.amount < 0 ? 'text-red-600' : 'text-green-600'"
-      class="text-right"
-    >
-      {{ formatNumber(item.amount_to_pay) }}
     </TableCell>
   </TableRow>
 </template>

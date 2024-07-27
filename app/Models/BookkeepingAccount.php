@@ -30,6 +30,9 @@ use Illuminate\Support\Carbon;
  * @method static Builder|BookkeepingAccount whereType($value)
  * @method static Builder|BookkeepingAccount whereUpdatedAt($value)
  *
+ * @property-read string $label
+ * @property-read \App\Models\Tax|null $tax
+ *
  * @mixin Eloquent
  */
 class BookkeepingAccount extends Model
@@ -66,7 +69,9 @@ class BookkeepingAccount extends Model
 
         if ($tax && $tax->value > 0) {
             $return['tax_id'] = $tax->id;
-            $taxAmount = $amount * ($tax->value / 100);
+            $taxAmount = round($amount / ($tax->value + 100) * $tax->value, 2);
+
+            // round(($receipt->gross / ($receipt->tax_rate + 100) * $receipt->tax_rate), 2);
 
             if ($tax->is_bidirectional) {
                 $return['tax_credit'] = $taxAmount;

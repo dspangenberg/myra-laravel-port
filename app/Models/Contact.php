@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Exceptions\ContactNotFoundException;
+use App\Exceptions\ContactWithoutAccountException;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -11,8 +13,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
- * 
- *
  * @property int $id
  * @property int|null $company_id
  * @property int $is_org
@@ -49,6 +49,7 @@ use Illuminate\Support\Carbon;
  * @property-read string $initials
  * @property-read string $reverse_full_name
  * @property-read Title|null $title
+ *
  * @method static Builder|Contact newModelQuery()
  * @method static Builder|Contact newQuery()
  * @method static Builder|Contact query()
@@ -92,24 +93,30 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $addresses_count
  * @property-read Collection<int, Contact> $contacts
  * @property-read int|null $contacts_count
+ *
  * @method static Builder|Contact whereTaxNumber($value)
+ *
  * @property-read Collection<int, ContactMail> $mails
  * @property-read int|null $mails_count
  * @property-read Collection<int, ContactPhone> $phones
  * @property-read int|null $phones_count
  * @property string|null $receipts_ref
  * @property string|null $iban
+ *
  * @method static Builder|Contact whereIban($value)
  * @method static Builder|Contact whereReceiptsRef($value)
+ *
  * @property int $outturn_account_id
  * @property bool $is_primary
  * @property string|null $paypal_email
  * @property string|null $cc_name
+ *
  * @method static Builder|Contact view($view)
  * @method static Builder|Contact whereCcName($value)
  * @method static Builder|Contact whereIsPrimary($value)
  * @method static Builder|Contact whereOutturnAccountId($value)
  * @method static Builder|Contact wherePaypalEmail($value)
+ *
  * @mixin Eloquent
  */
 class Contact extends Model
@@ -157,6 +164,7 @@ class Contact extends Model
         'department',
         'receipts_ref',
         'iban',
+        'cc_name',
         'short_name',
         'ref',
         'catgory_id',
@@ -179,6 +187,57 @@ class Contact extends Model
         'website',
         'dob',
     ];
+
+    public static function getAccounts(int $id, bool $createAccountIfNotExists = true)
+    {
+        $contact = static::find($id);
+        if ($contact->company_id) {
+            $contact = static::find($contact->company_id);
+        }
+
+        if (! $contact) {
+            throw new ContactNotFoundException;
+        }
+
+        if (! $contact->is_debtor && ! $contact->is_creditor) {
+            throw new ContactWithoutAccountException;
+        }
+
+        if ($contact->is_creditor && ! $contact->creditor_number) {
+            $contact->creditor_number = 79998;
+
+        }
+
+        if ($contact->is_debtor && ! $contact->debtor_number) {
+            throw new ContactWithoutAccountException;
+        }
+
+        $accountNumber = $contact->is_creditor ? $contact->creditor_number : $contact->debtor_number;
+        $bookkeepingAccount = BookkeepingAccount::where('account_number', $accountNumber)->first();
+
+        if (! $bookkeepingAccount) {
+            if (! $createAccountIfNotExists) {
+                throw new ContactWithoutAccountException;
+            } else {
+                $bookkeepingAccount = new BookkeepingAccount();
+                $bookkeepingAccount->account_number = $accountNumber;
+                $bookkeepingAccount->name = $contact->full_name;
+                $bookkeepingAccount->type = $contact->is_creditor ? 'c' : 'd';
+                $bookkeepingAccount->save();
+            }
+
+        }
+
+        $outturnAccount = $contact->outturn_account_id
+            ? BookkeepingAccount::query()->where('account_number', $contact->outturn_account_id)->first()
+            : null; // BookkeepingAccount::query()->where('type', $contact->is_creditor ? 'e' : 'r')->where('is_default', true)->first();
+
+        return [
+            'subledgerAccount' => $bookkeepingAccount,
+            'outturnAccount' => $outturnAccount,
+            'name' => $contact->short_name ? $contact->short_name : $contact->full_name,
+        ];
+    }
 
     public function getFullNameAttribute(): string
     {

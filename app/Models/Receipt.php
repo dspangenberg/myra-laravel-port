@@ -5,14 +5,12 @@ namespace App\Models;
 use DateTimeInterface;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Carbon;
 
 /**
- * 
- *
  * @property int $id
  * @property string $receipts_ref
  * @property string $reference
@@ -32,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @property string $text
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static Builder|Receipt newModelQuery()
  * @method static Builder|Receipt newQuery()
  * @method static Builder|Receipt query()
@@ -54,10 +53,13 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Receipt whereText($value)
  * @method static Builder|Receipt whereTitle($value)
  * @method static Builder|Receipt whereUpdatedAt($value)
+ *
  * @property string $issued_on
  * @property string|null $tax_code_number
+ *
  * @method static Builder|Receipt whereIssuedOn($value)
  * @method static Builder|Receipt whereTaxCodeNumber($value)
+ *
  * @property string $type
  * @property int|null $document_number
  * @property int $year
@@ -65,9 +67,10 @@ use Illuminate\Support\Carbon;
  * @property string|null $text_md5
  * @property int $is_locked
  * @property string|null $note
- * @property-read \App\Models\ReceiptCategory|null $category
- * @property-read \App\Models\Contact|null $contact
+ * @property-read ReceiptCategory|null $category
+ * @property-read Contact|null $contact
  * @property-read string $real_document_number
+ *
  * @method static Builder|Receipt whereAmountToPay($value)
  * @method static Builder|Receipt whereDocumentNumber($value)
  * @method static Builder|Receipt whereIsLocked($value)
@@ -75,12 +78,13 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Receipt whereTextMd5($value)
  * @method static Builder|Receipt whereType($value)
  * @method static Builder|Receipt whereYear($value)
+ *
+ * @property-read BookkeepingBooking|null $booking
+ *
  * @mixin Eloquent
  */
 class Receipt extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'receipts_ref',
         'reference',
@@ -104,18 +108,32 @@ class Receipt extends Model
         'year',
         'text',
         'amount_to_pay',
-        'text_md5'
+        'text_md5',
     ];
 
-    protected $appends = [
-        'real_document_number',
-    ];
-
-    public function getRealDocumentNumberAttribute(): string
+    public static function createBooking($receipt): void
     {
-        $documentNumber = $this->type === 'I'? 'E' : 'A';
+        $receipt->load('category');
+        $receipt->gross = $receipt->gross * -1;
 
-        return $documentNumber . '-' . $this->year. '/'. $this->document_number;
+        $accounts = Contact::getAccounts($receipt->contact_id);
+
+        if ($accounts['outturnAccount'] === null) {
+            $bookkeepingAccount = BookkeepingAccount::query()->where('account_number', $receipt->category->outturn_account_id)->first();
+            if (! $bookkeepingAccount) {
+                $bookkeepingAccount = BookkeepingAccount::query()->where('type', 'e')->where('is_default', true)->first();
+            }
+
+            $accounts['outturnAccount'] = $bookkeepingAccount;
+        }
+
+        $booking = BookkeepingBooking::createBooking($receipt, 'issued_on', 'gross', $accounts['subledgerAccount'], $accounts['outturnAccount'], 'E');
+        $name = $accounts['name'];
+
+        $bookingTextSuffix = $receipt->currency_code !== 'EUR' ? ' ('.number_format($receipt->amount * -1, 2, ',', '.').' '.$receipt->currency_code.')' : '';
+
+        $booking->booking_text = "$name|Rechnungseingang {$bookingTextSuffix}|{$receipt->reference}";
+        $booking->save();
     }
 
     public function contact(): BelongsTo
@@ -126,6 +144,11 @@ class Receipt extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(ReceiptCategory::class, 'receipt_category_id', 'id');
+    }
+
+    public function booking(): MorphOne
+    {
+        return $this->morphOne(BookkeepingBooking::class, 'bookable');
     }
 
     protected function serializeDate(DateTimeInterface $date): string
@@ -139,5 +162,4 @@ class Receipt extends Model
             'issued_on' => 'date',
         ];
     }
-
 }

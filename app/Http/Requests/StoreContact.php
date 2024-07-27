@@ -51,6 +51,8 @@ class StoreContact extends FormRequest
             'dob' => 'nullable',
             'tax_number' => 'nullable',
             'mails' => 'nullable',
+            'iban' => 'nullable',
+            'cc_name' => 'nullable',
         ];
     }
 }

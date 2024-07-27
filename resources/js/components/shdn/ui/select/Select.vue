@@ -1,15 +1,33 @@
-<script setup lang="ts">
-import type { SelectRootEmits, SelectRootProps } from 'radix-vue'
-import { SelectRoot, useForwardPropsEmits } from 'radix-vue'
+<script generic="TValue" lang="ts" setup>
+import { computed } from 'vue'
+import { SelectRoot } from 'radix-vue'
 
-const props = defineProps<SelectRootProps>()
-const emits = defineEmits<SelectRootEmits>()
+const props = defineProps<{
+  modelValue: TValue | undefined
+}>()
 
-const forwarded = useForwardPropsEmits(props, emits)
+const emit = defineEmits<{
+  'update:modelValue': [value: TValue | undefined]
+}>()
+
+const model = computed<string | undefined>({
+  get: () => {
+    return JSON.stringify(props.modelValue)
+  },
+  set: (value) => {
+    if (value === undefined) {
+      emit('update:modelValue', undefined)
+      return
+    }
+
+    emit('update:modelValue', JSON.parse(value))
+  }
+})
+
 </script>
 
 <template>
-  <SelectRoot v-bind="forwarded">
+  <SelectRoot v-model="model">
     <slot />
   </SelectRoot>
 </template>

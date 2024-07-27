@@ -61,6 +61,10 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|Time byWeekOfYear(int $week, int $year)
  * @method static Builder|Time maxDuration($date)
  * @method static Builder|Time view($view)
+ * @property int $legacy_id
+ * @property int $legacy_invoice_id
+ * @method static Builder|Time whereLegacyId($value)
+ * @method static Builder|Time whereLegacyInvoiceId($value)
  * @mixin Eloquent
  */
 class Time extends Model
@@ -83,12 +87,16 @@ class Time extends Model
         'ping_at',
         'note',
         'avatar',
+        'legacy_invoice_id',
+        'legacy_id',
     ];
 
     protected $attributes = [
         'project_id' => 0,
         'time_category_id' => 0,
         'subproject_id' => 0,
+        'legacy_invoice_id' => 0,
+        'legacy_id' => 0,
         'user_id' => 0,
         'invoice_id' => 0,
         'begin_at' => '',
@@ -99,11 +107,6 @@ class Time extends Model
         'is_locked' => false,
         'is_billable' => false,
     ];
-
-    protected function serializeDate(DateTimeInterface $date): string
-    {
-        return $date->format('d.m.Y H:i');
-    }
 
     public function scopeMaxDuration(Builder $query, $date): Builder
     {
@@ -140,17 +143,6 @@ class Time extends Model
             ->select(DB::raw('*, TIMESTAMPDIFF(MINUTE, begin_at, end_at) as mins, DATE(begin_at) as ts'));
     }
 
-    protected function casts(): array
-    {
-        return [
-            'is_timer' => 'boolean',
-            'is_locked' => 'boolean',
-            'is_billable' => 'boolean',
-            'begin_at' => 'datetime',
-            'end_at' => 'datetime',
-        ];
-    }
-
     public function category(): HasOne
     {
         return $this->hasOne(TimeCategory::class, 'id', 'time_category_id');
@@ -164,5 +156,21 @@ class Time extends Model
     public function project(): HasOne
     {
         return $this->hasOne(Project::class, 'id', 'project_id');
+    }
+
+    protected function serializeDate(DateTimeInterface $date): string
+    {
+        return $date->format('d.m.Y H:i');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'is_timer' => 'boolean',
+            'is_locked' => 'boolean',
+            'is_billable' => 'boolean',
+            'begin_at' => 'datetime',
+            'end_at' => 'datetime',
+        ];
     }
 }

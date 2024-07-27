@@ -15,7 +15,7 @@ const baseUrl: string = '/api/contacts'
 
 export interface ContactMail {
   id?: number
-  e_email_category_id: number
+  email_category_id: number
   pos: number
   contact_id: number
   email: string
@@ -37,6 +37,8 @@ export interface ContactInterface {
   debtor_number: number
   creditor_number: number
   outturn_account_id: number
+  iban: string
+  cc_name: string
   is_primary: boolean
   is_debtor: boolean
   is_creditor: boolean

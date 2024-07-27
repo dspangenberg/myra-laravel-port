@@ -83,6 +83,16 @@ class Project extends Model
         'avatar',
     ];
 
+    protected $attributes = [
+        'budget_hours' => 0,
+        'budget_costs' => 0,
+        'budget_period' => 0,
+        'parent_project_id' => 0,
+        'is_archived' => false,
+        'website' => '',
+        'note' => '',
+    ];
+
     public function owner(): HasOne
     {
         return $this->hasOne(Contact::class, 'id', 'owner_contact_id');

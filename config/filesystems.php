@@ -89,6 +89,7 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+        storage_path('system/receipts') => '/Users/dspangenberg/Documents/twicewareReceipts.receipts/Documents/',
         public_path('avatars') => storage_path('app/images/avatars'),
     ],
 

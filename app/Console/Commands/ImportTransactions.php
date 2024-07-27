@@ -30,20 +30,21 @@ class ImportTransactions extends Command
      */
     public function handle(): void
     {
-        $jsonTransactions = Storage::disk('private')->json('holv-2021.json');
+        $jsonTransactions = Storage::disk('private')->json('pbg-2021.json');
         $collection = collect($jsonTransactions);
 
         $account = $collection->get('account');
         $transactions = collect($collection->get('transactions'))->reverse();
-        $bankAcount = BankAccount::query()->where('iban', $account['iban'])->first();
+        $ownBankAccounts = BankAccount::where('iban', $account['iban'])->get()->pluck('iban')->toArray();
 
-        $transactions->each(function ($item) use ($bankAcount) {
+        $transactions->each(function ($item) use ($account, $ownBankAccounts) {
             $item = collect($item)->dot();
+            $bankAccount = BankAccount::query()->where('iban', $account['iban'])->first();
 
             if ($item->get('bookingDate', '')) {
                 echo $item->get('id,');
                 $transaction = Transaction::firstOrNew(['mm_ref' => $item->get('id')]);
-                $transaction->bank_account_id = $bankAcount->id;
+                $transaction->bank_account_id = $bankAccount->id;
                 $transaction->mm_ref = $item->get('id');
                 $transaction->booked_on = Carbon::createFromTimestamp($item->get('bookingDate'));
                 $transaction->valued_on = Carbon::createFromTimestamp($item->get('valueDate'));
@@ -52,28 +53,37 @@ class ImportTransactions extends Command
                 if ($transaction->currency === 'EUR') {
                     $transaction->amount_EUR = $item->get('amount');
                 }
-
-                $transaction->year = Carbon::createFromTimestamp($item->get('bookingDate'))->year;
-                $transaction->prefix = $bankAcount->prefix;
-                $lastDocumentNumber = Transaction::query()->where('prefix', $bankAcount->prefix)->where('year',
-                    $transaction->year)->max('document_number');
-                $lastDocumentNumber++;
-
-                $transaction->document_number = $lastDocumentNumber;
-                $transaction->bank_code = $item->get('bankCode', '');
                 $transaction->bank_code = $item->get('bankCode', '');
                 $transaction->account_number = $item->get('accountNumber', '');
                 $transaction->name = $item->get('name', '');
                 $transaction->purpose = $item->get('purpose', '');
                 $transaction->comment = $item->get('comment', '');
                 $transaction->booking_key = $item->get('bookingKey', '');
+
+                $transaction->booking_text = $item->get('bookingText', '');
+                $transaction->type = $item->get('type', '');
+                $transaction->return_reason = $item->get('returnReason', '');
+                $transaction->transaction_code = $item->get('transactionCode', '');
+                $transaction->end_to_end_reference = $item->get('endToEndReference', '');
+                $transaction->mandate_reference = $item->get('mandateReference', '');
+                $transaction->batch_reference = $item->get('batchReference', '');
+                $transaction->primanota_number = $item->get('primanotaNumber', '');
+
                 $transaction->contact_id = 0;
 
                 if (substr_count($item->get('category'), 'privat') > 0) {
                     $transaction->is_private = true;
                 } else {
-                    if ($transaction->account_number) {
-                        $contact = Contact::query()->where('iban', $transaction->account_number)->first();
+                    if (in_array($transaction->bank_code, $ownBankAccounts) || $transaction->name === 'TWICEWARE SOLUTIONS E.K.' || substr_count($transaction->name, 'PAYPAL')) {
+                        $transaction->is_transit = true;
+                    } else {
+                        $contact = false;
+                        if ($transaction->account_number) {
+                            $contact = Contact::query()->where('iban', $transaction->account_number)->first();
+                        }
+                        if (! $contact) {
+                            $contact = Contact::query()->where('cc_name', 'LIKE', $transaction->name)->first();
+                        }
                         if ($contact) {
                             $transaction->contact_id = $contact->id;
                         }
@@ -81,6 +91,7 @@ class ImportTransactions extends Command
                 }
 
                 $transaction->save();
+                $transaction->createBooking($transaction);
             }
 
         });

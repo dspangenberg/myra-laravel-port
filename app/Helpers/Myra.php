@@ -1,8 +1,5 @@
 <?php
 
-use League\CommonMark\CommonMarkConverter;
-use League\CommonMark\Exception\CommonMarkException;
-
 function minutes_to_hours($minutes): string
 {
     $is_neg = ($minutes < 0);
@@ -28,17 +25,12 @@ function minutes_to_units($minutes): string
  */
 function md($markdown): string
 {
-    $converter = new CommonMarkConverter([
-        'html_input' => 'strip',
-        'allow_unsafe_links' => false,
-    ]);
-
-    return $converter->convert($markdown);
+    return Str::inlineMarkdown($markdown);
 }
 
 function formated_invoice_id(int $invoice_id): string
 {
-    if (!$invoice_id) {
+    if (! $invoice_id) {
         return '(Entwurf)';
     }
 

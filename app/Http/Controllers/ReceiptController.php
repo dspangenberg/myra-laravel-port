@@ -22,7 +22,7 @@ class ReceiptController extends Controller
             return ReceiptResource::collection(Receipt::query()
                 ->with('contact')
                 ->with('category')
-                ->orderBy('issued_on', 'desc')
+                ->orderBy('issued_on')
                 ->paginate(25)
             );
         } else {
