@@ -2,10 +2,11 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin \App\Models\Invoice */ class InvoiceResource extends JsonResource
+/** @mixin Invoice */ class InvoiceResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
@@ -14,7 +15,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
             'updated_at' => $this->updated_at,
             'id' => $this->id,
             'contact_id' => $this->contact_id,
+            'contact' => ContactResource::make($this->contact),
             'project_id' => $this->project_id,
+            'project' => ProjectResource::make($this->project),
             'invoice_number' => $this->invoice_number,
             'issued_on' => $this->issued_on,
             'due_on' => $this->due_on,
@@ -26,6 +29,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
             'address' => $this->address,
             'payment_deadline_id' => $this->payment_deadline_id,
             'sent_at' => $this->sent_at,
+            'formated_invoice_number' => $this->formated_invoice_number,
+            'lines_sum_amount' => $this->lines_sum_amount,
+            'lines_sum_tax' => $this->lines_sum_tax,
         ];
     }
 }

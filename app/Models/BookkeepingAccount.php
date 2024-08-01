@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
+ * 
+ *
  * @property int $id
  * @property int $account_number
  * @property string $name
@@ -17,7 +19,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $tax_id
- *
  * @method static Builder|BookkeepingAccount newModelQuery()
  * @method static Builder|BookkeepingAccount newQuery()
  * @method static Builder|BookkeepingAccount query()
@@ -29,10 +30,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|BookkeepingAccount whereTaxId($value)
  * @method static Builder|BookkeepingAccount whereType($value)
  * @method static Builder|BookkeepingAccount whereUpdatedAt($value)
- *
  * @property-read string $label
  * @property-read \App\Models\Tax|null $tax
- *
  * @mixin Eloquent
  */
 class BookkeepingAccount extends Model

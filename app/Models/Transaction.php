@@ -13,6 +13,8 @@ use Illuminate\Support\Carbon;
 
 #[ObservedBy([TransactionObserver::class])]
 /**
+ * 
+ *
  * @property int $id
  * @property string $mm_ref
  * @property int $contact_id
@@ -36,7 +38,6 @@ use Illuminate\Support\Carbon;
  * @property int $year
  * @property-read BankAccount|null $bank_account
  * @property-read string $real_document_number
- *
  * @method static Builder|Transaction newModelQuery()
  * @method static Builder|Transaction newQuery()
  * @method static Builder|Transaction query()
@@ -61,7 +62,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Transaction whereUpdatedAt($value)
  * @method static Builder|Transaction whereValuedOn($value)
  * @method static Builder|Transaction whereYear($value)
- *
  * @property string|null $booking_text
  * @property string|null $type
  * @property string|null $return_reason
@@ -70,7 +70,6 @@ use Illuminate\Support\Carbon;
  * @property string|null $mandate_reference
  * @property string|null $batch_reference
  * @property string|null $primanota_number
- *
  * @method static Builder|Transaction whereBatchReference($value)
  * @method static Builder|Transaction whereBookingText($value)
  * @method static Builder|Transaction whereEndToEndReference($value)
@@ -79,10 +78,12 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Transaction whereReturnReason($value)
  * @method static Builder|Transaction whereTransactionCode($value)
  * @method static Builder|Transaction whereType($value)
- *
  * @property-read Contact|null $contact
  * @property-read \App\Models\BookkeepingBooking|null $booking
- *
+ * @property int $is_transit
+ * @property int|null $booking_id
+ * @method static Builder|Transaction whereBookingId($value)
+ * @method static Builder|Transaction whereIsTransit($value)
  * @mixin Eloquent
  */
 class Transaction extends Model

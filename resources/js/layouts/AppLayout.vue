@@ -53,12 +53,19 @@ import { container as WidgetContainerModal } from 'jenesius-vue-modal'
             </template>
           </TwiceUiNavItem>
           <TwiceUiNavItem
-            active-route-path="/app/agenda"
+            active-route-path="/app/documents"
             label="Dokumente"
-            route-name="agenda"
+            route-name="documents-list"
           >
             <template #icon="{ iconProps }">
               <IconFolder v-bind="iconProps" />
+            </template>
+            <template #default>
+              <twice-ui-sub-nav-item
+                active-route-path="/app/documents/inbox"
+                label="Inbox"
+                route-name="documents-list"
+              />
             </template>
           </TwiceUiNavItem>
           <TwiceUiNavItem
@@ -94,15 +101,16 @@ import { container as WidgetContainerModal } from 'jenesius-vue-modal'
           <TwiceUiNavItem
             active-route-path="/app/invoicing"
             label="Fakturierung"
-            route-name="soon"
+            route-name="invoices-list"
           >
             <template #icon="{ iconProps }">
               <IconReceiptEuro v-bind="iconProps" />
             </template>
             <template #default>
               <twice-ui-sub-nav-item
-                label="Belege"
-                route-name="soon"
+                active-route-path="/app/invoicing/invoices"
+                label="Rechnungen"
+                route-name="invoices-list"
               />
             </template>
           </TwiceUiNavItem>
@@ -110,7 +118,7 @@ import { container as WidgetContainerModal } from 'jenesius-vue-modal'
         <div class="grid gap-1 p-2 ">
           <TwiceUiNavItem
             active-route-path="/app/bookkeeping"
-            label="Buchaltung"
+            label="Buchhaltung"
             route-name="receipts-list"
           >
             <template #icon="{ iconProps }">

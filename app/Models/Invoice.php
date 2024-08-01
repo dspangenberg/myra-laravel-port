@@ -6,10 +6,12 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
+ * 
+ *
  * @property int $id
  * @property int $contact_id
  * @property int $project_id
@@ -26,7 +28,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $sent_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @method static Builder|Invoice newModelQuery()
  * @method static Builder|Invoice newQuery()
  * @method static Builder|Invoice query()
@@ -46,15 +47,15 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Invoice whereTypeId($value)
  * @method static Builder|Invoice whereUpdatedAt($value)
  * @method static Builder|Invoice whereVatId($value)
- *
  * @property int $legacy_id
  * @property-read \App\Models\BookkeepingBooking|null $booking
  * @property-read string $formated_invoice_number
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\InvoiceLine> $lines
  * @property-read int|null $lines_count
- *
  * @method static Builder|Invoice whereLegacyId($value)
- *
+ * @property-read \App\Models\Contact|null $contact
+ * @property-read \App\Models\PaymentDeadline|null $payment_deadline
+ * @property-read \App\Models\Project|null $project
  * @mixin Eloquent
  */
 class Invoice extends Model
@@ -81,7 +82,7 @@ class Invoice extends Model
     ];
 
     protected $appends = [
-        'formatedInvoiceNumber',
+        'formated_invoice_number',
     ];
 
     public static function createBooking($invoice): void
@@ -89,7 +90,7 @@ class Invoice extends Model
         $invoice->load('lines');
         $invoice->amount = $invoice->lines->sum('amount');
 
-        $accounts = Contact::getAccounts($invoice->contact_id);
+        $accounts = Contact::getAccounts($invoice->contact_id, true, true);
         $booking = BookkeepingBooking::createBooking($invoice, 'issued_on', 'amount', $accounts['subledgerAccount'], $accounts['outturnAccount'], 'A');
         $name = $accounts['name'];
         $booking->booking_text = "{$name}|Rechnungsausgang|{$invoice->formatedInvoiceNumber}";
@@ -101,14 +102,24 @@ class Invoice extends Model
         return 'RG-'.formated_invoice_id($this->invoice_number);
     }
 
-    public function booking(): MorphOne
-    {
-        return $this->morphOne(BookkeepingBooking::class, 'bookable');
-    }
-
     public function lines(): HasMany
     {
         return $this->hasMany(InvoiceLine::class);
+    }
+
+    public function contact(): HasOne
+    {
+        return $this->hasOne(Contact::class, 'id', 'contact_id');
+    }
+
+    public function project(): HasOne
+    {
+        return $this->hasOne(Project::class, 'id', 'project_id');
+    }
+
+    public function payment_deadline(): HasOne
+    {
+        return $this->hasOne(PaymentDeadline::class, 'id', 'payment_deadline_id');
     }
 
     protected function casts(): array

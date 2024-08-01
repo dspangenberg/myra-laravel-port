@@ -11,7 +11,7 @@ import { type Tax } from '@/api/params/Tax'
 import { type Title } from '@/api/params/Title'
 
 const { axios } = useAxios(true)
-const baseUrl: string = '/api/contacts'
+export const baseUrl: string = '/api/contacts'
 
 export interface ContactMail {
   id?: number

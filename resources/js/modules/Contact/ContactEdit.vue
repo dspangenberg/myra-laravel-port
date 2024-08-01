@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { computed, ref, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { type Contact } from '@/api/Contact'
@@ -7,9 +7,9 @@ import { storeToRefs } from 'pinia'
 import ContactEditAdvanced from './ContactEditAdvanced.vue'
 import ContactEditBase from './ContactEditBase.vue'
 import ContactEditAccount from './ContactEditAccount.vue'
-
+import type { FormData } from '@/types'
 const contactStore = useContactStore()
-const { contact, contactEdit } = storeToRefs(contactStore)
+const { baseUrl, contact, contactEdit } = storeToRefs(contactStore)
 
 const form = reactive(contactEdit)
 const router = useRouter()
@@ -40,9 +40,9 @@ const component = computed(() => {
   }
 })
 
-const onSubmit = async (values: Contact) => {
+const onValidated = async (values: FormData) => {
   console.log(values)
-  await contactStore.save(values)
+  await contactStore.save(contactEdit.value)
   onClose()
 }
 
@@ -67,20 +67,21 @@ const onSubmit = async (values: Contact) => {
             title="Weitere Daten"
           />
           <twice-ui-tab
-            title="Debitor-, Kreditor und Firmendaten"
             name="account"
+            title="Debitor-, Kreditor und Firmendaten"
           />
         </twice-ui-tabs>
       </template>
       <template #content>
-        <twice-ui-form
+        <twice-ui-precognitive-form
           id="form"
           ref="formRef"
-          :initial-values="form"
-          @submitted="onSubmit"
+          :base-url="baseUrl"
+          :initial-values="contactEdit as unknown as FormData"
+          @validated="onValidated"
         >
           <component :is="component" />
-        </twice-ui-form>
+        </twice-ui-precognitive-form>
       </template>
       <template #footer>
         <twice-ui-button @click="onClose">

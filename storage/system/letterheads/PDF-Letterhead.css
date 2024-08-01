@@ -7,3 +7,15 @@
   margin-bottom: 2cm;
 }
 
+body {
+  line-height:1.4;
+  font-size: 13px;
+  font-family: "facit";
+}
+
+#recipient {
+  position: absolute;
+  top: 57mm;
+  left:23mm;
+  width: 80mm;
+}

@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 
 /**
+ * 
+ *
  * @property int $id
  * @property int $transaction_id
  * @property int $receipt_id
@@ -29,7 +31,6 @@ use Illuminate\Support\Carbon;
  * @property int $is_locked
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @method static Builder|BookkeepingBooking newModelQuery()
  * @method static Builder|BookkeepingBooking newQuery()
  * @method static Builder|BookkeepingBooking query()
@@ -52,7 +53,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|BookkeepingBooking whereTaxId($value)
  * @method static Builder|BookkeepingBooking whereTransactionId($value)
  * @method static Builder|BookkeepingBooking whereUpdatedAt($value)
- *
  * @property-read BookkeepingAccount|null $account_credit
  * @property-read BookkeepingAccount|null $account_debit
  * @property-read Tax|null $tax
@@ -60,11 +60,13 @@ use Illuminate\Support\Carbon;
  * @property int $bookable_id
  * @property int $is_marked
  * @property-read Model|\Eloquent $bookable
- *
  * @method static Builder|BookkeepingBooking whereBookableId($value)
  * @method static Builder|BookkeepingBooking whereBookableType($value)
  * @method static Builder|BookkeepingBooking whereIsMarked($value)
- *
+ * @property string $document_number_prefix
+ * @property int $document_number_counter
+ * @method static Builder|BookkeepingBooking whereDocumentNumberCounter($value)
+ * @method static Builder|BookkeepingBooking whereDocumentNumberPrefix($value)
  * @mixin Eloquent
  */
 class BookkeepingBooking extends Model
@@ -201,7 +203,7 @@ class BookkeepingBooking extends Model
 
     public function getDocumentNumberAttribute(): string
     {
-        return $this->document_number_prefix.'-'.$this->document_number_year.'/'.$this->document_number_counter;
+        return $this->document_number_prefix.'-'.$this->document_number_year.'.'.$this->document_number_counter;
     }
 
     protected function casts(): array

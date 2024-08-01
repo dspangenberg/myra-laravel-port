@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookkeepingBookingController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\TimeController;
@@ -25,9 +27,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('/users', UserController::class);
     Route::resource('/contacts', ContactController::class);
     Route::resource('/bookings', BookkeepingBookingController::class);
+    Route::resource('/documents', DocumentController::class);
+    Route::resource('/invoices', InvoiceController::class);
     Route::resource('/projects', ProjectController::class);
     Route::resource('/times', TimeController::class);
     Route::resource('/receipts', ReceiptController::class);
+    Route::get('/invoices/{invoice}/pdf', [InvoiceController::class, 'createPdf']);
 });
 
 Route::middleware([HandlePrecognitiveRequests::class])->group(function () {

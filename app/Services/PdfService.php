@@ -15,7 +15,7 @@ class PdfService
     /**
      * @throws MpdfException
      */
-    public static function createPdf(string $layoutName, string $view, array $data, array $config): string
+    public static function createPdf(string $layoutName, string $view, array $data, array $config = []): string
     {
 
         $layouts = Storage::disk('system')->json('layouts/layouts.json');
@@ -45,9 +45,11 @@ class PdfService
         $defaultConfig = [
             'title' => '',
             'hide' => false,
+            'pdfA' => false,
         ];
 
         $data['pdf_footer'] = array_merge($defaultConfig, $config);
+        $data['pdf_config'] = array_merge($defaultConfig, $config);
         $data['styles'] = $styles;
         $html = View::make($view, $data)->render();
 
@@ -72,6 +74,10 @@ class PdfService
         $mpdf->WriteHTML($html);
         $mpdf->SetTitle($data['pdf_footer']['title']);
         $mpdf->SetCreator('twiceware_myra');
+
+        if ($data['pdf_config']['pdfA']) {
+            $mpdf->PDFA = true;
+        }
 
         $content = $mpdf->Output('', Destination::STRING_RETURN);
 

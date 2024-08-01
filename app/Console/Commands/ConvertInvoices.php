@@ -98,6 +98,7 @@ class ConvertInvoices extends Command
                 $invoiceLine->price = $legacyInvoiceLine->price;
                 $invoiceLine->amount = $legacyInvoiceLine->amount;
                 $invoiceLine->tax_id = $tax->id;
+                $invoiceLine->tax = $legacyInvoiceLine->tax;
                 $invoiceLine->type_id = $legacyInvoiceLine->type;
                 $invoiceLine->legacy_id = $legacyInvoiceLine->id;
                 $invoiceLine->pos = $lineCounter;

@@ -1,5 +1,5 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
-import { getAllContacts, findContactById, createContact, updateContact, createOrEditContact } from '@/api/Contact'
+import { baseUrl as apiBaseUrl, getAllContacts, findContactById, createContact, updateContact, createOrEditContact } from '@/api/Contact'
 import { ref, type Ref } from 'vue'
 
 import { type Meta } from '@/types/'
@@ -7,7 +7,7 @@ import type { Contact } from '@/api/Contact'
 
 import { type AddressCategory } from '@/api/params/AddressCategory'
 import { type Country } from '@/api/params/Country'
-import { type EmailCategory } from '@/api/params/EmailCategory'
+import { type EMailCategory } from '@/api/params/EmailCategory'
 import { type PaymentDeadline } from '@/api/params/PaymentDeadline'
 import { type PhoneCategory } from '@/api/params/PhoneCategory'
 import { type Salutation } from '@/api/params/Salutation'
@@ -18,10 +18,10 @@ export const useContactStore = defineStore('contact-store', () => {
   const contacts: Ref<Contact[] | null> = ref([])
   const contact: Ref<Contact | null> = ref(null)
   const contactEdit: Ref<Contact | null> = ref(null)
-
+  const baseUrl: Ref<string> = ref(apiBaseUrl)
   const addressCategories: Ref<AddressCategory[] | null> = ref([])
   const countries: Ref<Country[] | null> = ref([])
-  const emailCategories: Ref<EmailCategory[] | null> = ref([])
+  const emailCategories: Ref<EMailCategory[] | null> = ref([])
   const paymentDeadlines: Ref<PaymentDeadline[] | null> = ref([])
   const phoneCategories: Ref<PhoneCategory[] | null> = ref([])
   const salutations: Ref<Salutation[] | null> = ref([])
@@ -116,7 +116,7 @@ export const useContactStore = defineStore('contact-store', () => {
     contacts,
     editContactPerson,
     meta,
-
+    baseUrl,
     addressCategories,
     countries,
     emailCategories,

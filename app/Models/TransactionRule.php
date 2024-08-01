@@ -24,6 +24,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|TransactionRule whereSetField($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TransactionRule whereSetValue($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TransactionRule whereUpdatedAt($value)
+ * @property string $table
+ * @property string $comparator
+ * @method static \Illuminate\Database\Eloquent\Builder|TransactionRule whereComparator($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TransactionRule whereTable($value)
  * @mixin \Eloquent
  */
 class TransactionRule extends Model

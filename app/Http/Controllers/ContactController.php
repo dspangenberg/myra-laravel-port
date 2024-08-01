@@ -93,6 +93,8 @@ class ContactController extends Controller
         $contact->update($request->validated());
         $contact->mails()->upsert($request->validated('mails'), 'email');
 
+        dump($contact);
+
         return new ContactResource($contact);
     }
 

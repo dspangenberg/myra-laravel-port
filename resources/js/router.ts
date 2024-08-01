@@ -5,6 +5,9 @@ import contactRoutes from '@/modules/Contact/routes'
 import projectRoutes from '@/modules/Project/routes'
 import timeRoutes from '@/modules/Time/routes'
 import bookKeepingRoutes from '@/modules/Bookkeeping/routes'
+import invoicingRoutes from '@/modules/Invoicing/routes'
+import documentesRoutes from '@/modules/Document/routes'
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -57,8 +60,10 @@ const router = createRouter({
           path: 'documents',
           component: () => import('@/views/Soon.vue')
         },
+        invoicingRoutes,
         bookKeepingRoutes,
         contactRoutes,
+        documentesRoutes,
         projectRoutes,
         timeRoutes,
         userRoutes
