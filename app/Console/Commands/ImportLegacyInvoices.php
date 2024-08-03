@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Contact;
 use App\Models\Receipt;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
-use Carbon\Carbon;
-use App\Models\Contact;
 
 class ImportLegacyInvoices extends Command
 {
@@ -45,7 +45,7 @@ class ImportLegacyInvoices extends Command
                 if ($account && $account['account_id']) {
                     $contact = Contact::query()->where('debtor_number', $account['account_id'])->first();
                     if ($contact) {
-                        $receipt = new Receipt();
+                        $receipt = new Receipt;
                         $receipt->contact_id = $contact->id;
                         $receipt->type = 'O';
                         $receipt->year = $year;

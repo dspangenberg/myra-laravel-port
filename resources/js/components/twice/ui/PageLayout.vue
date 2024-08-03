@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { type RouteParams, type LocationQuery } from 'vue-router'
 import { computed, useSlots, toRefs } from 'vue'
 
@@ -12,6 +12,7 @@ export interface Props {
   backRouteQuery?: LocationQuery
   backText?: string
   contentLayout?: 'full' | '2-1'
+  maxWidth?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -23,7 +24,16 @@ const props = withDefaults(defineProps<Props>(), {
   backRouteQuery: undefined,
   headerLoading: false,
   loading: false,
-  contentLayout: '2-1'
+  contentLayout: '2-1',
+  maxWidth: 'xl'
+})
+
+const maxWidthClass = computed(() => {
+  return {
+    xl: 'max-w-7xl',
+    xxl: 'max-w-screen-2xl',
+    full: 'px-12'
+  }[props.maxWidth]
 })
 
 const $slots = useSlots()
@@ -40,6 +50,7 @@ const { title } = toRefs(props)
       <div class="my-3">
         <slot name="org-header">
           <TwiceUiPageHeader
+            :max-width="maxWidth"
             :title="title"
           >
             <template #breadcrumbs>
@@ -66,7 +77,10 @@ const { title } = toRefs(props)
         </slot>
       </div>
     </div>
-    <div class="flex flex-1 overflow-y-hidden max-w-7xl mx-auto flex-col w-full">
+    <div
+      :class="maxWidthClass"
+      class="flex flex-1 overflow-y-hidden mx-auto flex-col w-full"
+    >
       <slot name="content-full" />
     </div>
   </div>

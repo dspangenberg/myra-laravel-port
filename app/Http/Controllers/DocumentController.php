@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\DocumentResource;
 use App\Models\Document;
+use Illuminate\Http\Request;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class DocumentController extends Controller
@@ -16,7 +17,7 @@ class DocumentController extends Controller
             ->select('*')
             ->with('contact')
             ->with('folder')
-            ->orderBy('name')
+            ->orderBy('issued_on')
             ->paginate($this->recordsPerPage, $request->get('page', 1));
 
         return DocumentResource::collection($documents);

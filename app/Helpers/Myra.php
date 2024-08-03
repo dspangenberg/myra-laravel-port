@@ -47,3 +47,25 @@ function formated_invoice_id(int $invoice_id): string
     return $formated_id;
 
 }
+
+function iban_to_human_format($iban)
+{
+    // First verify validity, or return
+
+    // Add spaces every four characters
+    $human_iban = '';
+    for ($i = 0; $i < strlen($iban); $i++) {
+        $human_iban .= substr($iban, $i, 1);
+        if (($i > 0) && (($i + 1) % 4 == 0)) {
+            $human_iban .= ' ';
+        }
+    }
+
+    return $human_iban;
+}
+
+// https://stackoverflow.com/questions/838227/php-sort-an-array-by-the-length-of-its-values
+function sortByLength($a, $b): int
+{
+    return strlen($b) - strlen($a);
+}

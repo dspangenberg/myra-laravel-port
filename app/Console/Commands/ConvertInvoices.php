@@ -12,6 +12,7 @@ use App\SushiModels\LegacyInvoice;
 use App\SushiModels\LegacyInvoiceLine;
 use App\SushiModels\LegacyProject;
 use Illuminate\Console\Command;
+use MediaUploader;
 
 class ConvertInvoices extends Command
 {
@@ -40,7 +41,7 @@ class ConvertInvoices extends Command
             $contact = Contact::query()->where('debtor_number', $account->account_id)->first();
 
             $lProject = LegacyProject::query()->where('id', $legacyInvoice->project_id)->first();
-            $invoice = new Invoice();
+            $invoice = new Invoice;
 
             if ($lProject) {
                 $project = Project::query()->where('name', $lProject->name)->firstOrNew();
@@ -90,7 +91,7 @@ class ConvertInvoices extends Command
                 }
 
                 $lineCounter++;
-                $invoiceLine = new InvoiceLine();
+                $invoiceLine = new InvoiceLine;
                 $invoiceLine->invoice_id = $invoice->id;
                 $invoiceLine->text = $legacyInvoiceLine->text;
                 $invoiceLine->quantity = $legacyInvoiceLine->quantity;
@@ -104,6 +105,18 @@ class ConvertInvoices extends Command
                 $invoiceLine->pos = $lineCounter;
                 $invoiceLine->save();
             });
+
+            $legacyFile = storage_path('system/invoices/2021/'.$invoice->filename);
+            try {
+                $media = MediaUploader::fromSource($legacyFile)
+                    ->toDisk('s3')
+                    ->toDirectory('Documents/Invocing/Invoices/2021')
+                    ->makePrivate()
+                    ->upload();
+
+                $invoice->attachMedia($media, 'pdf');
+            } catch (\Exception $e) {
+            }
             Invoice::createBooking($invoice);
 
         });

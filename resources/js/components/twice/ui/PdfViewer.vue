@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { VuePDF } from '@tato30/vue-pdf'
 import { onMounted, ref, toRefs, watch } from 'vue'
 import { IconDownload, IconPrinter, IconChevronRight, IconChevronLeft } from '@tabler/icons-vue'
@@ -10,6 +10,7 @@ interface Props {
   isOpen?: boolean
   dataUrl?: string | null
   base64: string
+  filename?: string
 }
 
 interface PdfMetadata {
@@ -27,7 +28,8 @@ interface PdfMetadata {
 
 const props = withDefaults(defineProps<Props>(), {
   isOpen: false,
-  dataUrl: null
+  dataUrl: null,
+  filename: 'file.pdf'
 })
 
 const { dataUrl, base64 } = toRefs(props)
@@ -41,7 +43,7 @@ const onDownload = async () => {
   if (dataUrl.value) {
     const link = document.createElement('a')
     link.href = dataUrl.value
-    link.setAttribute('download', 'file.pdf')
+    link.download = props.filename
     document.body.appendChild(link)
     link.click()
   }
@@ -100,8 +102,8 @@ const onPrevPage = () => {
   <div>
     <TwiceUiDialog
       :show="true"
-      width="lg"
       :title="title"
+      width="lg"
       @hide="onHide"
     >
       <template #toolbar>
@@ -143,8 +145,8 @@ const onPrevPage = () => {
           v-if="pdf"
           id="pdf"
           :page="page"
-          class="border mx-auto my-6"
           :pdf="pdf"
+          class="border mx-auto my-6"
         />
       </template>
       <template #secondary-actions>

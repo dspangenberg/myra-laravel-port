@@ -24,6 +24,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
             'dunning_block' => $this->dunning_block,
             'is_draft' => $this->is_draft,
             'type_id' => $this->type_id,
+            'filename' => $this->filename,
             'service_provision' => $this->service_provision,
             'vat_id' => $this->vat_id,
             'address' => $this->address,

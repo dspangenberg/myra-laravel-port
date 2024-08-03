@@ -1,10 +1,11 @@
 @page {
-  margin: 4.5cm 4.5cm 2.0cm 2.5cm;
+  margin: 5cm 4.5cm 2.5cm 2.5cm;
+  header: html_header;
 }
 
 @page :first {
-  margin-top: 4.8cm;
-  margin-bottom: 2cm;
+  margin: 10cm 2.5cm 2.5cm 2.5cm;
+  header: html_first_header;
 }
 
 body {
@@ -16,6 +17,26 @@ body {
 #recipient {
   position: absolute;
   top: 57mm;
-  left:23mm;
+  left:25mm;
+  height:27.3mm;
   width: 80mm;
+}
+
+p {
+  padding-bottom: 8pt;
+}
+
+
+#infobox-first-page {
+  position: absolute;
+  top: 57mm;
+  left:115mm;
+  width: 60mm;
+}
+
+#infobox {
+    position: absolute;
+    top: 25mm;
+    left:105mm;
+    width: 60mm;
 }

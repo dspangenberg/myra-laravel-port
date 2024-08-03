@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Plank\Mediable\Mediable;
+use Plank\Mediable\MediableInterface;
 
 /**
  * @property int $id
@@ -55,8 +57,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *
  * @mixin \Eloquent
  */
-class Document extends Model
+class Document extends Model implements MediableInterface
 {
+    use Mediable;
     use SoftDeletes;
 
     protected $fillable = [
@@ -75,6 +78,15 @@ class Document extends Model
         'document_folder_id',
         'year',
     ];
+
+    protected $appends = [
+        'alternate_subject',
+    ];
+
+    public function getAlternateSubjectAttribute(): string
+    {
+        return $this->subject ? $this->subject : 'Schreiben vom '.$this->issued_on->format('d.m.Y');
+    }
 
     public function contact(): HasOne
     {

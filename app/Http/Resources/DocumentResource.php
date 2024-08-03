@@ -21,6 +21,16 @@ use Illuminate\Http\Resources\Json\JsonResource;
             'subject' => $this->subject,
             'size' => $this->size,
             'received_on' => $this->received_on,
+            'number_of_pages' => $this->number_of_pages,
+            'is_confirmed' => $this->is_confirmed,
+            'is_marked' => $this->is_marked,
+            'document_folder_id' => $this->document_folder_id,
+            'sender' => $this->sender,
+            'year' => $this->year,
+            'contact' => ContactResource::make($this->contact),
+            'folder_id' => $this->folder_id,
+            'alternate_subject' => $this->alternate_subject,
+            'folder' => DocumentFolderResource::make($this->folder),
         ];
     }
 }

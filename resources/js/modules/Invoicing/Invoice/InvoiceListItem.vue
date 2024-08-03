@@ -16,11 +16,12 @@ export interface Props {
   item: Invoice
 }
 
-const onCreatePdf = async (id: number) => {
-  const { dataUrl: resUrl, base64: resBase64 } = await invoiceStore.createPdf(id)
+const onCreatePdf = async (invoice: Invoice) => {
+  const { dataUrl: resUrl, base64: resBase64 } = await invoiceStore.createPdf(invoice.id as unknown as number)
   await promptModal('pdfViewer', {
     base64: resBase64,
-    dataUrl: resUrl
+    dataUrl: resUrl,
+    filename: invoice.filename
   })
 }
 
@@ -63,7 +64,7 @@ defineEmits(['select'])
         v-if="item.id"
         size="icon"
         variant="ghost"
-        @click="onCreatePdf(item.id)"
+        @click="onCreatePdf(item)"
       >
         <IconPrinter
           class="size-5"

@@ -28,6 +28,7 @@ return new class extends Migration
             $table->year('document_number_year');
             $table->string('document_number_prefix');
             $table->integer('document_number_counter');
+
             $table->unique(['document_number_year', 'document_number_prefix', 'document_number_counter'], 'document_number');
         });
     }

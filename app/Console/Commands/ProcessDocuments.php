@@ -29,8 +29,6 @@ class ProcessDocuments extends Command
     public function handle()
     {
         $importFile = $this->argument('file');
-
-        /*
         $pdfBaseName = basename($importFile, '.pdf');
         $tmp = tempnam(sys_get_temp_dir(), $pdfBaseName).'_%d.pdf';
 
@@ -63,10 +61,6 @@ class ProcessDocuments extends Command
         $collection = collect($pageDocuments);
         $collection->sortBy('page');
 
-        Storage::disk('private')->put('documents2.json', json_encode($collection));
-        dd($collection);
-*/
-        $documents = Storage::disk('private')->json('documents2.json');
         $pages = 28;
 
         $docs = collect($documents)->sortBy('page');
@@ -94,7 +88,7 @@ class ProcessDocuments extends Command
             $numberOfPages = $lastPage - $firstPage + 1;
             $tmp = sys_get_temp_dir().'/Inbox-Scan-Label-ID-'.$doc['code'].'.pdf';
 
-            $tmpPage = sys_get_temp_dir().'/Scan-20240730dan0Ug_%d.pdf';
+            $tmpPage = sys_get_temp_dir().'/Scan-202407307Tl5YA_%d.pdf';
 
             $pngFile = sys_get_temp_dir().'/Preview-Scan-Label-ID-'.$doc['code'];
             $pageFiles = [];
@@ -131,10 +125,34 @@ class ProcessDocuments extends Command
                         $textFile = str_replace('.pdf', '.txt', $tmp);
                         $addressField = file_get_contents($textFile);
                         preg_match('/((.+)[0-9][0-9][0-9][0-9][0-9]\D+)/', $addressField, $addressMatches);
-                        $sender = $addressMatches[1];
+                        if (count($addressMatches)) {
+                            $sender = $addressMatches[1];
+                        }
                     } else {
                         dd($pfdAdressParser->errorOutput());
                     }
+
+                    /*
+                    $subject = '';
+                    $command = 'pdftotext -r 300 -f 1 -l 1 -x 200 -y 1000 -W 2100 -H 100 '.$tmp;
+                    $sujectParser = Process::run($command);
+                    var_dump($command);
+                    if ($sujectParser->successful()) {
+                        $textFile = str_replace('.pdf', '.txt', $tmp);
+                        $subjectPosition = file_get_contents($textFile);
+                        preg_match_all('/(.+)/', $subjectPosition, $subjectMatches);
+                        if (count($subjectMatches)) {
+                            $array = usort($subjectMatches[0], function ($a, $b) {
+                                var_dump($a);
+
+                                return strlen($b) - strlen($a);
+                            });
+                            var_dump('subject', $array);
+                        }
+                    } else {
+                        dd($sujectParser->errorOutput());
+                    }
+                    */
 
                     preg_match_all('/(0[1-9]|1[0-9]|2[0-9]|3[01])\.(0[1-9]|1[012])\.(?:19|20)[0-9]{2}/i', $text, $matches);
                     $dates = [];
@@ -154,11 +172,8 @@ class ProcessDocuments extends Command
                     }
                     $date = count($dates) ? $dates[0] : $defaultDate;
                     $dmsName = $date.'--'.basename($tmp);
-                    $year = Carbon::parse($date)->format('Y');
-                    $month = Carbon::parse($date)->format('m');
 
-                    Storage::disk('s3')->put("/documents/inbox/$year/$month/$dmsName", file_get_contents($tmp));
-                    var_dump($date, $dmsName, $numberOfPages);
+                    Storage::disk('s3')->put("/Documents/Inbox/$dmsName", file_get_contents($tmp));
 
                     $document = new Document;
                     $document->issued_on = $date;

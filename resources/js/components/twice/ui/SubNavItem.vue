@@ -75,7 +75,7 @@ const isActive = computed(() => {
       >
         <span
           v-tooltip="label"
-          :class="isActive ? 'font-medium' : ''"
+          :class="isActive ? 'font-medium text-blue-500' : ''"
           class="truncate hover:underline text-base"
         >
           {{ label }}

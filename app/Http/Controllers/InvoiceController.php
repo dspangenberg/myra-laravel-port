@@ -6,6 +6,9 @@ use App\Http\Requests\InvoiceRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
 use App\Services\PdfService;
+use App\Settings\InvoicingSettings;
+use Illuminate\Support\Str;
+use MediaUploader;
 use Mpdf\MpdfException;
 
 class InvoiceController extends Controller
@@ -32,7 +35,7 @@ class InvoiceController extends Controller
     }
 
     /**
-     * @throws MpdfException
+     * @throws MpdfException|\Spatie\TemporaryDirectory\Exceptions\PathAlreadyExists
      */
     public function createPdf(Invoice $invoice)
     {
@@ -46,7 +49,33 @@ class InvoiceController extends Controller
             ->where('id', $invoice->id)
             ->first();
 
-        $pdfContent = PdfService::createPdf('invoice', 'pdf.invoice.index', ['invoice' => $invoice], ['pdfA' => true, 'hide' => true]);
+        $bank_account = (object) [
+            'iban' => app(InvoicingSettings::class)->invoice_iban,
+            'bic' => app(InvoicingSettings::class)->invoice_bic,
+            'account_owner' => app(InvoicingSettings::class)->invoice_account_owner,
+            'bank_name' => app(InvoicingSettings::class)->invoice_bank_name,
+        ];
+
+        if ($invoice->is_draft && $invoice->hasMedia('pdf')) {
+            $pdfContent = PdfService::createPdf('invoice', 'pdf.invoice.index', ['invoice' => $invoice, 'bank_account' => $bank_account], ['pdfA' => true, 'hide' => true]);
+        } else {
+            $media = $invoice->firstMedia('pdf');
+            $pdfContent = Str::toBase64($media->contents());
+        }
+
+        if (! $invoice->hasMedia('preview')) {
+            $pdf = $invoice->firstMedia('pdf');
+            $pngFile = PdfService::createPreview($pdfContent);
+
+            $media = MediaUploader::fromSource($pngFile)
+                ->toDisk('s3')
+                ->toDirectory('Previews/Invocing/Invoices/2021')
+                ->makePrivate()
+                ->useFilename($pdf->filename.'.png')
+                ->upload();
+
+            $invoice->attachMedia($media, 'preview');
+        }
 
         return response($pdfContent);
     }

@@ -10,8 +10,6 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 
 /**
- * 
- *
  * @property int $id
  * @property int $transaction_id
  * @property int $receipt_id
@@ -31,6 +29,7 @@ use Illuminate\Support\Carbon;
  * @property int $is_locked
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static Builder|BookkeepingBooking newModelQuery()
  * @method static Builder|BookkeepingBooking newQuery()
  * @method static Builder|BookkeepingBooking query()
@@ -53,20 +52,25 @@ use Illuminate\Support\Carbon;
  * @method static Builder|BookkeepingBooking whereTaxId($value)
  * @method static Builder|BookkeepingBooking whereTransactionId($value)
  * @method static Builder|BookkeepingBooking whereUpdatedAt($value)
+ *
  * @property-read BookkeepingAccount|null $account_credit
  * @property-read BookkeepingAccount|null $account_debit
  * @property-read Tax|null $tax
  * @property string $bookable_type
  * @property int $bookable_id
  * @property int $is_marked
- * @property-read Model|\Eloquent $bookable
+ * @property-read Model|Eloquent $bookable
+ *
  * @method static Builder|BookkeepingBooking whereBookableId($value)
  * @method static Builder|BookkeepingBooking whereBookableType($value)
  * @method static Builder|BookkeepingBooking whereIsMarked($value)
+ *
  * @property string $document_number_prefix
  * @property int $document_number_counter
+ *
  * @method static Builder|BookkeepingBooking whereDocumentNumberCounter($value)
  * @method static Builder|BookkeepingBooking whereDocumentNumberPrefix($value)
+ *
  * @mixin Eloquent
  */
 class BookkeepingBooking extends Model
@@ -100,7 +104,7 @@ class BookkeepingBooking extends Model
 
     public static function createBooking($parent, $dateField, $amountField, $debit_account, $credit_account, $documentNumberPrefix = ''): BookkeepingBooking
     {
-        $booking = new BookkeepingBooking();
+        $booking = new BookkeepingBooking;
         $booking->bookable()->associate($parent);
         $booking->date = $parent[$dateField];
 
@@ -146,45 +150,7 @@ class BookkeepingBooking extends Model
 
     }
 
-    public function initBooking(MorphTo $parent, $date, $amount, $credit_account, $debit_account, $text, $document_number, $note): void
-    {
-        $booking = new BookkeepingBooking();
-
-        $booking->bookable()->associate($parent);
-        $booking->date = $date;
-        $booking->ammount = $amount;
-
-        $booking->account_id_credit = $amount < 0 ? $credit_account->account_number : $debit_account->account_number;
-        $booking->account_id_debit = $amount < 0 ? $credit_account->account_number : $debit_account->account_number;
-
-        $this->booking_text = $text;
-        switch ($type) {
-            case 'transaction':
-                $this->transaction_id = $id;
-                $transaction = Transaction::find($id);
-                $this->booking_text = $text ?: $transaction->name.'|'.$transaction->purpose;
-                break;
-            case 'receipt':
-                $this->receipt_id = $id;
-                break;
-            case 'payment':
-                $this->payment_id = $id;
-                break;
-        }
-
-        $this->document_number = $document_number;
-        $this->account_id_credit = $amount < 0 ? $debit_account_id : $credit_account_id;
-        $this->account_id_debit = $amount < 0 ? $credit_account_id : $debit_account_id;
-        $this->amount = $amount < 0 ? $amount * -1 : $amount;
-
-        $this->date = $date;
-
-        $this->tax_credit = $tax['tax_credit'];
-        $this->tax_debit = $tax['tax_debit'];
-        $this->tax_id = $tax['tax_id'];
-        $this->note = $note;
-
-    }
+    public function initBooking(MorphTo $parent, $date, $amount, $credit_account, $debit_account, $text, $document_number, $note): void {}
 
     public function account_credit(): HasOne
     {
@@ -203,7 +169,7 @@ class BookkeepingBooking extends Model
 
     public function getDocumentNumberAttribute(): string
     {
-        return $this->document_number_prefix.'-'.$this->document_number_year.'.'.$this->document_number_counter;
+        return $this->document_number_prefix.'-'.$this->date->year.'-'.$this->document_number_counter;
     }
 
     protected function casts(): array

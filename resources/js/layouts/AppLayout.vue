@@ -62,7 +62,7 @@ import { container as WidgetContainerModal } from 'jenesius-vue-modal'
             </template>
             <template #default>
               <twice-ui-sub-nav-item
-                active-route-path="/app/documents/inbox"
+                active-route-path="/app/documents"
                 label="Inbox"
                 route-name="documents-list"
               />

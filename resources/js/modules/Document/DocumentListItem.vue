@@ -22,12 +22,15 @@ defineEmits(['select'])
       {{ formatDate(item.issued_on) }}
     </TableCell>
     <TableCell class="truncate">
-      {{ item.contact?.full_name || item.sender }}
+      {{ item.org_file }}
+    </TableCell>
+    <TableCell class="truncate">
+      {{ item.contact?.reverse_full_name || item.sender }}
     </TableCell>
     <TableCell
       class="truncate"
     >
-      {{ item.subject }}
+      {{ item.alternate_subject }}
     </TableCell>
     <TableCell />
   </TableRow>

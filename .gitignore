@@ -21,6 +21,7 @@ yarn-error.log
 /database/private-data
 /.pnpm-store
 /storage/system/pdfs
+/storage/system/invoices
 /storage/system/receipts
 /storage/system/fonts/*.ttf
 /storage/system/letterheads/*.pdf

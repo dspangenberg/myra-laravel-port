@@ -48,7 +48,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <twice-ui-page-layout title="Dokumente">
+  <twice-ui-page-layout
+    max-width="full"
+    title="Inbox"
+  >
     <template #breadcrumbs>
       <Breadcrumb>
         <BreadcrumbList>
@@ -85,30 +88,15 @@ onMounted(async () => {
                   <TableHead class="w-24 ">
                     Datum
                   </TableHead>
-                  <TableHead class="w-36">
-                    Rechnungsnr.
+                  <TableHead class="w-96">
+                    Datei
+                  </TableHead>
+                  <TableHead class="w-72">
+                    Absender
                   </TableHead>
                   <TableHead class="w-full truncate">
-                    Debitor
+                    Beteff
                   </TableHead>
-                  <TableHead class="w-64">
-                    Projekt
-                  </TableHead>
-                  <TableHead class="w-24 text-right truncate">
-                    Netto
-                  </TableHead>
-                  <TableHead
-                    class="w-24 text-right"
-                  >
-                    Ust.
-                  </TableHead>
-                  <TableHead class="w-24 text-right">
-                    Brutto
-                  </TableHead>
-                  <TableHead class="w-24 text-right">
-                    Offen
-                  </TableHead>
-                  <TableHead class="w-24" />
                   <TableHead class="w-auto" />
                 </TableRow>
               </TableHeader>
