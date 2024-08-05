@@ -3,7 +3,7 @@ import { useAxios } from '@/composables/useAxios'
 import { type Meta } from '@/types/'
 import { type AddressCategory } from '@/api/params/AddressCategory'
 import { type Country } from '@/api/params/Country'
-import { type EmailCategory } from '@/api/params/EmailCategory'
+import { type BookkeepingAccount } from '@/api/params/BookkeepingAccount'
 import { type PaymentDeadline } from '@/api/params/PaymentDeadline'
 import { type PhoneCategory } from '@/api/params/PhoneCategory'
 import { type Salutation } from '@/api/params/Salutation'
@@ -83,6 +83,7 @@ export interface EditOrCreateResponse extends Response {
   payment_deadlines: PaymentDeadline[],
   phone_categories: PhoneCategory[],
   salutations: Salutation[],
+  bookkeeping_accounts: BookkeepingAccount[]
   taxes: Tax[]
   titles: Title[]
 }

@@ -39,6 +39,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Tax whereIsBidirectional($value)
  * @property int $legacy_id
  * @method static Builder|Tax whereLegacyId($value)
+ * @property int $is_used_in_invoicing
+ * @method static Builder|Tax whereIsUsedInInvoicing($value)
  * @mixin Eloquent
  */
 class Tax extends Model

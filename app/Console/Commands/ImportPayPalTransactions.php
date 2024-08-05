@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Models\PayPalTransactions;
 use Illuminate\Console\Command;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Throwable;
-use App\Models\PayPalTransactions;
 
 class ImportPayPalTransactions extends Command
 {
@@ -28,7 +28,7 @@ class ImportPayPalTransactions extends Command
      *
      * @throws Throwable
      */
-    public function handle()
+    public function handle(): void
     {
         $provider = new PayPalClient;
         $provider->getAccessToken();
@@ -39,17 +39,18 @@ class ImportPayPalTransactions extends Command
          */
 
         $filters = [
-            'start_date' => '2024-06-01T17:37:24%2b02:00',
-            'end_date' => '2024-06-28T17:37:24%2b02:00',
+            'start_date' => '2022-01-01T00:00:00%2b02:00',
+            'end_date' => '2022-01-31T23:59:59%2b02:00',
         ];
 
         $response = $provider->listTransactions($filters, 'all');
 
+        dump($response);
         $transactions = collect($response['transaction_details']);
         $transactions->values()->each(function ($item) {
             $transaction = collect($item)->dot();
 
-            $payPalTransaction = new PayPalTransactions();
+            $payPalTransaction = new PayPalTransactions;
             $payPalTransaction->transaction_updated_date = $transaction->get('transaction_info.transaction_initiation_date');
             $payPalTransaction->transaction_initiation_date = $transaction->get('transaction_info.transaction_updated_date');
 

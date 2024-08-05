@@ -84,6 +84,11 @@ use Illuminate\Support\Carbon;
  * @property int|null $booking_id
  * @method static Builder|Transaction whereBookingId($value)
  * @method static Builder|Transaction whereIsTransit($value)
+ * @property string|null $org_category
+ * @property-read string $bookkepping_text
+ * @method static Builder|Transaction whereOrgCategory($value)
+ * @property float $amount_in_foreign_currency
+ * @method static Builder|Transaction whereAmountInForeignCurrency($value)
  * @mixin Eloquent
  */
 class Transaction extends Model
@@ -92,15 +97,19 @@ class Transaction extends Model
         'mm_ref',
     ];
 
+    protected $appends = [
+        'bookkepping_text',
+    ];
+
     public static function createBooking($transaction): void
     {
 
         $transaction->load('bank_account');
+        $booking = BookkeepingBooking::whereMorphedTo('bookable', Transaction::class)->where('bookable_id', $transaction->id)->first();
 
         $accounts = [
             'creditId' => '',
             'debitId' => '',
-            'bookingText' => ',',
         ];
 
         if ($transaction->is_private) {
@@ -111,32 +120,51 @@ class Transaction extends Model
         if ($transaction->is_transit) {
             $accounts['debitId'] = 1360;
 
-            if ($transaction->bankAccount) {
-                $accounts['creditId'] = $transaction->bankAccount->bookkeeping_account_id;
+            if ($transaction->bank_account) {
+                $accounts['creditId'] = $transaction->bank_account->bookkeeping_account_id;
             } else {
-                $accounts['creditId'] = ($transaction->name === 'TWICEWARE SOLUTIONS E.K.') ? 1250 : 1297;
+                $accounts['creditId'] = 1250;
             }
-
         }
 
         $accountDebit = BookkeepingAccount::where('account_number', $accounts['debitId'])->first();
         $accountCredit = BookkeepingAccount::where('account_number', $accounts['creditId'])->first();
 
         if ($transaction->is_private) {
-            $accounts['bookingText'] = "$transaction->name|$transaction->purpose";
+            // $accounts['bookingText'] = $transaction->bookkepping_text;
         }
 
         if ($transaction->is_transit) {
-            $accounts['bookingText'] = "Geldtransit|$transaction->booking_text|$transaction->purpose";
+            // $accounts['bookingText'] = "Geldtransit|$transaction->booking_text|$transaction->purpose";
+        }
+
+        if (! $accounts['creditId']) {
+            $accounts = Contact::getAccounts($transaction->contact_id);
+
+            if ($accounts['subledgerAccount']) {
+                $accountCredit = $accounts['subledgerAccount'];
+            } else {
+                if ($accounts['outturnAccount']) {
+                    $accountCredit = $accounts['outturnAccount'];
+                }
+            }
+
+            if ($transaction->bank_account) {
+                $accountDebit = BookkeepingAccount::where('account_number', $transaction->bank_account->bookkeeping_account_id)->first();
+                dump($accountDebit);
+            }
         }
 
         if ($accountDebit && $accountCredit) {
 
             $booking = BookkeepingBooking::createBooking($transaction, 'booked_on', 'amount', $accountDebit,
-                $accountCredit, $transaction->bank_account->prefix);
+                $accountCredit, $transaction->bank_account->prefix,
+                $booking ? $booking->id : null
+            );
 
-            $booking->booking_text = $accounts['bookingText'];
+            $booking->booking_text = $transaction->bookkepping_text;
             $booking->save();
+            // dump($booking->toArray());
         }
     }
 
@@ -148,6 +176,35 @@ class Transaction extends Model
     public function booking(): MorphOne
     {
         return $this->morphOne(BookkeepingBooking::class, 'bookable');
+    }
+
+    public function getBookkeppingTextAttribute(): string
+    {
+        $lines = [];
+
+        if ($this->booking_key === 'MSC') {
+            if ($this->is_transit) {
+                $this->booking_text = $this->amount < 0 ? 'Überweisung' : 'Gutschrift';
+            } else {
+                if ($this->account_number === '') {
+                    $this->booking_text = 'Kreditkartenzahlung';
+                }
+            }
+
+        }
+
+        if ($this->booking_text) {
+            $private = $this->is_private ? ' (privat)' : '';
+            $lines[] = $this->booking_text.$private;
+        }
+
+        $lines[] = strtoupper($this->name);
+
+        if ($this->name !== $this->purpose) {
+            $lines[] = $this->purpose;
+        }
+
+        return implode('|', array_filter($lines));
     }
 
     public function bank_account(): BelongsTo

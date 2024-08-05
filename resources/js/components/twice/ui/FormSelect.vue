@@ -27,6 +27,7 @@ export interface Props {
   selectClass?: string
   optionName?: string
   hideEmpty?: boolean
+  optionsValue?: string
   onlyOptionsWithName?: boolean
   placeholderValue?: number | string | null
 }
@@ -88,7 +89,7 @@ const htmlId = computed(() => `select-${xid}`)
             :key="index"
             :group="item.group"
             :selected="item['id'] === data"
-            :value="item['id']"
+            :value="item[optionsValue as keyof Option]"
             class="text-sm"
           >
             {{ item[optionName as keyof Option] }}

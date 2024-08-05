@@ -9,6 +9,8 @@ use Plank\Mediable\Mediable;
 use Plank\Mediable\MediableInterface;
 
 /**
+ * 
+ *
  * @property int $id
  * @property string $org_file
  * @property string|null $doc_file_name
@@ -26,7 +28,6 @@ use Plank\Mediable\MediableInterface;
  * @property int $is_confirmed
  * @property int $is_marked
  * @property string|null $sender
- *
  * @method static \Illuminate\Database\Eloquent\Builder|Document newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Document newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Document onlyTrashed()
@@ -50,11 +51,29 @@ use Plank\Mediable\MediableInterface;
  * @method static \Illuminate\Database\Eloquent\Builder|Document whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Document withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|Document withoutTrashed()
- *
  * @property int $document_folder_id
- *
  * @method static \Illuminate\Database\Eloquent\Builder|Document whereDocumentFolderId($value)
- *
+ * @property string $year
+ * @property-read \App\Models\Contact|null $contact
+ * @property-read \App\Models\DocumentFolder|null $folder
+ * @property-read string $alternate_subject
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Plank\Mediable\Media> $media
+ * @property-read int|null $media_count
+ * @method static \Plank\Mediable\MediableCollection<int, static> all($columns = ['*'])
+ * @method static \Plank\Mediable\MediableCollection<int, static> get($columns = ['*'])
+ * @method static \Illuminate\Database\Eloquent\Builder|Document whereHasMedia($tags = [], bool $matchAll = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Document whereHasMediaMatchAll($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|Document whereYear($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Document withMedia($tags = [], bool $matchAll = false, bool $withVariants = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Document withMediaAndVariants($tags = [], bool $matchAll = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Document withMediaAndVariantsMatchAll($tags = [])
+ * @method static \Illuminate\Database\Eloquent\Builder|Document withMediaMatchAll(bool $tags = [], bool $withVariants = false)
+ * @method static \Plank\Mediable\MediableCollection<int, static> all($columns = ['*'])
+ * @method static \Plank\Mediable\MediableCollection<int, static> get($columns = ['*'])
+ * @method static \Plank\Mediable\MediableCollection<int, static> all($columns = ['*'])
+ * @method static \Plank\Mediable\MediableCollection<int, static> get($columns = ['*'])
+ * @method static \Plank\Mediable\MediableCollection<int, static> all($columns = ['*'])
+ * @method static \Plank\Mediable\MediableCollection<int, static> get($columns = ['*'])
  * @mixin \Eloquent
  */
 class Document extends Model implements MediableInterface

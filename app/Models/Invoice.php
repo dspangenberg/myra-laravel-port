@@ -5,11 +5,15 @@ namespace App\Models;
 use App\Settings\InvoicingSettings;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use JetBrains\PhpStorm\NoReturn;
+use Plank\Mediable\Media;
 use Plank\Mediable\Mediable;
+use Plank\Mediable\MediableCollection;
 use Plank\Mediable\MediableInterface;
 use rikudou\EuQrPayment\QrPayment;
 
@@ -54,7 +58,7 @@ use rikudou\EuQrPayment\QrPayment;
  * @property int $legacy_id
  * @property-read BookkeepingBooking|null $booking
  * @property-read string $formated_invoice_number
- * @property-read \Illuminate\Database\Eloquent\Collection<int, InvoiceLine> $lines
+ * @property-read Collection<int, InvoiceLine> $lines
  * @property-read int|null $lines_count
  *
  * @method static Builder|Invoice whereLegacyId($value)
@@ -62,6 +66,25 @@ use rikudou\EuQrPayment\QrPayment;
  * @property-read Contact|null $contact
  * @property-read PaymentDeadline|null $payment_deadline
  * @property-read Project|null $project
+ * @property-read string $filename
+ * @property-read string $qr_code
+ * @property-read Collection<int, Media> $media
+ * @property-read int|null $media_count
+ *
+ * @method static MediableCollection<int, static> all($columns = ['*'])
+ * @method static Builder|Invoice whereHasMedia($tags = [], bool $matchAll = false)
+ * @method static Builder|Invoice whereHasMediaMatchAll($tags)
+ * @method static Builder|Invoice withMedia($tags = [], bool $matchAll = false, bool $withVariants = false)
+ * @method static Builder|Invoice withMediaAndVariants($tags = [], bool $matchAll = false)
+ * @method static Builder|Invoice withMediaAndVariantsMatchAll($tags = [])
+ * @method static Builder|Invoice withMediaMatchAll(bool $tags = [], bool $withVariants = false)
+ *
+ * @property-read Collection<int, Payment> $payments
+ * @property-read int|null $payments_count
+ * @property mixed $lines_sum_amount
+ * @property mixed $lines_sum_tax
+ *
+ * @method static MediableCollection<int, static> get($columns = ['*'])
  *
  * @mixin Eloquent
  */
@@ -96,16 +119,24 @@ class Invoice extends Model implements MediableInterface
         'filename',
     ];
 
+    #[NoReturn]
     public static function createBooking($invoice): void
     {
+
+        $booking = BookkeepingBooking::whereMorphedTo('bookable', Invoice::class)->where('bookable_id', $invoice->id)->first();
+
         $invoice->load('lines');
-        $invoice->amount = $invoice->lines->sum('amount');
+        $invoice->amount = $invoice->lines->sum('amount') + $invoice->lines->sum('tax');
 
         $accounts = Contact::getAccounts($invoice->contact_id, true, true);
-        $booking = BookkeepingBooking::createBooking($invoice, 'issued_on', 'amount', $accounts['subledgerAccount'], $accounts['outturnAccount'], 'A');
-        $name = $accounts['name'];
-        $booking->booking_text = "{$name}|Rechnungsausgang|{$invoice->formatedInvoiceNumber}";
-        $booking->save();
+        $booking = BookkeepingBooking::createBooking($invoice, 'issued_on', 'amount', $accounts['subledgerAccount'], $accounts['outturnAccount'], 'A', $booking ? $booking->id : null);
+
+        if ($booking) {
+            $name = strtoupper($accounts['name']);
+            $booking->booking_text = "Rechnungsausgang|$name|$invoice->formatedInvoiceNumber";
+            $booking->save();
+        }
+
     }
 
     public function getFormatedInvoiceNumberAttribute(): string
@@ -129,14 +160,17 @@ class Invoice extends Model implements MediableInterface
             ->setCurrency('EUR')
             ->setRemittanceText($this->formated_invoice_number);
 
-        $qr = $payment->getQrCode()->getDataUri();
-
-        return $qr;
+        return $payment->getQrCode()->getDataUri();
     }
 
     public function lines(): HasMany
     {
         return $this->hasMany(InvoiceLine::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class, 'payable_id', 'id');
     }
 
     public function contact(): HasOne

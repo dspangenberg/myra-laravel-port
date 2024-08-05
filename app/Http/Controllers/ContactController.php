@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreContact;
 use App\Http\Resources\ContactResource;
 use App\Models\AddressCategory;
+use App\Models\BookkeepingAccount;
 use App\Models\Contact;
 use App\Models\Country;
 use App\Models\EmailCategory;
@@ -43,7 +44,7 @@ class ContactController extends Controller
 
     public function create()
     {
-        $contact = new Contact();
+        $contact = new Contact;
 
         return ContactResource::make($contact)->additional([
             'salutations' => Salutation::all(),
@@ -51,7 +52,7 @@ class ContactController extends Controller
             'payment_deadlines' => PaymentDeadline::all(),
             'address_categories' => AddressCategory::all(),
             'email_categories' => EmailCategory::all(),
-            'phone_categories' => PhoneCategory::all(),
+            'bookkeeping_accounts' => BookkeepingAccount::all(),
             'taxes' => Tax::all(),
             'country' => Country::all(),
         ]);
@@ -65,6 +66,7 @@ class ContactController extends Controller
             'salutations' => Salutation::all(),
             'titles' => Title::all(),
             'payment_deadlines' => PaymentDeadline::all(),
+            'bookkeeping_accounts' => BookkeepingAccount::orderBy('account_number')->whereIn('type', ['r', 'e', 'n'])->get(),
             'address_categories' => AddressCategory::all(),
             'email_categories' => EmailCategory::all(),
             'phone_categories' => PhoneCategory::all(),

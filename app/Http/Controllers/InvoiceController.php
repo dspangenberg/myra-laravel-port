@@ -23,6 +23,7 @@ class InvoiceController extends Controller
             ->with('lines')
             ->with('payment_deadline')
             ->withSum('lines', 'amount')
+            ->withSum('payments', 'amount')
             ->withSum('lines', 'tax')
             ->paginate();
 

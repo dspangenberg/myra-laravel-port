@@ -135,8 +135,19 @@ import { container as WidgetContainerModal } from 'jenesius-vue-modal'
               />
               <twice-ui-sub-nav-item
                 active-route-path="/app/bookkeeping/bookings"
-                label="Buchungen (Fibu)"
+                label="Buchungen"
                 route-name="bookings-list"
+                separator
+              />
+              <twice-ui-sub-nav-item
+                active-route-path="/app/bookkeeping/accounts"
+                label="Konten (Fibu)"
+                route-name="bookings-accounts-list"
+              />
+              <twice-ui-sub-nav-item
+                active-route-path="/app/bookkeeping/rules"
+                label="Regeln"
+                route-name="bookings-rules-list"
               />
             </template>
           </TwiceUiNavItem>

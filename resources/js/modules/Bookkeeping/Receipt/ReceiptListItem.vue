@@ -6,18 +6,24 @@ import {
 } from '@/components/shdn/ui/table'
 
 import { useTemplateFilter } from '@/composables/useTemplateFilter'
-const { formatDate, formatNumber } = useTemplateFilter()
-
+import { computed } from 'vue'
+const { formatDate, formatNumber, round } = useTemplateFilter()
 export interface Props {
   item: Receipt
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+
+const amountOpen = computed(() => round(props.item.payments_sum_amount - props.item.gross))
+
 defineEmits(['select'])
 
 </script>
 <template>
-  <TableRow>
+  <TableRow :class="amountOpen > 0 ? 'bg-red-50 text-red-500' :''">
+    <TableCell>
+      {{ item.id }}
+    </TableCell>
     <TableCell>
       {{ formatDate(item.issued_on) }}
     </TableCell>
@@ -65,6 +71,11 @@ defineEmits(['select'])
       class="text-right"
     >
       {{ formatNumber(item.gross) }}
+    </TableCell>
+    <TableCell
+      class="text-right "
+    >
+      {{ formatNumber(amountOpen) }}
     </TableCell>
   </TableRow>
 </template>

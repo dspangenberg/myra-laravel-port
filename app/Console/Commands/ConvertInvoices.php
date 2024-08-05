@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceLine;
 use App\Models\Project;
 use App\Models\Tax;
+use App\Services\PaymentService;
 use App\SushiModels\LegacyAccount;
 use App\SushiModels\LegacyInvoice;
 use App\SushiModels\LegacyInvoiceLine;
@@ -41,7 +42,7 @@ class ConvertInvoices extends Command
             $contact = Contact::query()->where('debtor_number', $account->account_id)->first();
 
             $lProject = LegacyProject::query()->where('id', $legacyInvoice->project_id)->first();
-            $invoice = new Invoice;
+            $invoice = Invoice::firstOrNew(['legacy_id' => $legacyInvoice->id]);
 
             if ($lProject) {
                 $project = Project::query()->where('name', $lProject->name)->firstOrNew();
@@ -91,7 +92,7 @@ class ConvertInvoices extends Command
                 }
 
                 $lineCounter++;
-                $invoiceLine = new InvoiceLine;
+                $invoiceLine = InvoiceLine::firstOrNew(['legacy_id' => $legacyInvoiceLine->id]);
                 $invoiceLine->invoice_id = $invoice->id;
                 $invoiceLine->text = $legacyInvoiceLine->text;
                 $invoiceLine->quantity = $legacyInvoiceLine->quantity;
@@ -106,6 +107,7 @@ class ConvertInvoices extends Command
                 $invoiceLine->save();
             });
 
+            /*
             $legacyFile = storage_path('system/invoices/2021/'.$invoice->filename);
             try {
                 $media = MediaUploader::fromSource($legacyFile)
@@ -117,7 +119,13 @@ class ConvertInvoices extends Command
                 $invoice->attachMedia($media, 'pdf');
             } catch (\Exception $e) {
             }
+            */
+
+            $invoice->loadSum('lines', 'amount');
+            $invoice->loadSum('lines', 'tax');
+
             Invoice::createBooking($invoice);
+            PaymentService::getPaymentsForInvoice($invoice);
 
         });
     }

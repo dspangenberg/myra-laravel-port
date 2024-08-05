@@ -30,6 +30,7 @@ export interface Receipt {
   amount_to_pay: number
   text: string
   tax_code_number: string
+  payments_sum_amount: number
 }
 
 export interface Response {

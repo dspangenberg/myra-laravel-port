@@ -33,6 +33,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
             'formated_invoice_number' => $this->formated_invoice_number,
             'lines_sum_amount' => $this->lines_sum_amount,
             'lines_sum_tax' => $this->lines_sum_tax,
+            'payments_sum_amount' => $this->payments_sum_amount,
         ];
     }
 }

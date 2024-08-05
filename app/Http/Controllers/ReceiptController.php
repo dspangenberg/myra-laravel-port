@@ -23,6 +23,7 @@ class ReceiptController extends Controller
                 ->with('contact')
                 ->with('category')
                 ->orderBy('issued_on')
+                ->withSum('payments', 'amount')
                 ->paginate(25)
             );
         } else {

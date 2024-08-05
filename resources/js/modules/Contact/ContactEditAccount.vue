@@ -5,76 +5,64 @@ import { storeToRefs } from 'pinia'
 import { type Option } from '@/types'
 
 const contactStore = useContactStore()
-const { paymentDeadlines, taxes, contactEdit } = storeToRefs(contactStore)
-
-const isDebtor = ref(contactEdit.value?.is_debtor)
-const isCreditor = ref(contactEdit.value?.is_creditor)
-
-const onDebtorChange = (value: boolean) => {
-  isDebtor.value = value
-}
-const onCreditorChange = (value: boolean) => {
-  isCreditor.value = value
-}
+const { paymentDeadlines, taxes, bookkeepingAccounts, contactEdit } = storeToRefs(contactStore)
 
 </script>
 
 <template>
-  <div>
+  <div v-if="contactEdit">
     <twice-ui-form-group>
       <div class="col-span-12 flex space-x-3 items-center">
-        <twice-ui-check-box
+        <twice-ui-form-check-box
+          v-model="contactEdit.is_debtor"
           label="Debitor"
-          name="is_debtor"
-          @input="onDebtorChange"
         />
-        <twice-ui-check-box
+        <twice-ui-form-check-box
+          v-model="contactEdit.is_creditor"
           label="Kreditor"
-          name="is_creditor"
-          @input="onCreditorChange"
         />
       </div>
     </twice-ui-form-group>
 
     <twice-ui-form-group
-      v-if="isDebtor"
+      v-if="contactEdit.is_debtor"
       title="Debitorendaten"
     >
       <div class="col-span-12">
-        <twice-ui-input
+        <twice-ui-form-input
+          v-model="contactEdit.debtor_number"
           label="Debitorennummer"
-          name="debtor_number"
         />
       </div>
       <div class="col-span-12">
-        <twice-ui-select
+        <twice-ui-form-select
+          v-model="contactEdit.tax_id"
           :options="taxes as unknown as Option[]"
           label="Steuersatz"
-          name="tax_id"
         />
       </div>
       <div class="col-span-12">
-        <twice-ui-select
+        <twice-ui-form-select
+          v-model="contactEdit.payment_deadline_id"
           :options="paymentDeadlines as unknown as Option[]"
           label="Zahlungsziel"
-          name="payment_deadline_id"
         />
         <div class="pt-1">
-          <twice-ui-check-box
+          <twice-ui-form-check-box
+            v-model="contactEdit.has_dunning_block"
             label="Mahnsperre"
-            name="has_dunning_block"
           />
         </div>
       </div>
     </twice-ui-form-group>
     <twice-ui-form-group
-      v-if="isCreditor"
+      v-if="contactEdit.is_creditor"
       title="Kreditordaten"
     >
       <div class="col-span-12">
-        <twice-ui-input
+        <twice-ui-form-input
+          v-model="contactEdit.creditor_number"
           label="Kreditorennummer"
-          name="creditor_number"
         />
       </div>
     </twice-ui-form-group>
@@ -82,15 +70,15 @@ const onCreditorChange = (value: boolean) => {
       title="Registerdaten"
     >
       <div class="col-span-12">
-        <twice-ui-input
+        <twice-ui-form-input
+          v-model="contactEdit.register_court"
           label="Registergericht"
-          name="register_court"
         />
       </div>
       <div class="col-span-12">
-        <twice-ui-input
+        <twice-ui-form-input
+          v-model="contactEdit.register_number"
           label="Registernummer"
-          name="register_number"
         />
       </div>
     </twice-ui-form-group>
@@ -98,34 +86,37 @@ const onCreditorChange = (value: boolean) => {
       title="Steuerdaten"
     >
       <div class="col-span-12">
-        <twice-ui-input
+        <twice-ui-form-input
+          v-model="contactEdit.vat_id"
           label="Umsatzsteuer-ID"
-          name="vat_id"
         />
       </div>
       <div class="col-span-12">
-        <twice-ui-input
+        <twice-ui-form-input
+          v-model="contactEdit.tax_number"
           label="Steuernummer"
-          name="tax_number"
         />
       </div>
 
       <div class="col-span-12">
-        <twice-ui-input
+        <twice-ui-form-input
+          v-model="contactEdit.iban"
           label="IBAN"
-          name="iban"
         />
       </div>
       <div class="col-span-12">
-        <twice-ui-input
-          label="Name auf Kreditkartenabrechnung:"
-          name="cc_name"
+        <twice-ui-form-input
+          v-model="contactEdit.cc_name"
+          label="Name auf Kreditkartenabrechnung"
         />
       </div>
-      <div class="col-span-12">
-        <twice-ui-input
+      <div class="col-span-24">
+        <twice-ui-form-select
+          v-model="contactEdit.outturn_account_id"
+          :options="bookkeepingAccounts as unknown as Option[]"
           label="Erfolgskonto"
-          name="outturn_account_id"
+          option-name="label"
+          options-value="account_number"
         />
         <div class="pt-1">
           <twice-ui-check-box

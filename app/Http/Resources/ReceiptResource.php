@@ -5,7 +5,6 @@ namespace App\Http\Resources;
 use App\Models\Receipt;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @mixin Receipt
@@ -43,7 +42,7 @@ class ReceiptResource extends JsonResource
             'category' => new ReceiptCategoryResource($this->whenLoaded('category')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-
+            'payments_sum_amount' => $this->payments_sum_amount,
         ];
     }
 }

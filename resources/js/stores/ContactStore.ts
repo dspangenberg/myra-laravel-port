@@ -13,6 +13,7 @@ import { type PhoneCategory } from '@/api/params/PhoneCategory'
 import { type Salutation } from '@/api/params/Salutation'
 import { type Tax } from '@/api/params/Tax'
 import { type Title } from '@/api/params/Title'
+import type { BookkeepingAccount } from '@/api/params/BookkeepingAccount'
 
 export const useContactStore = defineStore('contact-store', () => {
   const contacts: Ref<Contact[] | null> = ref([])
@@ -24,6 +25,7 @@ export const useContactStore = defineStore('contact-store', () => {
   const emailCategories: Ref<EMailCategory[] | null> = ref([])
   const paymentDeadlines: Ref<PaymentDeadline[] | null> = ref([])
   const phoneCategories: Ref<PhoneCategory[] | null> = ref([])
+  const bookkeepingAccounts: Ref<BookkeepingAccount[] | null> = ref([])
   const salutations: Ref<Salutation[] | null> = ref([])
   const taxes: Ref<Tax[] | null> = ref([])
   const titles: Ref<Title[] | null> = ref([])
@@ -79,6 +81,7 @@ export const useContactStore = defineStore('contact-store', () => {
       state.paymentDeadlines = data.payment_deadlines
       state.phoneCategories = data.phone_categories
       state.salutations = data.salutations
+      state.bookkeepingAccounts = data.bookkeeping_accounts
       state.taxes = data.taxes
       state.titles = data.titles
       state.contact = data.data
@@ -118,6 +121,7 @@ export const useContactStore = defineStore('contact-store', () => {
     meta,
     baseUrl,
     addressCategories,
+    bookkeepingAccounts,
     countries,
     emailCategories,
     paymentDeadlines,

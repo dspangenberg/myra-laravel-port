@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
+ * 
+ *
  * @property int $id
  * @property int $parent_id
  * @property string $name
@@ -16,7 +18,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- *
  * @method static \Illuminate\Database\Eloquent\Builder|DocumentFolder newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DocumentFolder newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DocumentFolder onlyTrashed()
@@ -33,7 +34,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|DocumentFolder whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|DocumentFolder withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|DocumentFolder withoutTrashed()
- *
+ * @property string $path
+ * @property string $path_structure
+ * @property string $file_name_structure
+ * @method static \Illuminate\Database\Eloquent\Builder|DocumentFolder whereFileNameStructure($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DocumentFolder wherePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DocumentFolder wherePathStructure($value)
  * @mixin \Eloquent
  */
 class DocumentFolder extends Model

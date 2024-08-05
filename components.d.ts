@@ -138,6 +138,7 @@ declare module 'vue' {
     TwiceUiDialog: typeof import('./resources/js/components/twice/ui/Dialog.vue')['default']
     TwiceUiDl: typeof import('./resources/js/components/twice/ui/Dl.vue')['default']
     TwiceUiForm: typeof import('./resources/js/components/twice/ui/Form.vue')['default']
+    TwiceUiFormCheckBox: typeof import('./resources/js/components/twice/ui/FormCheckBox.vue')['default']
     TwiceUiFormErrors: typeof import('./resources/js/components/twice/ui/FormErrors.vue')['default']
     TwiceUiFormGroup: typeof import('./resources/js/components/twice/ui/FormGroup.vue')['default']
     TwiceUiFormInput: typeof import('./resources/js/components/twice/ui/FormInput.vue')['default']

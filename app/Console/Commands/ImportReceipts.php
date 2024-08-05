@@ -37,14 +37,14 @@ class ImportReceipts extends Command
     {
 
         $jsonContent = Storage::disk('private')->json('receipts-2021.json');
-        $recieptCollection = collect($jsonContent);
-        $category = $recieptCollection->values()->select('category')->values();
-        $contacts = $recieptCollection->values()->select('iban', 'contact')->values();
+        $receiptCollection = collect($jsonContent);
+        $category = $receiptCollection->values()->select('category')->values();
+        $contacts = $receiptCollection->values()->select('iban', 'contact')->values();
 
         $category->each(function ($item) {
             $category = ReceiptCategory::query()->where('receipts_ref', $item['category']['id'])->first();
             if (! $category) {
-                $category = new ReceiptCategory();
+                $category = new ReceiptCategory;
                 $category->receipts_ref = $item['category']['id'];
                 $category->name = $item['category']['title'];
                 $category->save();
@@ -58,7 +58,7 @@ class ImportReceipts extends Command
 
                 $contact = Contact::query()->where('receipts_ref', $orgContact)->first();
                 if (! $contact) {
-                    $contact = new Contact();
+                    $contact = new Contact;
                     $contact->receipts_ref = $orgContact['id'];
                     $contact->name = $orgContact['title'];
                     $contact->is_creditor = true;
@@ -70,15 +70,12 @@ class ImportReceipts extends Command
             }
         });
 
-        $recieptCollection->reverse()->each(function ($item) {
+        $receiptCollection->reverse()->each(function ($item) {
             $item = collect($item)->dot();
             $date = Carbon::parse($item->get('date'), 'UTC')->setTimezone('Europe/Berlin');
 
-            $receipt = Receipt::query()->where('receipts_ref', $item['id'])->first();
-            $is_new = false;
-            if (! $receipt) {
-                $is_new = true;
-                $receipt = new Receipt();
+            $receipt = Receipt::firstOrNew(['receipts_ref' => $item['id']]);
+            if (! $receipt->id) {
                 $receipt->receipts_ref = $item['id'];
                 $year = $date->year;
                 $receipt->year = $year;
@@ -99,14 +96,14 @@ class ImportReceipts extends Command
             // $receipt->issuedAt = $item['issuedAt'];
 
             $receipt->currency_code = $item->get('amountsOriginal.currency');
-            $receipt->tax_rate = $item->get('amountsOriginal.taxDetails.0.percent', 0);
-            $receipt->tax_code_number = $receipt->tax_rate !== 0 ? 85 : '';
+            // $receipt->tax_rate = $item->get('amountsOriginal.taxDetails.0.percent', 0);
+            // $receipt->tax_code_number = $receipt->tax_rate !== 0 ? 85 : '';
             $receipt->amount = $item->get('amountsOriginal.gross');
 
             if ($receipt->amount != 0) {
 
                 if ($receipt->currency_code !== 'EUR') {
-                    $receipt->tax_rate = 19;
+                    // $receipt->tax_rate = 0;
 
                     $receipt->exchange_rate = ConversionRate::query()
                         ->where('currency_code', 'USD')
@@ -115,13 +112,12 @@ class ImportReceipts extends Command
                         ->first()->rate;
 
                     $receipt->net = round($receipt->amount / $receipt->exchange_rate, 2);
-                    $receipt->tax = round(($receipt->net / 100 * $receipt->tax_rate), 2);
-                    $receipt->gross = round($receipt->net + $receipt->tax, 2);
+                    $receipt->tax = 0;
+                    $receipt->gross = $receipt->net;
 
                 } else {
                     $receipt->gross = $receipt->amount;
-                    $receipt->tax = round(($receipt->gross / ($receipt->tax_rate + 100) * $receipt->tax_rate), 2);
-                    $receipt->net = round($receipt->gross - $receipt->tax, 2);
+                    $receipt->tax = 0;
                 }
 
                 $receipt->amount = $receipt->amount * -1;
@@ -173,9 +169,8 @@ class ImportReceipts extends Command
 
                 if ($save) {
                     $receipt->save();
-                    Receipt::createBooking($receipt);
+                    //Receipt::createBooking($receipt);
                 }
-
             }
             // print_r($receipt->toJSON());
 

@@ -30,7 +30,7 @@ export interface Meta {
 }
 
 export interface Option {
-  id: string
+  id: number
   name: string
   disabled?: boolean
   group?: string

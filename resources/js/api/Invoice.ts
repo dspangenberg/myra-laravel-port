@@ -26,6 +26,7 @@ export interface Invoice {
   payment_deadline_id: number
   payment_deadline: PaymentDeadline
   formated_invoice_number: string
+  payments_sum_amount: number
   sent_at?: string
   filename: string
   lines_sum_amount: number

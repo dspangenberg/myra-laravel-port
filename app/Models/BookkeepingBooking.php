@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 
 /**
+ * 
+ *
  * @property int $id
  * @property int $transaction_id
  * @property int $receipt_id
@@ -29,7 +31,6 @@ use Illuminate\Support\Carbon;
  * @property int $is_locked
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @method static Builder|BookkeepingBooking newModelQuery()
  * @method static Builder|BookkeepingBooking newQuery()
  * @method static Builder|BookkeepingBooking query()
@@ -52,7 +53,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|BookkeepingBooking whereTaxId($value)
  * @method static Builder|BookkeepingBooking whereTransactionId($value)
  * @method static Builder|BookkeepingBooking whereUpdatedAt($value)
- *
  * @property-read BookkeepingAccount|null $account_credit
  * @property-read BookkeepingAccount|null $account_debit
  * @property-read Tax|null $tax
@@ -60,17 +60,15 @@ use Illuminate\Support\Carbon;
  * @property int $bookable_id
  * @property int $is_marked
  * @property-read Model|Eloquent $bookable
- *
  * @method static Builder|BookkeepingBooking whereBookableId($value)
  * @method static Builder|BookkeepingBooking whereBookableType($value)
  * @method static Builder|BookkeepingBooking whereIsMarked($value)
- *
  * @property string $document_number_prefix
  * @property int $document_number_counter
- *
  * @method static Builder|BookkeepingBooking whereDocumentNumberCounter($value)
  * @method static Builder|BookkeepingBooking whereDocumentNumberPrefix($value)
- *
+ * @property string $document_number_year
+ * @method static Builder|BookkeepingBooking whereDocumentNumberYear($value)
  * @mixin Eloquent
  */
 class BookkeepingBooking extends Model
@@ -102,11 +100,22 @@ class BookkeepingBooking extends Model
         'document_number',
     ];
 
-    public static function createBooking($parent, $dateField, $amountField, $debit_account, $credit_account, $documentNumberPrefix = ''): BookkeepingBooking
+    public static function createBooking($parent, $dateField, $amountField, $debit_account, $credit_account, $documentNumberPrefix = '', $bookingId = null): ?BookkeepingBooking
     {
-        $booking = new BookkeepingBooking;
-        $booking->bookable()->associate($parent);
-        $booking->date = $parent[$dateField];
+        if ($bookingId) {
+            $booking = BookkeepingBooking::firstOrNew(['id' => $bookingId]);
+            if ($booking->is_locked) {
+                return null;
+            }
+        } else {
+            $booking = new BookkeepingBooking;
+            $booking->bookable()->associate($parent);
+            $prefix = $documentNumberPrefix !== '' ? $documentNumberPrefix : $parent->prefix;
+            $booking->date = $parent[$dateField];
+            $booking->document_number_prefix = $prefix;
+            $booking->document_number_year = $booking->date->year;
+            $booking->setDocumentNumber($booking->date->year, $prefix);
+        }
 
         $amount = $parent[$amountField];
         $booking->amount = $amount < 0 ? $amount * -1 : $amount;
@@ -118,12 +127,6 @@ class BookkeepingBooking extends Model
             $booking->account_id_debit = $debit_account->account_number;
             $booking->account_id_credit = $credit_account->account_number;
         }
-
-        $prefix = $documentNumberPrefix !== '' ? $documentNumberPrefix : $parent->prefix;
-        $booking->document_number_prefix = $prefix;
-        $booking->document_number_year = $booking->date->year;
-
-        $booking->setDocumentNumber($booking->date->year, $prefix);
 
         $taxes = BookkeepingAccount::getTax($booking->account_id_credit, $booking->account_id_debit, $booking->amount);
         $booking->tax_credit = $taxes['tax_credit'];

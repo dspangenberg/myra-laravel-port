@@ -7,6 +7,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Carbon;
 
@@ -76,6 +77,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Receipt whereType($value)
  * @method static Builder|Receipt whereYear($value)
  * @property-read BookkeepingBooking|null $booking
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
+ * @property-read int|null $payments_count
  * @mixin Eloquent
  */
 class Receipt extends Model
@@ -122,12 +125,13 @@ class Receipt extends Model
             $accounts['outturnAccount'] = $bookkeepingAccount;
         }
 
-        $booking = BookkeepingBooking::createBooking($receipt, 'issued_on', 'gross', $accounts['subledgerAccount'], $accounts['outturnAccount'], 'E');
-        $name = $accounts['name'];
+        $booking = BookkeepingBooking::whereMorphedTo('bookable', Receipt::class)->where('bookable_id', $receipt->id)->first();
+        $booking = BookkeepingBooking::createBooking($receipt, 'issued_on', 'gross', $accounts['subledgerAccount'], $accounts['outturnAccount'], 'E', $booking ? $booking->id : null);
+        $name = strtoupper($accounts['name']);
 
-        $bookingTextSuffix = $receipt->currency_code !== 'EUR' ? ' ('.number_format($receipt->amount * -1, 2, ',', '.').' '.$receipt->currency_code.')' : '';
+        $bookingTextSuffix = $receipt->currency_code !== 'EUR' ? number_format($receipt->amount * -1, 2, ',', '.').' '.$receipt->currency_code : '';
 
-        $booking->booking_text = "$name|Rechnungseingang {$bookingTextSuffix}|{$receipt->reference}";
+        $booking->booking_text = "Rechnungseingang|$name|$receipt->reference|$bookingTextSuffix";
         $booking->save();
     }
 
@@ -144,6 +148,11 @@ class Receipt extends Model
     public function booking(): MorphOne
     {
         return $this->morphOne(BookkeepingBooking::class, 'bookable');
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class, 'payable_id', 'id');
     }
 
     protected function serializeDate(DateTimeInterface $date): string

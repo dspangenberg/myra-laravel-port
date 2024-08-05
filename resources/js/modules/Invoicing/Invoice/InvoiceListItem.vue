@@ -9,12 +9,18 @@ import { useInvoiceStore } from '@/stores/InvoiceStore'
 
 import { useTemplateFilter } from '@/composables/useTemplateFilter'
 import { promptModal } from 'jenesius-vue-modal'
+import { computed } from 'vue'
 const invoiceStore = useInvoiceStore()
-const { formatDate, formatNumber } = useTemplateFilter()
+const { formatDate, formatNumber, round } = useTemplateFilter()
 
 export interface Props {
   item: Invoice
 }
+
+const props = defineProps<Props>()
+
+const amountGross = computed(() => round(props.item.lines_sum_amount + props.item.lines_sum_tax))
+const amountOpen = computed(() => amountGross.value < 0 ? 0 : Math.abs(props.item.payments_sum_amount - amountGross.value))
 
 const onCreatePdf = async (invoice: Invoice) => {
   const { dataUrl: resUrl, base64: resBase64 } = await invoiceStore.createPdf(invoice.id as unknown as number)
@@ -25,12 +31,11 @@ const onCreatePdf = async (invoice: Invoice) => {
   })
 }
 
-defineProps<Props>()
 defineEmits(['select'])
 
 </script>
 <template>
-  <TableRow>
+  <TableRow :class="amountOpen > 0 ? 'bg-red-50 text-red-500' :''">
     <TableCell class="">
       {{ formatDate(item.issued_on) }}
     </TableCell>
@@ -54,10 +59,12 @@ defineEmits(['select'])
       {{ formatNumber(item.lines_sum_tax) }}
     </TableCell>
     <TableCell class="text-right ">
-      {{ formatNumber(item.lines_sum_amount + item.lines_sum_tax) }}
+      {{ formatNumber(amountGross) }}
     </TableCell>
-    <TableCell class="text-right ">
-      {{ formatNumber(0) }}
+    <TableCell
+      class="text-right "
+    >
+      {{ formatNumber(amountOpen) }}
     </TableCell>
     <TableCell>
       <ShdnUiButton
