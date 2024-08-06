@@ -26,8 +26,6 @@ class ReceiptController extends Controller
                 ->orderBy('issued_on')
                 ->paginate(25);
 
-            dump($receipts);
-
             return ReceiptResource::collection($receipts);
         } else {
             $creditors = Contact::query()->where('is_debtor', 1)->orderBy('name')->paginate(25);
