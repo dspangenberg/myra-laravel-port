@@ -20,7 +20,7 @@ export interface Props {
 const props = defineProps<Props>()
 
 const amountGross = computed(() => round(props.item.lines_sum_amount + props.item.lines_sum_tax))
-const amountOpen = computed(() => amountGross.value < 0 ? 0 : Math.abs(props.item.payments_sum_amount - amountGross.value))
+const amountOpen = computed(() => amountGross.value < 0 ? 0 : Math.abs(props.item.payable_sum_amount - amountGross.value))
 
 const onCreatePdf = async (invoice: Invoice) => {
   const { dataUrl: resUrl, base64: resBase64 } = await invoiceStore.createPdf(invoice.id as unknown as number)

@@ -7,13 +7,11 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Carbon;
 
 /**
- * 
- *
  * @property int $id
  * @property string $receipts_ref
  * @property string $reference
@@ -33,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @property string $text
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static Builder|Receipt newModelQuery()
  * @method static Builder|Receipt newQuery()
  * @method static Builder|Receipt query()
@@ -55,10 +54,13 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Receipt whereText($value)
  * @method static Builder|Receipt whereTitle($value)
  * @method static Builder|Receipt whereUpdatedAt($value)
+ *
  * @property string $issued_on
  * @property string|null $tax_code_number
+ *
  * @method static Builder|Receipt whereIssuedOn($value)
  * @method static Builder|Receipt whereTaxCodeNumber($value)
+ *
  * @property string $type
  * @property int|null $document_number
  * @property int $year
@@ -69,6 +71,7 @@ use Illuminate\Support\Carbon;
  * @property-read ReceiptCategory|null $category
  * @property-read Contact|null $contact
  * @property-read string $real_document_number
+ *
  * @method static Builder|Receipt whereAmountToPay($value)
  * @method static Builder|Receipt whereDocumentNumber($value)
  * @method static Builder|Receipt whereIsLocked($value)
@@ -76,9 +79,14 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Receipt whereTextMd5($value)
  * @method static Builder|Receipt whereType($value)
  * @method static Builder|Receipt whereYear($value)
+ *
  * @property-read BookkeepingBooking|null $booking
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
  * @property-read int|null $payments_count
+ * @property int $number_range_document_numbers_id
+ *
+ * @method static Builder|Receipt whereNumberRangeDocumentNumbersId($value)
+ *
  * @mixin Eloquent
  */
 class Receipt extends Model
@@ -130,9 +138,10 @@ class Receipt extends Model
         $name = strtoupper($accounts['name']);
 
         $bookingTextSuffix = $receipt->currency_code !== 'EUR' ? number_format($receipt->amount * -1, 2, ',', '.').' '.$receipt->currency_code : '';
-
-        $booking->booking_text = "Rechnungseingang|$name|$receipt->reference|$bookingTextSuffix";
-        $booking->save();
+        if ($booking) {
+            $booking->booking_text = "Rechnungseingang|$name|$receipt->reference|$bookingTextSuffix";
+            $booking->save();
+        }
     }
 
     public function contact(): BelongsTo
@@ -150,9 +159,9 @@ class Receipt extends Model
         return $this->morphOne(BookkeepingBooking::class, 'bookable');
     }
 
-    public function payments(): HasMany
+    public function payable(): MorphMany
     {
-        return $this->hasMany(Payment::class, 'payable_id', 'id');
+        return $this->morphMany(Payment::class, 'payable');
     }
 
     protected function serializeDate(DateTimeInterface $date): string

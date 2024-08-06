@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { computed, toRef } from 'vue'
 import { useField } from 'vee-validate'
 
@@ -61,8 +61,8 @@ const gridCols = computed(() => {
 </script>
 <template>
   <div
-    class="w-full space-y-1 "
     :class="[horizontal ? 'flex items-center' : '']"
+    class="w-full space-y-1 "
   >
     <div
       v-if="label"
@@ -80,12 +80,11 @@ const gridCols = computed(() => {
       <twice-ui-radio-button
         v-for="(option, index) in options"
         :key="index"
-        v-model="value"
-        type="radio"
-        :label="option.name"
-        :horizontal="horizontal"
         :cols="cols"
+        :horizontal="horizontal"
+        :label="option.name"
         :value="option.id"
+        type="radio"
       />
     </div>
   </div>

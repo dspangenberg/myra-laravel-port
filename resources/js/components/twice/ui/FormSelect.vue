@@ -89,7 +89,7 @@ const htmlId = computed(() => `select-${xid}`)
             :key="index"
             :group="item.group"
             :selected="item['id'] === data"
-            :value="item[optionsValue as keyof Option]"
+            :value="item[optionsValue as keyof Option] as unknown as string"
             class="text-sm"
           >
             {{ item[optionName as keyof Option] }}

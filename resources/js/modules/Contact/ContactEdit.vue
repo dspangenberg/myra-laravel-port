@@ -11,7 +11,6 @@ import type { FormData } from '@/types'
 const contactStore = useContactStore()
 const { baseUrl, contact, contactEdit } = storeToRefs(contactStore)
 
-const form = reactive(contactEdit)
 const router = useRouter()
 const route = useRoute()
 const formRef = ref(null)
@@ -42,7 +41,7 @@ const component = computed(() => {
 
 const onValidated = async (values: FormData) => {
   console.log(values)
-  await contactStore.save(contactEdit.value)
+  await contactStore.save(contactEdit.value as unknown as Contact)
   onClose()
 }
 

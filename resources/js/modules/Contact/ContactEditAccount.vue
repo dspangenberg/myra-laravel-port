@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
 import { useContactStore } from '@/stores/ContactStore'
 import { storeToRefs } from 'pinia'
 import { type Option } from '@/types'

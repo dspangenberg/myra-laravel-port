@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
 use JetBrains\PhpStorm\NoReturn;
 use Plank\Mediable\Media;
@@ -85,6 +86,17 @@ use rikudou\EuQrPayment\QrPayment;
  * @property mixed $lines_sum_tax
  *
  * @method static MediableCollection<int, static> get($columns = ['*'])
+ * @method static MediableCollection<int, static> all($columns = ['*'])
+ * @method static MediableCollection<int, static> get($columns = ['*'])
+ *
+ * @property int $number_range_document_numbers_id
+ *
+ * @method static MediableCollection<int, static> all($columns = ['*'])
+ * @method static MediableCollection<int, static> get($columns = ['*'])
+ * @method static Builder|Invoice whereNumberRangeDocumentNumberId($value)
+ * @method static MediableCollection<int, static> all($columns = ['*'])
+ * @method static MediableCollection<int, static> get($columns = ['*'])
+ * @method static Builder|Invoice whereNumberRangeDocumentNumbersId($value)
  *
  * @mixin Eloquent
  */
@@ -168,9 +180,9 @@ class Invoice extends Model implements MediableInterface
         return $this->hasMany(InvoiceLine::class);
     }
 
-    public function payments(): HasMany
+    public function payable(): MorphMany
     {
-        return $this->hasMany(Payment::class, 'payable_id', 'id');
+        return $this->morphMany(Payment::class, 'payable');
     }
 
     public function contact(): HasOne

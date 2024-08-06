@@ -35,7 +35,7 @@ const onSubmit = async () => {
   const result: Form<Data> = form.validate() as Form<Data>
   if (!result.hasErrors) {
     console.log(result)
-    emit('validated', result.data.data)
+    emit('validated', result.data as unknown as Data)
   }
 }
 

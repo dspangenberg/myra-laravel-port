@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\BankAccount;
 use App\Models\Contact;
+use App\Models\NumberRange;
 use App\Models\Transaction;
 use App\Models\TransactionRule;
 use Carbon\Carbon;
@@ -31,15 +32,14 @@ class ImportTransactions extends Command
      */
     public function handle(): void
     {
-        $jsonTransactions = Storage::disk('private')->json('holv-2021.json');
+        $jsonTransactions = Storage::disk('private')->json('PayPal.json');
         $collection = collect($jsonTransactions);
 
         $account = $collection->get('account');
         $transactions = collect($collection->get('transactions'))->reverse();
-        $ownBankAccounts = BankAccount::where('iban', $account['iban'])->get()->pluck('iban')->toArray();
+        $ownBankAccounts = BankAccount::get()->pluck('iban')->toArray();
         $transactions->each(function ($item) use ($account, $ownBankAccounts) {
             $item = collect($item)->dot();
-            dump($item);
             if ($item->count() > 0) {
 
                 $bankAccount = BankAccount::query()->where('iban', $account['iban'])->first();
@@ -74,6 +74,7 @@ class ImportTransactions extends Command
                     $transaction->mandate_reference = $item->get('mandateReference', '');
                     $transaction->batch_reference = $item->get('batchReference', '');
                     $transaction->primanota_number = $item->get('primanotaNumber', '');
+                    $transaction->number_range_document_numbers_id = NumberRange::createDocumentNumber($transaction, 'booked_on', $bankAccount->prefix);
 
                     $transaction->contact_id = 0;
 

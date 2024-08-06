@@ -7,7 +7,7 @@ import type { Contact } from '@/api/Contact'
 
 import { type AddressCategory } from '@/api/params/AddressCategory'
 import { type Country } from '@/api/params/Country'
-import { type EMailCategory } from '@/api/params/EmailCategory'
+import { type EmailCategory } from '@/api/params/EmailCategory'
 import { type PaymentDeadline } from '@/api/params/PaymentDeadline'
 import { type PhoneCategory } from '@/api/params/PhoneCategory'
 import { type Salutation } from '@/api/params/Salutation'
@@ -22,7 +22,7 @@ export const useContactStore = defineStore('contact-store', () => {
   const baseUrl: Ref<string> = ref(apiBaseUrl)
   const addressCategories: Ref<AddressCategory[] | null> = ref([])
   const countries: Ref<Country[] | null> = ref([])
-  const emailCategories: Ref<EMailCategory[] | null> = ref([])
+  const emailCategories: Ref<EmailCategory[] | null> = ref([])
   const paymentDeadlines: Ref<PaymentDeadline[] | null> = ref([])
   const phoneCategories: Ref<PhoneCategory[] | null> = ref([])
   const bookkeepingAccounts: Ref<BookkeepingAccount[] | null> = ref([])
@@ -50,7 +50,7 @@ export const useContactStore = defineStore('contact-store', () => {
     store.$patch(state => {
       if (state.contactEdit !== null) {
         state.contactEdit.mails.push({
-          e_email_category_id: 0,
+          email_category_id: 0,
           contact_id: contactId,
           pos: 0,
           email: ''

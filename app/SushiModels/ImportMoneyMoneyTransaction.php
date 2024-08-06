@@ -4,7 +4,7 @@ class LegacyInvoice extends Model
 {
     use Sushi;
 
-    public function MoneyMoneyTransaction(): array
+    public function ImportMoneyMoneyTransaction(): array
     {
         $jsonInvoices = Storage::disk('private')->json('invoices.json');
 

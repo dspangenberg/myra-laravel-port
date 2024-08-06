@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { computed, toRef } from 'vue'
 import { id as id2 } from 'random-html-id'
 import { useField } from 'vee-validate'
@@ -64,9 +64,9 @@ const { value } = useField<string>(name, rules, { label })
   <div class="p-0 m-0 bg-transparent border-0">
     <twice-ui-label
       v-if="label"
+      :for="htmlId"
       :label="label"
       :required="required"
-      :for="htmlId"
     />
     <Select
       v-model="value"
@@ -76,8 +76,8 @@ const { value } = useField<string>(name, rules, { label })
         :autofocus="autofocus"
       >
         <SelectValue
-          :placeholder="placeholder"
           :class="selectClass"
+          :placeholder="placeholder"
         />
       </SelectTrigger>
 
@@ -88,10 +88,10 @@ const { value } = useField<string>(name, rules, { label })
           <SelectItem
             v-for="(item, index) in filteredOptions"
             :key="index"
-            :value="item['id']"
-            class="text-sm"
             :group="item.group"
-            :selected="item['id'] === value"
+            :selected="item['id'] === parseInt(value)"
+            :value="item['id'] as unknown as string"
+            class="text-sm"
           >
             {{ item[optionName as keyof Option] }}
           </SelectItem>

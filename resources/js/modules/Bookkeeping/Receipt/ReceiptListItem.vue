@@ -14,7 +14,7 @@ export interface Props {
 
 const props = defineProps<Props>()
 
-const amountOpen = computed(() => round(props.item.payments_sum_amount - props.item.gross))
+const amountOpen = computed(() => round(props.item.payable_sum_amount - props.item.gross))
 
 defineEmits(['select'])
 

@@ -7,7 +7,6 @@ use App\Models\Payment;
 use App\Models\PaymentSuggestion;
 use App\Models\Receipt;
 use App\Models\Transaction;
-use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -20,13 +19,34 @@ class PaymentService
         $grossAmount = $invoice->lines_sum_amount + $invoice->lines_sum_tax;
         $purpose = '%'.Str::replace('RG-', '', $invoice->formated_invoice_number).'%';
 
-        $transactions = $service->findTransactionByPurpose($purpose);
+        $transactions = $service->findTransactionByPurpose($purpose, $invoice->contact_id);
         $rank = 100;
 
         if ($transactions->count() === 0) {
             $transactions = $service->findTransactionByAmount($invoice, $grossAmount);
             $rank = 50;
         }
+
+        $transactions->each(function ($transaction) use ($invoice) {
+            $existingPayment = Payment::with('transaction')->with('transaction.bank_account')
+                ->whereMorphedTo('payable', Invoice::class)
+                ->where('payable_id', $invoice->id)
+                ->where('transaction_id', $transaction->id)
+                ->first();
+
+            $payment = Payment::firstOrNew(['id' => $existingPayment ? $existingPayment->id : null]);
+
+            if ($payment->is_confirmed) {
+                return false;
+            }
+
+            $payment->transaction_id = $transaction->id;
+            $payment->amount = $transaction->amount;
+            $payment->issued_on = $transaction->booked_on;
+            $payment->payable()->associate($invoice);
+            $payment->is_confirmed = true;
+            $payment->save();
+        });
 
         $service->createPayments($transactions, $invoice, $rank);
     }
@@ -72,7 +92,7 @@ class PaymentService
                 }
             }
 
-            if ($rank < 30) {
+            if ($rank > 30) {
                 $payment = Payment::firstOrNew(['id' => $id]);
                 $payment->rank = $orgRank;
             } else {
@@ -147,7 +167,7 @@ class PaymentService
 
     public static function adjustPaymentForReciept(int $id)
     {
-        $suggestedPayment = PaymentSuggestion::find($id);
+        $suggestedPayment = PaymentSuggestion::with('transaction')->find($id);
         $data = $suggestedPayment->toArray();
         unset($data['id']);
         $payment = new Payment($data);
@@ -161,8 +181,8 @@ class PaymentService
                 $currencyDifferency = $payment->amount - $receipt->gross;
                 $differencePayment = new Payment;
                 $differencePayment->payable()->associate($receipt);
-                $differencePayment->issued_on = Carbon::now();
-                $differencePayment->transaction_id = 0;
+                $differencePayment->issued_on = $payment->issued_on;
+                $differencePayment->transaction_id = $suggestedPayment->transaction_id;
                 $differencePayment->amount = $currencyDifferency * -1;
                 $differencePayment->is_confirmed = true;
                 $differencePayment->is_currency_difference = true;

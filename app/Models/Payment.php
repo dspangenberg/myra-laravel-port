@@ -67,10 +67,6 @@ class Payment extends Model
         'rank',
     ];
 
-    protected $appends = [
-        'bookkeeeping_text',
-    ];
-
     public static function createBookingIncoming($payment): void
     {
 

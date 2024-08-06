@@ -31,7 +31,7 @@ class ExportBookings extends Command
     #[NoReturn]
     public function handle(): void
     {
-        $bookings = BookkeepingBooking::whereBetween('date', ['2021-01-01', '2021-01-31'])->get();
+        $bookings = BookkeepingBooking::with('range_document_number')->whereBetween('date', ['2021-01-01', '2021-01-31'])->orderBy('date')->get();
         $temporaryDirectory = (new TemporaryDirectory)
             ->create();
 

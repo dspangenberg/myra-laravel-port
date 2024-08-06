@@ -2,8 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\ReceiptBookkeepingService;
-use App\Services\TransactionsBookkeepingService;
+use App\Services\BookingService;
 use Illuminate\Console\Command;
 
 class CreateBookings extends Command
@@ -25,9 +24,8 @@ class CreateBookings extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
-        ReceiptBookkeepingService::runAll();
-        TransactionsBookkeepingService::runAll();
+        BookingService::createCurrencyDifferenceBookings(2021);
     }
 }

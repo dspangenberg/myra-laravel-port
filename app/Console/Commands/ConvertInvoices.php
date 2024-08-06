@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Contact;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
+use App\Models\NumberRange;
 use App\Models\Project;
 use App\Models\Tax;
 use App\Services\PaymentService;
@@ -78,6 +79,7 @@ class ConvertInvoices extends Command
             $invoice->address = $legacyInvoice->address;
             $invoice->payment_deadline_id = $legacyInvoice->payment_deadline_id || 1;
             $invoice->sent_at = $legacyInvoice->sent_at;
+            $invoice->number_range_document_numbers_id = NumberRange::createDocumentNumber($invoice, 'issued_on');
             $invoice->save();
 
             $legacyInvoiceLines = LegacyInvoiceLine::query()->where('invoice_id', $legacyInvoice->id)->orderBy('pos')->orderBy('id')->get();

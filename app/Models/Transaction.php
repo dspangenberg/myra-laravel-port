@@ -89,6 +89,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Transaction whereOrgCategory($value)
  * @property float $amount_in_foreign_currency
  * @method static Builder|Transaction whereAmountInForeignCurrency($value)
+ * @property int $number_range_document_numbers_id
+ * @method static Builder|Transaction whereNumberRangeDocumentNumbersId($value)
  * @mixin Eloquent
  */
 class Transaction extends Model

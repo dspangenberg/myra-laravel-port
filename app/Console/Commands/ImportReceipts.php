@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Contact;
 use App\Models\ConversionRate;
+use App\Models\NumberRange;
 use App\Models\Receipt;
 use App\Models\ReceiptCategory;
 use Carbon\Carbon;
@@ -75,10 +76,13 @@ class ImportReceipts extends Command
             $date = Carbon::parse($item->get('date'), 'UTC')->setTimezone('Europe/Berlin');
 
             $receipt = Receipt::firstOrNew(['receipts_ref' => $item['id']]);
+            $receipt->issued_on = $date;
+
             if (! $receipt->id) {
                 $receipt->receipts_ref = $item['id'];
                 $year = $date->year;
                 $receipt->year = $year;
+                $receipt->number_range_document_numbers_id = NumberRange::createDocumentNumber($receipt, 'issued_on');
             }
 
             $receipt->reference = $item->get('reference', '');
@@ -90,7 +94,6 @@ class ImportReceipts extends Command
                 $receipt->contact_id = 0;
             }
 
-            $receipt->issued_on = $date;
             $receipt->receipt_category_id = ReceiptCategory::query()->where('receipts_ref',
                 $item->get('category.id'))->first()->id;
             // $receipt->issuedAt = $item['issuedAt'];
@@ -169,7 +172,7 @@ class ImportReceipts extends Command
 
                 if ($save) {
                     $receipt->save();
-                    //Receipt::createBooking($receipt);
+                    Receipt::createBooking($receipt);
                 }
             }
             // print_r($receipt->toJSON());

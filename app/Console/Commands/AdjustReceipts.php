@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\PaymentSuggestion;
 use App\Models\Receipt;
-use App\Models\TransactionRule;
 use App\Services\PaymentService;
 use Illuminate\Console\Command;
 
@@ -37,7 +36,7 @@ class AdjustReceipts extends Command
         if ($this->argument('receipt')) {
             $receipts = Receipt::with('contact')->where('id', $this->argument('receipt'))->get();
         } else {
-            $receipts = Receipt::with('contact')->get();
+            $receipts = Receipt::with('contact')->orderBy('issued_on')->get();
         }
 
         $receipts->each(function (Receipt $receipt) {
@@ -54,19 +53,6 @@ class AdjustReceipts extends Command
                     ],
                 ],
             );
-
-            if (! $this->argument('receipt')) {
-                $rules = TransactionRule::query()->where('table', 'payment')->get();
-                $rules->each(function ($rule) use ($receipt) {
-                    $trans = Receipt::query()->where('id', $receipt->id)->where($rule->search_field,
-                        $rule->comparator, $rule->search_value)->dd()->first();
-                    if ($trans) {
-                        if ($rule->set_field === '*batch_ignore') {
-                            warning('Beleg wird im Batchmodus ignoriert');
-                        }
-                    }
-                });
-            }
 
             $receipt->load('payments')->load('payments.transaction');
 

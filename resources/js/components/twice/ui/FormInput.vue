@@ -13,7 +13,7 @@ export interface Props {
   prefix?: string
   suffix?: string
   help?: string
-  modelValue: string
+  modelValue: string | number
   placeholder?: string
   prefixClass?: string
   suffixClass?: string

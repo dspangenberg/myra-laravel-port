@@ -19,13 +19,16 @@ class ReceiptController extends Controller
         $type = $request->query('type', 'list');
 
         if ($type === 'list') {
-            return ReceiptResource::collection(Receipt::query()
+            $receipts = Receipt::query()
                 ->with('contact')
                 ->with('category')
+                ->withSum('payable', 'amount')
                 ->orderBy('issued_on')
-                ->withSum('payments', 'amount')
-                ->paginate(25)
-            );
+                ->paginate(25);
+
+            dump($receipts);
+
+            return ReceiptResource::collection($receipts);
         } else {
             $creditors = Contact::query()->where('is_debtor', 1)->orderBy('name')->paginate(25);
 

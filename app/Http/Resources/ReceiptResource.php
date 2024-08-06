@@ -33,6 +33,8 @@ class ReceiptResource extends JsonResource
             'export_file_name' => $this->export_file_name,
             'document_number' => $this->document_number,
             'real_document_number' => $this->real_document_number,
+            'payments' => $this->payments,
+            'payable' => $this->payable,
             'type' => $this->type,
             'year' => $this->year,
             'text' => $this->text,
@@ -42,7 +44,7 @@ class ReceiptResource extends JsonResource
             'category' => new ReceiptCategoryResource($this->whenLoaded('category')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'payments_sum_amount' => $this->payments_sum_amount,
+            'payable_sum_amount' => $this->payable_sum_amount,
         ];
     }
 }

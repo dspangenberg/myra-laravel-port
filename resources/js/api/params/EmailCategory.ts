@@ -1,4 +1,4 @@
-export interface EMailCategory {
+export interface EmailCategory {
   id: number
   name: string
   type: number

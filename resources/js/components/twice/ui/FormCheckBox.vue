@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { computed, toRef } from 'vue'
+import { computed } from 'vue'
 import { id as id2 } from 'random-html-id'
 import { useVModel } from '@vueuse/core'
 
 export interface Props {
-  modelValue: number
+  modelValue: number | boolean
   trueValue?: boolean
-  name: string
+  name?: string
   rules?: string
   label: string
   id?: string
@@ -16,6 +16,7 @@ export interface Props {
 const props = withDefaults(defineProps<Props>(), {
   id: undefined,
   rules: undefined,
+  name: '',
   trueValue: true,
   disabled: false
 })

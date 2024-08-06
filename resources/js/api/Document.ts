@@ -20,6 +20,7 @@ export interface Document {
   size: number
   received_on: string
   number_of_pages: number
+  alternate_subject: string
   is_confirmed: boolean
   is_marked: boolean
   document_folder_id: number

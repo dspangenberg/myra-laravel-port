@@ -13,6 +13,7 @@ class BookkeepingBookingController extends Controller
         $bookings = BookkeepingBooking::with('tax')
             ->with('account_credit')
             ->with('account_debit')
+            ->with('range_document_number')
             //->where('account_id_credit', 1800)
             //->orWhere('account_id_debit', 1800)
             ->orderBy('date')
