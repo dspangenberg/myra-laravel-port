@@ -1,5 +1,5 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
-import { getAllReceipt, findReceiptById, createReceipt, updateReceipt } from '@/api/Receipt'
+import { getAllReceipt, findReceiptById, createReceipt, updateReceipt, getReceiptsPdf } from '@/api/Receipt'
 import { ref, type Ref } from 'vue'
 
 import { type Meta } from '@/types/'
@@ -27,6 +27,9 @@ export const useReceiptStore = defineStore('receipt-store', () => {
     isLoading.value = false
   }
 
+  const getPdf = async (id: number) => {
+    return await getReceiptsPdf(id)
+  }
   const findById = async (id: number) => {
     const { data } = await findReceiptById(id)
 
@@ -56,7 +59,7 @@ export const useReceiptStore = defineStore('receipt-store', () => {
     receiptEdit,
     receipts,
     meta,
-
+    getPdf,
     getAll,
     findById,
     save

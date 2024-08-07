@@ -5,14 +5,7 @@ const routes = {
     {
       path: 'list',
       name: 'bookings-list',
-      component: () => import('@/modules/Bookkeeping/Booking/BookingList.vue'),
-      children: [
-        {
-          path: ':id',
-          name: 'bookings-detail',
-          component: () => import('@/modules/Bookkeeping/Booking/BookingDetails.vue')
-        }
-      ]
+      component: () => import('@/modules/Bookkeeping/Booking/BookingList.vue')
     }
   ]
 }

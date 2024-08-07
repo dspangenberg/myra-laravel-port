@@ -130,8 +130,9 @@ import { container as WidgetContainerModal } from 'jenesius-vue-modal'
                 route-name="soon"
               />
               <twice-ui-sub-nav-item
+                active-route-path="/app/bookkeeping/transactions"
                 label="Transaktionen"
-                route-name="soon"
+                route-name="transactions-list"
               />
               <twice-ui-sub-nav-item
                 active-route-path="/app/bookkeeping/bookings"

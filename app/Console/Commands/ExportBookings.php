@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\BookkeepingBooking;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 use JetBrains\PhpStorm\NoReturn;
 use Spatie\TemporaryDirectory\Exceptions\PathAlreadyExists;
 use Spatie\TemporaryDirectory\TemporaryDirectory;
@@ -31,16 +31,22 @@ class ExportBookings extends Command
     #[NoReturn]
     public function handle(): void
     {
-        $bookings = BookkeepingBooking::with('range_document_number')->whereBetween('date', ['2021-01-01', '2021-01-31'])->orderBy('date')->get();
+        $bookings = BookkeepingBooking::with('range_document_number')
+            ->with('range_document_number.range')
+            ->whereBetween('date', ['2021-01-01', '2021-01-31'])->orderBy('date')->get();
         $temporaryDirectory = (new TemporaryDirectory)
             ->create();
 
-        $tmpFile = $temporaryDirectory->path(Str::random().'.csv');
+        $fileName = Carbon::now()->format('Y-m-d-H-i-s').'myra-buchungen.csv';
+        $tmpFile = $temporaryDirectory->path($fileName);
 
         $handle = fopen($tmpFile, 'w');
-        fputcsv($handle, ['Belegdatum', 'SollKonto', 'HabenKonto', 'Buchungstext', 'Betrag', 'Beleg']); // Add more headers as needed
+        fputcsv($handle, ['Belegdatum', 'SollKonto', 'HabenKonto', 'Buchungstext', 'Betrag', 'Beleg', 'Fremdbeleg']); // Add more headers as needed
 
         foreach ($bookings as $booking) {
+            if (! $booking->document_number) {
+                $booking->bookable->document_number;
+            }
             fputcsv($handle, [
                 $booking->date->format('d.m.Y'),
                 $booking->account_id_credit,
@@ -48,10 +54,11 @@ class ExportBookings extends Command
                 trim($booking->booking_text, '|'),
                 number_format($booking->amount, 2, ',', ''),
                 $booking->document_number,
+                $booking->document_number.'.pdf',
             ]);
         }
 
         fclose($handle);
-        dd($tmpFile);
+        dd($temporaryDirectory->path());
     }
 }

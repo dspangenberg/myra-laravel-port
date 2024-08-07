@@ -23,7 +23,7 @@ class PaymentService
         $rank = 100;
 
         if ($transactions->count() === 0) {
-            $transactions = $service->findTransactionByAmount($invoice, $grossAmount);
+            $transactions = $service->findTransactionByAmount($invoice, $grossAmount, $invoice->contact_id);
             $rank = 50;
         }
 
@@ -53,16 +53,23 @@ class PaymentService
 
     public function findTransactionByPurpose(string $purpose, $contactId = 0): Collection
     {
-
-        return Transaction::where('is_private', 0)->where('contact_id', $contactId)->where('purpose', 'LIKE', $purpose)->dump()->get();
+        return Transaction::where('is_private', 0)
+            ->where('is_transit', 0)
+            ->where('contact_id', $contactId)
+            ->where('purpose', 'LIKE', $purpose)
+            ->get();
 
     }
 
-    public function findTransactionByAmount(Invoice|Receipt $item, $amount): Collection
+    public function findTransactionByAmount(Invoice|Receipt $item, $amount, $contactId = 0): Collection
     {
         return Transaction::where('contact_id', $item->contact_id)
+            ->where('booked_on', '>=', $item->issued_on)
+            ->whereBetween('booked_on', [$item->issued_on->subDay(), $item->issued_on->addDays(90)])
             ->where('is_private', 0)
-            ->where('amount', $amount)
+            ->where('is_transit', 0)
+            ->where('amount', round($amount, 2))
+            ->where('contact_id', $contactId)
             ->get();
     }
 
@@ -71,10 +78,10 @@ class PaymentService
 
         $model = $item->getMorphClass();
         $transactionCount = $transactions->count();
-
         $transactions->each(function ($transaction) use ($model, $item, $rank, $transactionCount) {
+
             $existingPayment = Payment::with('transaction')->with('transaction.bank_account')
-                ->whereMorphedTo('payable', $model)
+                ->whereMorphedTo('payable', $item)
                 ->where('payable_id', $item->id)
                 ->where('transaction_id', $transaction->id)
                 ->first();
@@ -87,12 +94,9 @@ class PaymentService
             $orgRank = $rank;
             if ($model === 'App\Models\Receipt' && $transactionCount > 1) {
                 $rank = $item->issued_on->diffInDays($transaction->booked_on);
-                if ($rank < 30) {
-                    $rank = 30;
-                }
             }
 
-            if ($rank > 30) {
+            if ($transactionCount === 1) {
                 $payment = Payment::firstOrNew(['id' => $id]);
                 $payment->rank = $orgRank;
             } else {
@@ -105,9 +109,10 @@ class PaymentService
             $payment->issued_on = $transaction->booked_on;
             $payment->payable()->associate($item);
             $payment->is_confirmed = $rank > 25;
-            if ($rank > 0) {
+            if ($rank >= 0) {
                 $payment->save();
             }
+
         });
     }
 
@@ -115,11 +120,11 @@ class PaymentService
     {
 
         $service = new PaymentService;
-        $transactions = $service->findTransactionByPurpose('%'.$receipt->reference.'%', $receipt->contact_id);
+        $transactions = $service->findTransactionByPurpose('%'.$receipt->reference.'%');
         $rank = 100;
 
         if ($transactions->count() === 0) {
-            $transactions = $service->findTransactionByAmount($receipt, $receipt->gross);
+            $transactions = $service->findTransactionByAmount($receipt, $receipt->gross, $receipt->contact_id);
             $rank = $transactions->count() > 1 ? $transactions->count() : 50;
             if ($transactions->count() === 0) {
                 $transactions = $service->findTransactionByContact($receipt);
@@ -162,34 +167,57 @@ class PaymentService
     {
         return Transaction::where('contact_id', $item->contact_id)
             ->where('is_private', 0)
+            ->where('is_transit', 0)
+            ->whereBetween('booked_on', [$item->issued_on->subDay(), $item->issued_on->addDays(90)])
             ->get();
     }
 
-    public static function adjustPaymentForReciept(int $id)
+    public static function adjustPaymentForReciept(int $id, $type = 'suggested')
     {
-        $suggestedPayment = PaymentSuggestion::with('transaction')->find($id);
-        $data = $suggestedPayment->toArray();
-        unset($data['id']);
-        $payment = new Payment($data);
+        if ($type === 'suggested') {
+            $suggestedPayment = PaymentSuggestion::with('transaction')->find($id);
+            $data = $suggestedPayment->toArray();
+            unset($data['id']);
+            $payment = new Payment($data);
+        } else {
+            $payment = Payment::with('transaction')->find($id);
+        }
+
         $payment->rank = 100;
         $payment->is_confirmed = true;
         $payment->save();
 
-        $receipt = Receipt::find($suggestedPayment->payable_id);
+        $receipt = Receipt::find($payment->payable_id);
+        PaymentService::checkForCurrencyDifference($receipt, $payment);
+        PaymentSuggestion::where('transaction_id', $payment->transaction_id)->forceDelete();
+    }
+
+    public static function checkForCurrencyDifference(Receipt $receipt, Payment $payment)
+    {
         if ($receipt->gross !== $payment->amount) {
             if ($receipt->currency_code !== 'EUR') {
-                $currencyDifferency = $payment->amount - $receipt->gross;
+                $difference = Payment::whereMorphedTo('payable', Receipt::class)
+                    ->where('payable_id', $payment->payable_id)
+                    ->where('transaction_id', $payment->transaction_id)
+                    ->where('is_currency_difference', 1)
+                    ->first();
+
+                if ($difference) {
+                    return false;
+                }
+
+                $transaction = Transaction::find($payment->transaction_id);
+                $difference = ($transaction->amount - $receipt->gross) * -1;
                 $differencePayment = new Payment;
                 $differencePayment->payable()->associate($receipt);
                 $differencePayment->issued_on = $payment->issued_on;
-                $differencePayment->transaction_id = $suggestedPayment->transaction_id;
-                $differencePayment->amount = $currencyDifferency * -1;
+                $differencePayment->transaction_id = $payment->transaction_id;
+                $differencePayment->amount = $difference;
                 $differencePayment->is_confirmed = true;
                 $differencePayment->is_currency_difference = true;
                 $differencePayment->save();
+                BookingService::createCurrencyDifferenceBookings($differencePayment);
             }
         }
-
-        PaymentSuggestion::where('transaction_id', $payment->transaction_id)->forceDelete();
     }
 }

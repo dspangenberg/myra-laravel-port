@@ -11,6 +11,8 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
+use function Laravel\Prompts\select;
+
 class ImportTransactions extends Command
 {
     /**
@@ -32,7 +34,17 @@ class ImportTransactions extends Command
      */
     public function handle(): void
     {
-        $jsonTransactions = Storage::disk('private')->json('PayPal.json');
+        $files = [];
+        foreach (glob(database_path('/private-data/*.json')) as $filename) {
+            $files[] = basename($filename);
+        }
+
+        $filename = select(
+            label: 'Datei mit Belegdaten auswählen:',
+            options: $files,
+            scroll: 10
+        );
+        $jsonTransactions = Storage::disk('private')->json($filename);
         $collection = collect($jsonTransactions);
 
         $account = $collection->get('account');
@@ -74,7 +86,11 @@ class ImportTransactions extends Command
                     $transaction->mandate_reference = $item->get('mandateReference', '');
                     $transaction->batch_reference = $item->get('batchReference', '');
                     $transaction->primanota_number = $item->get('primanotaNumber', '');
-                    $transaction->number_range_document_numbers_id = NumberRange::createDocumentNumber($transaction, 'booked_on', $bankAccount->prefix);
+
+                    if (! $transaction->number_range_document_numbers_id) {
+                        $transaction->number_range_document_numbers_id = NumberRange::createDocumentNumber($transaction,
+                            'booked_on', $bankAccount->prefix);
+                    }
 
                     $transaction->contact_id = 0;
 

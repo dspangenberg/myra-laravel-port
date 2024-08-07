@@ -79,6 +79,8 @@ use Illuminate\Support\Carbon;
  *
  * @method static Builder|BookkeepingBooking whereNumberRangeDocumentNumbersId($value)
  *
+ * @property-read \App\Models\NumberRangeDocumentNumber|null $range_document_number
+ *
  * @mixin Eloquent
  */
 class BookkeepingBooking extends Model
@@ -131,6 +133,9 @@ class BookkeepingBooking extends Model
             $booking = new BookkeepingBooking;
             $booking->bookable()->associate($parent);
             $booking->date = $parent[$dateField];
+        }
+
+        if (! $booking->number_range_document_numbers_id) {
             $booking->number_range_document_numbers_id = $parent->number_range_document_numbers_id;
         }
 
@@ -177,7 +182,11 @@ class BookkeepingBooking extends Model
 
     public function getDocumentNumberAttribute(): string
     {
-        return $this->range_document_number->document_number;
+        if ($this->range_document_number) {
+            return $this->range_document_number->document_number;
+        }
+
+        return $this->bookable->document_number;
     }
 
     public function range_document_number(): HasOne

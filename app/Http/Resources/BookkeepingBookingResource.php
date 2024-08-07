@@ -28,6 +28,8 @@ class BookkeepingBookingResource extends JsonResource
             'is_split' => $this->is_split,
             'split_id' => $this->split_id,
             'booking_text' => $this->booking_text,
+            'bookable' => $this->bookable,
+            'bookable_type' => $this->bookable_type,
             'document_number' => $this->document_number,
             'note' => $this->note,
             'tax_credit' => $this->tax_credit,

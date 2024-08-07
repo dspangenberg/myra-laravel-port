@@ -14,6 +14,7 @@ use App\SushiModels\LegacyInvoice;
 use App\SushiModels\LegacyInvoiceLine;
 use App\SushiModels\LegacyProject;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
 use MediaUploader;
 
 class ConvertInvoices extends Command
@@ -44,6 +45,10 @@ class ConvertInvoices extends Command
 
             $lProject = LegacyProject::query()->where('id', $legacyInvoice->project_id)->first();
             $invoice = Invoice::firstOrNew(['legacy_id' => $legacyInvoice->id]);
+            $invoice->issued_on = $legacyInvoice->issued_on;
+            if (! $invoice->number_range_document_numbers_id) {
+                $invoice->number_range_document_numbers_id = NumberRange::createDocumentNumber($invoice, 'issued_on');
+            }
 
             if ($lProject) {
                 $project = Project::query()->where('name', $lProject->name)->firstOrNew();
@@ -69,7 +74,6 @@ class ConvertInvoices extends Command
             $invoice->legacy_id = $legacyInvoice->id;
             $invoice->contact_id = $contact->id;
             $invoice->invoice_number = $legacyInvoice->invoice_number;
-            $invoice->issued_on = $legacyInvoice->issued_on;
             $invoice->due_on = $legacyInvoice->due_on;
             $invoice->dunning_block = $legacyInvoice->dunning_block || false;
             $invoice->is_draft = $legacyInvoice->is_draft;
@@ -79,7 +83,6 @@ class ConvertInvoices extends Command
             $invoice->address = $legacyInvoice->address;
             $invoice->payment_deadline_id = $legacyInvoice->payment_deadline_id || 1;
             $invoice->sent_at = $legacyInvoice->sent_at;
-            $invoice->number_range_document_numbers_id = NumberRange::createDocumentNumber($invoice, 'issued_on');
             $invoice->save();
 
             $legacyInvoiceLines = LegacyInvoiceLine::query()->where('invoice_id', $legacyInvoice->id)->orderBy('pos')->orderBy('id')->get();
@@ -109,10 +112,14 @@ class ConvertInvoices extends Command
                 $invoiceLine->save();
             });
 
-            /*
+            $invoice->load('range_document_number');
+            $prefix = NumberRange::find($invoice->range_document_number->number_range_id)->prefix;
+            $year = $invoice->issued_on->year;
+
             $legacyFile = storage_path('system/invoices/2021/'.$invoice->filename);
+
             try {
-                $media = MediaUploader::fromSource($legacyFile)
+                $media = MediaUploader::fromSource('/system/'.$legacyFile)
                     ->toDisk('s3')
                     ->toDirectory('Documents/Invocing/Invoices/2021')
                     ->makePrivate()
@@ -121,10 +128,12 @@ class ConvertInvoices extends Command
                 $invoice->attachMedia($media, 'pdf');
             } catch (\Exception $e) {
             }
-            */
 
             $invoice->loadSum('lines', 'amount');
             $invoice->loadSum('lines', 'tax');
+
+            $pdfContents = Storage::disk('s3')->get('Documents/Invocing/Invoices/2021/'.$invoice->filename);
+            Storage::disk('s3')->put("Documents/Receipts/$year/$prefix/$invoice->document_number.pdf", $pdfContents, 'private');
 
             Invoice::createBooking($invoice);
             PaymentService::getPaymentsForInvoice($invoice);

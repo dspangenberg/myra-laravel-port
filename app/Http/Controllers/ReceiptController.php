@@ -8,6 +8,8 @@ use App\Http\Resources\ReceiptResource;
 use App\Models\Contact;
 use App\Models\Receipt;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ReceiptController extends Controller
 {
@@ -22,6 +24,7 @@ class ReceiptController extends Controller
             $receipts = Receipt::query()
                 ->with('contact')
                 ->with('category')
+                ->with('range_document_number')
                 ->withSum('payable', 'amount')
                 ->orderBy('issued_on')
                 ->paginate(25);
@@ -71,6 +74,18 @@ class ReceiptController extends Controller
     /**
      * Show the form for creating a new resource.
      */
+    public function downloadReceipt(Receipt $receipt)
+    {
+        $receipt->load('range_document_number');
+        $receipt->load('range_document_number.range');
+
+        $year = $receipt->range_document_number->year;
+        $prefix = $receipt->range_document_number->range->prefix;
+        $content = Str::toBase64(Storage::disk('s3')->get("Documents/Receipts/$year/$prefix/$receipt->document_number.pdf"));
+
+        return response($content);
+    }
+
     public function create()
     {
         //

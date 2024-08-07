@@ -10,10 +10,10 @@ import {
 import { useLaravelQuery } from '@/composables/useLaravelQuery'
 
 import { storeToRefs } from 'pinia'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useReceiptStore } from '@/stores/ReceiptStore'
-import ReceiptListItem from './ReceiptListItem.vue'
+import { useTransactionStore } from '@/stores/TransactionStore'
+import TransactionListItem from './TransactionListItem.vue'
 import {
   Table,
   TableHeader,
@@ -24,19 +24,15 @@ import {
 
 const router = useRouter()
 const route = useRoute()
-const receiptStore = useReceiptStore()
-const { receipt, receipts, meta, isLoading } = storeToRefs(receiptStore)
+const transactionStore = useTransactionStore()
+const { transactions, meta, isLoading, bank_accounts } = storeToRefs(transactionStore)
 
 const qs = computed(() => route.query)
 const { queryString } = useLaravelQuery(['page'], { type: 'list' })
 
-const onSelect = async (id: number) => {
-  await receiptStore.findById(id)
-}
-
 watch(qs, async () => {
-  if (route.name === 'receipts-list') {
-    await receiptStore.getAll(queryString.value)
+  if (route.name === 'transactions-list') {
+    await transactionStore.getAll(queryString.value)
   }
 }, { immediate: true })
 
@@ -45,13 +41,13 @@ const onUpdatePage = (page: number) => {
 }
 
 onMounted(() => {
-  receiptStore.receipt = null
+  transactionStore.getAll()
 })
 
 </script>
 
 <template>
-  <twice-ui-page-layout title="Belege">
+  <twice-ui-page-layout title="Transaktionen">
     <template #breadcrumbs>
       <Breadcrumb>
         <BreadcrumbList>
@@ -76,41 +72,19 @@ onMounted(() => {
     <template #header-pivot>
       <twice-ui-pivot>
         <twice-ui-pivot-item
-          :active-route-query="{view: 'debitors'}"
-          :route-query="{view: 'debitors'}"
-          active-route-path="/app/invoicing/receipts/grouped"
-          disabled
-          label="Übersicht"
-          route-name="receipts-grouped-list"
+          v-for="bank_account in bank_accounts"
+          :active-route-query="{bank_account: bank_account.id}"
+          :label="bank_account.name"
+          :route-query="{bank_account: bank_account.id}"
+          active-route-path="/app/invoicing/transactions"
+          route-name="transactions-list"
         />
         <twice-ui-pivot-item
           :route-params="{type: 'list'}"
-          active-route-path="/app/invoicing/receipts/list"
-          label="Belege"
-          route-name="receipts-list"
-        />
-        <twice-ui-pivot-item
-          :active-route-query="{view: 'debitors'}"
-          :route-query="{view: 'debitors'}"
-          active-route-path="/app/invoicing/receipts/grouped"
+          active-route-path="/app/invoicing/transactions"
           disabled
-          label="Transaktionen"
-          route-name="receipts-grouped-list"
-        />
-        <twice-ui-pivot-item
-          :active-route-query="{view: 'creditors'}"
-          :route-query="{view: 'creditors', type: 'grouped'}"
-          active-route-path="/app/invoicing/receipts/grouped"
-          label="Kreditoren"
-          route-name="receipts-grouped-list"
-        />
-        <twice-ui-pivot-item
-          :active-route-query="{view: 'categories'}"
-          :route-query="{view: 'categories'}"
-          active-route-path="/app/invoicing/receipts/grouped"
-          disabled
-          label="Kategorien"
-          route-name="receipts-grouped-list"
+          label="Transaktionen ohne Beleg"
+          route-name="transactions-list"
         />
       </twice-ui-pivot>
     </template>
@@ -120,8 +94,8 @@ onMounted(() => {
           <twice-ui-table-box
             :loading="isLoading"
             :meta="meta"
-            :record-count="receipts?.length"
-            record-name="Kontakte"
+            :record-count="transactions?.length"
+            record-name="Transaktionen"
             @update-page="onUpdatePage"
           >
             <template #header>
@@ -130,38 +104,29 @@ onMounted(() => {
             <Table class="text-sm">
               <TableHeader>
                 <TableRow class="align-top">
-                  <TableHead class="w-12">
-                    ID
-                  </TableHead>
                   <TableHead class="w-24">
                     Datum
                   </TableHead>
-                  <TableHead class="w-24">
+                  <TableHead class="w-32">
                     Belegnr.
                   </TableHead>
-                  <TableHead class="w-20">
-                    Kreditor
+                  <TableHead class="w-64">
+                    Kontakt
                   </TableHead>
-                  <TableHead class="w-48" />
-
-                  <TableHead class="w-80">
-                    Referenz
+                  <TableHead class="w-auto">
+                    Buchungstext
                   </TableHead>
-                  <TableHead class="w-28">
-                    Kategorie
+                  <TableHead class="w-32 text-right">
+                    Betrag
                   </TableHead>
-                  <TableHead class="w-28">
-                    Brutto
-                  </TableHead>
-                  <TableHead class="w-auto" />
+                  <TableHead class="w-16" />
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <ReceiptListItem
-                  v-for="(receipt, index) in receipts"
+                <TransactionListItem
+                  v-for="(transaction, index) in transactions"
                   :key="index"
-                  :item="receipt"
-                  @select="onSelect"
+                  :item="transaction"
                 />
               </TableBody>
             </Table>

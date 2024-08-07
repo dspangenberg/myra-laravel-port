@@ -37,7 +37,7 @@ class ImportReceipts extends Command
     public function handle(): void
     {
 
-        $jsonContent = Storage::disk('private')->json('receipts-2021.json');
+        $jsonContent = Storage::disk('private')->json('Receipts.json');
         $receiptCollection = collect($jsonContent);
         $category = $receiptCollection->values()->select('category')->values();
         $contacts = $receiptCollection->values()->select('iban', 'contact')->values();
@@ -88,8 +88,14 @@ class ImportReceipts extends Command
             $receipt->reference = $item->get('reference', '');
 
             $contactId = $item->get('contact.id', $item->get('provider.id'));
+            $contactName = $item->get('contact.title', $item->get('provider.title', ''));
             if ($contactId) {
-                $receipt->contact_id = Contact::query()->where('receipts_ref', $contactId)->first()->id;
+                $contact = Contact::query()->where('receipts_ref', $contactId)->first();
+                if ($contact) {
+                    $receipt->contact_id = Contact::createNewCreditorFromReceipts($contact->id);
+                } else {
+                    Contact::createNewCreditorFromReceipts(0, $contactName, $contactId);
+                }
             } else {
                 $receipt->contact_id = 0;
             }
@@ -132,10 +138,7 @@ class ImportReceipts extends Command
                 $receipt->pdf_file = basename($item->get('asset.path'));
                 $receipt->text = $item->get('text');
 
-                $pdfContents = Storage::disk('system')->get("receipts/$receipt->pdf_file");
                 $year = $receipt->issued_on->year;
-                Storage::disk('s3')->put("documents/org-receipts/$year/$receipt->pdf_file", $pdfContents, 'private');
-
                 $save = true;
 
                 $duplicate = Receipt::query()
@@ -172,11 +175,16 @@ class ImportReceipts extends Command
 
                 if ($save) {
                     $receipt->save();
+
+                    $receipt->load('range_document_number');
+                    $prefix = NumberRange::find($receipt->range_document_number->number_range_id)->prefix;
+
+                    $pdfContents = Storage::disk('system')->get("receipts/$receipt->pdf_file");
+                    Storage::disk('s3')->put("Documents/Receipts/$year/$prefix/$receipt->document_number.pdf", $pdfContents, 'private');
+
                     Receipt::createBooking($receipt);
                 }
             }
-            // print_r($receipt->toJSON());
-
         });
     }
 }

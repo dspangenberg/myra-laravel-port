@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin \App\Models\NumberRangeDocumentNumbers */ class NumberRangeDocumentNumbersResource extends JsonResource
+/** @mixin \App\Models\NumberRangeDocumentNumber */ class NumberRangeDocumentNumbersResource extends JsonResource
 {
     public function toArray(Request $request): array
     {

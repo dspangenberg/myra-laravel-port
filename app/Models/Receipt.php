@@ -7,6 +7,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Carbon;
@@ -87,6 +88,9 @@ use Illuminate\Support\Carbon;
  *
  * @method static Builder|Receipt whereNumberRangeDocumentNumbersId($value)
  *
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payable
+ * @property-read int|null $payable_count
+ *
  * @mixin Eloquent
  */
 class Receipt extends Model
@@ -115,6 +119,10 @@ class Receipt extends Model
         'text',
         'amount_to_pay',
         'text_md5',
+    ];
+
+    protected $appends = [
+        'document_number',
     ];
 
     public static function createBooking($receipt): void
@@ -162,6 +170,16 @@ class Receipt extends Model
     public function payable(): MorphMany
     {
         return $this->morphMany(Payment::class, 'payable');
+    }
+
+    public function getDocumentNumberAttribute(): string
+    {
+        return $this->range_document_number->document_number;
+    }
+
+    public function range_document_number(): HasOne
+    {
+        return $this->hasOne(NumberRangeDocumentNumber::class, 'id', 'number_range_document_numbers_id');
     }
 
     protected function serializeDate(DateTimeInterface $date): string

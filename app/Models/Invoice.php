@@ -87,16 +87,19 @@ use rikudou\EuQrPayment\QrPayment;
  *
  * @method static MediableCollection<int, static> get($columns = ['*'])
  * @method static MediableCollection<int, static> all($columns = ['*'])
- * @method static MediableCollection<int, static> get($columns = ['*'])
  *
  * @property int $number_range_document_numbers_id
  *
  * @method static MediableCollection<int, static> all($columns = ['*'])
- * @method static MediableCollection<int, static> get($columns = ['*'])
  * @method static Builder|Invoice whereNumberRangeDocumentNumberId($value)
- * @method static MediableCollection<int, static> all($columns = ['*'])
  * @method static MediableCollection<int, static> get($columns = ['*'])
  * @method static Builder|Invoice whereNumberRangeDocumentNumbersId($value)
+ *
+ * @property-read Collection<int, \App\Models\Payment> $payable
+ * @property-read int|null $payable_count
+ *
+ * @method static MediableCollection<int, static> all($columns = ['*'])
+ * @method static MediableCollection<int, static> get($columns = ['*'])
  *
  * @mixin Eloquent
  */
@@ -127,6 +130,7 @@ class Invoice extends Model implements MediableInterface
 
     protected $appends = [
         'formated_invoice_number',
+        'document_number',
         'qr_code',
         'filename',
     ];
@@ -159,6 +163,20 @@ class Invoice extends Model implements MediableInterface
     public function getFilenameAttribute(): string
     {
         return str_replace('.', '_', basename(str_replace('RG-', '', $this->formated_invoice_number), '.pdf')).'.pdf';
+    }
+
+    public function getDocumentNumberAttribute(): string
+    {
+        if ($this->range_document_number) {
+            return $this->range_document_number->document_number;
+        }
+
+        return '';
+    }
+
+    public function range_document_number(): HasOne
+    {
+        return $this->hasOne(NumberRangeDocumentNumber::class, 'id', 'number_range_document_numbers_id');
     }
 
     public function getQrCodeAttribute(): string

@@ -13,8 +13,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
- * 
- *
  * @property int $id
  * @property int|null $company_id
  * @property int $is_org
@@ -51,6 +49,7 @@ use Illuminate\Support\Carbon;
  * @property-read string $initials
  * @property-read string $reverse_full_name
  * @property-read Title|null $title
+ *
  * @method static Builder|Contact newModelQuery()
  * @method static Builder|Contact newQuery()
  * @method static Builder|Contact query()
@@ -94,24 +93,30 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $addresses_count
  * @property-read Collection<int, Contact> $contacts
  * @property-read int|null $contacts_count
+ *
  * @method static Builder|Contact whereTaxNumber($value)
+ *
  * @property-read Collection<int, ContactMail> $mails
  * @property-read int|null $mails_count
  * @property-read Collection<int, ContactPhone> $phones
  * @property-read int|null $phones_count
  * @property string|null $receipts_ref
  * @property string|null $iban
+ *
  * @method static Builder|Contact whereIban($value)
  * @method static Builder|Contact whereReceiptsRef($value)
+ *
  * @property int $outturn_account_id
  * @property bool $is_primary
  * @property string|null $paypal_email
  * @property string|null $cc_name
+ *
  * @method static Builder|Contact view($view)
  * @method static Builder|Contact whereCcName($value)
  * @method static Builder|Contact whereIsPrimary($value)
  * @method static Builder|Contact whereOutturnAccountId($value)
  * @method static Builder|Contact wherePaypalEmail($value)
+ *
  * @mixin Eloquent
  */
 class Contact extends Model
@@ -182,6 +187,28 @@ class Contact extends Model
         'website',
         'dob',
     ];
+
+    public static function createNewCreditorFromReceipts($contactId, $contactName = '', $ref = ''): int
+    {
+        $contact = Contact::firstOrNew(['id' => $contactId]);
+        if ($contact->id === 0) {
+            $contact->name = $contactName;
+            $contact->ref = $ref;
+            $contact->is_org = true;
+        }
+
+        $contact->is_creditor = true;
+        if (! $contact->creditor_number) {
+            $lastNumber = Contact::where('creditor_number', '>=', 79900)->max('creditor_number');
+            $lastNumber++;
+            $contact->creditor_number = $lastNumber;
+        }
+
+        $contact->save();
+
+        return $contact->id;
+
+    }
 
     public static function getAccounts(int $id, bool $createAccountIfNotExists = true, bool $getDefaultOutturnAccount = false): array
     {

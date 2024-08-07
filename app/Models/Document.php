@@ -80,6 +80,8 @@ use Plank\Mediable\MediableInterface;
  * @method static \Plank\Mediable\MediableCollection<int, static> get($columns = ['*'])
  * @method static \Plank\Mediable\MediableCollection<int, static> all($columns = ['*'])
  * @method static \Plank\Mediable\MediableCollection<int, static> get($columns = ['*'])
+ * @method static \Plank\Mediable\MediableCollection<int, static> all($columns = ['*'])
+ * @method static \Plank\Mediable\MediableCollection<int, static> get($columns = ['*'])
  * @mixin \Eloquent
  */
 class Document extends Model implements MediableInterface

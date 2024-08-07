@@ -8,13 +8,13 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Carbon;
 
 #[ObservedBy([TransactionObserver::class])]
 /**
- * 
- *
  * @property int $id
  * @property string $mm_ref
  * @property int $contact_id
@@ -38,6 +38,7 @@ use Illuminate\Support\Carbon;
  * @property int $year
  * @property-read BankAccount|null $bank_account
  * @property-read string $real_document_number
+ *
  * @method static Builder|Transaction newModelQuery()
  * @method static Builder|Transaction newQuery()
  * @method static Builder|Transaction query()
@@ -62,6 +63,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Transaction whereUpdatedAt($value)
  * @method static Builder|Transaction whereValuedOn($value)
  * @method static Builder|Transaction whereYear($value)
+ *
  * @property string|null $booking_text
  * @property string|null $type
  * @property string|null $return_reason
@@ -70,6 +72,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $mandate_reference
  * @property string|null $batch_reference
  * @property string|null $primanota_number
+ *
  * @method static Builder|Transaction whereBatchReference($value)
  * @method static Builder|Transaction whereBookingText($value)
  * @method static Builder|Transaction whereEndToEndReference($value)
@@ -78,19 +81,28 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Transaction whereReturnReason($value)
  * @method static Builder|Transaction whereTransactionCode($value)
  * @method static Builder|Transaction whereType($value)
+ *
  * @property-read Contact|null $contact
  * @property-read \App\Models\BookkeepingBooking|null $booking
  * @property int $is_transit
  * @property int|null $booking_id
+ *
  * @method static Builder|Transaction whereBookingId($value)
  * @method static Builder|Transaction whereIsTransit($value)
+ *
  * @property string|null $org_category
  * @property-read string $bookkepping_text
+ *
  * @method static Builder|Transaction whereOrgCategory($value)
+ *
  * @property float $amount_in_foreign_currency
+ *
  * @method static Builder|Transaction whereAmountInForeignCurrency($value)
+ *
  * @property int $number_range_document_numbers_id
+ *
  * @method static Builder|Transaction whereNumberRangeDocumentNumbersId($value)
+ *
  * @mixin Eloquent
  */
 class Transaction extends Model
@@ -101,6 +113,7 @@ class Transaction extends Model
 
     protected $appends = [
         'bookkepping_text',
+        'document_number',
     ];
 
     public static function createBooking($transaction): void
@@ -180,6 +193,16 @@ class Transaction extends Model
         return $this->morphOne(BookkeepingBooking::class, 'bookable');
     }
 
+    public function getDocumentNumberAttribute(): string
+    {
+        return $this->range_document_number->document_number;
+    }
+
+    public function range_document_number(): HasOne
+    {
+        return $this->hasOne(NumberRangeDocumentNumber::class, 'id', 'number_range_document_numbers_id');
+    }
+
     public function getBookkeppingTextAttribute(): string
     {
         $lines = [];
@@ -212,6 +235,11 @@ class Transaction extends Model
     public function bank_account(): BelongsTo
     {
         return $this->belongsTo(BankAccount::class);
+    }
+
+    public function payable(): MorphMany
+    {
+        return $this->morphMany(Payment::class, 'payable');
     }
 
     protected function casts(): array

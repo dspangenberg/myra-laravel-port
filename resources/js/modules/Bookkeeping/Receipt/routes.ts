@@ -5,14 +5,7 @@ const routes = {
     {
       path: 'list',
       name: 'receipts-list',
-      component: () => import('@/modules/Bookkeeping/Receipt/ReceiptList.vue'),
-      children: [
-        {
-          path: ':id',
-          name: 'receipts-detail',
-          component: () => import('@/modules/Bookkeeping/Receipt/ReceiptDetails.vue')
-        }
-      ]
+      component: () => import('@/modules/Bookkeeping/Receipt/ReceiptList.vue')
     },
     {
       path: 'grouped',

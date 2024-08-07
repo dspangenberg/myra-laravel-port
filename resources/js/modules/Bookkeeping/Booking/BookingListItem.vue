@@ -21,6 +21,9 @@ defineEmits(['select'])
   <TableRow>
     <TableCell class="align-top">
       {{ formatDate(item.date) }}
+      <div class="text-sm text-gray-400">
+        #{{ item.id }}
+      </div>
     </TableCell>
     <TableCell class="align-top">
       {{ item.document_number }}
@@ -35,7 +38,6 @@ defineEmits(['select'])
         class="text-red-500"
       >
         {{ item.note }}
-
       </span>
     </TableCell>
     <TableCell class="text-right align-top">

@@ -4,12 +4,24 @@ import {
   TableCell,
   TableRow
 } from '@/components/shdn/ui/table'
-
+import { useReceiptStore } from '@/stores/ReceiptStore'
 import { useTemplateFilter } from '@/composables/useTemplateFilter'
 import { computed } from 'vue'
+import { promptModal } from 'jenesius-vue-modal'
+import { IconPrinter } from '@tabler/icons-vue'
 const { formatDate, formatNumber, round } = useTemplateFilter()
 export interface Props {
   item: Receipt
+}
+const receiptStore = useReceiptStore()
+
+const onGetPdf = async (receipt: Receipt) => {
+  const { dataUrl: resUrl, base64: resBase64 } = await receiptStore.getPdf(receipt.id as unknown as number)
+  await promptModal('pdfViewer', {
+    base64: resBase64,
+    dataUrl: resUrl,
+    filename: receipt.document_number + '.pdf'
+  })
 }
 
 const props = defineProps<Props>()
@@ -21,11 +33,19 @@ defineEmits(['select'])
 </script>
 <template>
   <TableRow :class="amountOpen > 0 ? 'bg-red-50 text-red-500' :''">
-    <TableCell>
+    <TableCell class="text-right">
       {{ item.id }}
     </TableCell>
     <TableCell>
       {{ formatDate(item.issued_on) }}
+    </TableCell>
+    <TableCell>
+      {{ item.document_number }}
+    </TableCell>
+    <TableCell class="truncate">
+      <span v-if="item.contact.creditor_number">
+        {{ formatNumber(item.contact.creditor_number, 0) }}
+      </span>
     </TableCell>
     <TableCell class="truncate">
       {{ item.contact.full_name }}
@@ -76,6 +96,18 @@ defineEmits(['select'])
       class="text-right "
     >
       {{ formatNumber(amountOpen) }}
+    </TableCell>
+    <TableCell>
+      <ShdnUiButton
+        v-if="item.id"
+        size="icon"
+        variant="ghost"
+        @click="onGetPdf(item)"
+      >
+        <IconPrinter
+          class="size-5"
+        />
+      </ShdnUiButton>
     </TableCell>
   </TableRow>
 </template>

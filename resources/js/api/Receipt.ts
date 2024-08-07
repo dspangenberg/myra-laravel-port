@@ -1,6 +1,6 @@
 import { useAxios } from '@/composables/useAxios'
 
-import { type Meta } from '@/types/'
+import { type Meta, PdfResponse } from '@/types/'
 import { type ReceiptCategory } from '@/api/params/ReceiptCategory'
 import { type Contact } from '@/api/Contact'
 
@@ -19,7 +19,6 @@ export interface Receipt {
   tax_rate: number
   amount: number
   currency_code: string
-  real_document_number: string
   exchange_rate: number
   gross: number
   net: number
@@ -31,6 +30,7 @@ export interface Receipt {
   text: string
   tax_code_number: string
   payable_sum_amount: number
+  document_number: string
 }
 
 export interface Response {
@@ -82,4 +82,9 @@ export const createReceipt = async (payload: Receipt): Promise<Response> => {
 
 export const updateReceipt = async (payload: Receipt) => {
   await axios.$put(`${baseUrl}/${payload.id}`, payload)
+}
+
+export const getReceiptsPdf = async (id: number): Promise<PdfResponse> => {
+  const { dataUrl, base64 } = await axios.$getPdf(`${baseUrl}/${id}/pdf`) as PdfResponse
+  return { dataUrl, base64 }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
@@ -36,4 +37,9 @@ class NumberRangeDocumentNumber extends Model
         'counter',
         'document_number',
     ];
+
+    public function range(): HasOne
+    {
+        return $this->hasOne(NumberRange::class, 'id', 'number_range_id');
+    }
 }

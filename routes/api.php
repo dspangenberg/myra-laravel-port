@@ -8,6 +8,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\TimeController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use App\Http\Requests\StoreUser;
 use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
@@ -32,7 +33,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('/projects', ProjectController::class);
     Route::resource('/times', TimeController::class);
     Route::resource('/receipts', ReceiptController::class);
+    Route::resource('/transactions', TransactionController::class);
     Route::get('/invoices/{invoice}/pdf', [InvoiceController::class, 'createPdf']);
+    Route::get('/receipts/{receipt}/pdf', [ReceiptController::class, 'downloadReceipt']);
 });
 
 Route::middleware([HandlePrecognitiveRequests::class])->group(function () {

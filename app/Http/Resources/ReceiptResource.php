@@ -31,7 +31,6 @@ class ReceiptResource extends JsonResource
             'title' => $this->title,
             'pdf_file' => $this->pdf_file,
             'export_file_name' => $this->export_file_name,
-            'document_number' => $this->document_number,
             'real_document_number' => $this->real_document_number,
             'payments' => $this->payments,
             'payable' => $this->payable,
@@ -45,6 +44,7 @@ class ReceiptResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'payable_sum_amount' => $this->payable_sum_amount,
+            'document_number' => $this->document_number,
         ];
     }
 }
